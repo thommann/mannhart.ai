@@ -1,0 +1,17 @@
+<section id="skills">
+  <div class="section-header reveal">
+    <span class="section-number">{{ t.skills.number }}</span>
+    <h2 class="section-title">{{ t.skills.title }}</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-grid">
+    {% for group in t.skills.groups %}
+    <div class="skill-group reveal">
+      <h3>{{ group.name }}</h3>
+      {% for skill in group.items %}
+      <div class="skill-item">{{ skill.name }} <div class="skill-dot">{% for i in range(5) %}<span{% if i < skill.level %} class="active"{% endif %}></span>{% endfor %}</div></div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
