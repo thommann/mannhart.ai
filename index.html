@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>t.mannhart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: hidden; }
+
+:root {
+  --bg: #0c0b0f;
+  --bg-elevated: #15141a;
+  --bg-card: #1a1920;
+  --text: #e8e4dd;
+  --text-muted: #8a8690;
+  --accent: #d4a574;
+  --accent-bright: #e8c4a0;
+  --border: #2a2830;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+/* --- Grain overlay --- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* --- Nav --- */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.25rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(12, 11, 15, 0.7);
+  border-bottom: 1px solid var(--border);
+  transition: transform 0.4s ease;
+}
+
+nav .logo {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+nav .logo span { color: var(--accent); }
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2.5rem;
+}
+
+nav ul a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  position: relative;
+}
+
+nav ul a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+nav ul a:hover { color: var(--text); }
+nav ul a:hover::after { width: 100%; }
+
+/* --- Hero --- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 8rem 3rem 4rem;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 165, 116, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hero-text { z-index: 1; }
+
+.hero-label {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-desc {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 440px;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.85rem 2rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  background: var(--accent-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212, 165, 116, 0.2);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  padding: 0.85rem 1.5rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 1s 0.6s forwards;
+}
+
+.hero-photo-wrap {
+  position: relative;
+  width: 340px;
+  height: 420px;
+}
+
+.hero-photo-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 1px solid var(--border);
+  transform: rotate(3deg);
+  transition: transform 0.5s;
+}
+
+.hero-photo-wrap:hover::before { transform: rotate(0deg); }
+
+.hero-photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(30%) contrast(1.05);
+  transition: filter 0.5s;
+}
+
+.hero-photo-wrap:hover img { filter: grayscale(0%) contrast(1); }
+
+.hero-photo-accent {
+  position: absolute;
+  bottom: -20px;
+  right: -30px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 4rem;
+  color: var(--accent);
+  opacity: 0.15;
+  line-height: 1;
+  user-select: none;
+}
+
+/* --- Sections --- */
+section {
+  padding: 6rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.section-number {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* --- About --- */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+
+.about-text {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.9;
+}
+
+.about-text strong { color: var(--text); font-weight: 500; }
+
+.about-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.detail-block h4 {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.75rem;
+}
+
+.detail-block p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* --- Experience --- */
+.timeline { position: relative; }
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 120px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 3rem;
+  padding: 2.5rem 0;
+  position: relative;
+  transition: opacity 0.3s;
+}
+
+.timeline-item + .timeline-item { border-top: none; }
+
+.timeline-date {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding-top: 0.3rem;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
+.timeline-content {
+  padding-left: 2rem;
+  position: relative;
+}
+
+.timeline-content::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 10px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.timeline-item:hover .timeline-content::before {
+  background: var(--accent);
+}
+
+.timeline-role {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.timeline-company {
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-location {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+}
+
+.timeline-desc {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  max-width: 560px;
+}
+
+.timeline-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tech-tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  letter-spacing: 0.03em;
+  transition: all 0.3s;
+}
+
+.tech-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --- Education --- */
+.edu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.edu-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+}
+
+.edu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.edu-card:hover { border-color: rgba(212, 165, 116, 0.3); transform: translateY(-4px); }
+.edu-card:hover::before { opacity: 1; }
+
+.edu-degree {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.edu-school {
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.edu-year {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.edu-detail {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.award-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  background: rgba(212, 165, 116, 0.08);
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  letter-spacing: 0.05em;
+}
+
+/* --- Skills --- */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.skill-group h3 {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  transition: color 0.3s;
+}
+
+.skill-item:hover { color: var(--text); }
+
+.skill-dot {
+  display: flex;
+  gap: 4px;
+}
+
+.skill-dot span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.skill-dot span.active { background: var(--accent); }
+
+/* --- Featured / Media --- */
+.featured-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.video-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: block;
+}
+
+.video-embed img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-embed .play-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  transition: background 0.3s;
+}
+
+.video-embed:hover .play-btn {
+  background: rgba(0,0,0,0.15);
+}
+
+.video-embed .play-btn svg {
+  width: 64px;
+  height: 64px;
+  fill: #fff;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.video-embed:hover .play-btn svg {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.featured-text h3 {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.featured-text p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+
+.featured-badges {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  background: rgba(212, 165, 116, 0.08);
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.badge:hover {
+  background: rgba(212, 165, 116, 0.15);
+  border-color: var(--accent);
+}
+
+.badge svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+}
+
+@media (max-width: 900px) {
+  .featured-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Contact --- */
+.contact-section {
+  text-align: center;
+  padding: 8rem 3rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.contact-section .section-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: 1.5rem;
+}
+
+.contact-section .section-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.contact-desc {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+}
+
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: color 0.3s;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid transparent;
+}
+
+.contact-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.contact-link svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+}
+
+/* --- Footer --- */
+footer {
+  text-align: center;
+  padding: 3rem;
+  border-top: 1px solid var(--border);
+}
+
+footer p {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* --- Scroll Reveal --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Animations --- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Mobile nav toggle --- */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 24px;
+  height: 1.5px;
+  background: var(--text);
+  margin: 6px 0;
+  transition: all 0.3s;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+
+  nav ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  nav ul.active { display: flex; }
+
+  .nav-toggle { display: block; }
+
+  .hero { padding: 7rem 1.5rem 3rem; }
+  .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .hero-visual { order: -1; }
+  .hero-photo-wrap { width: 250px; height: 310px; }
+
+  section { padding: 4rem 1.5rem; }
+
+  .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .edu-grid { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: 1fr; }
+
+  .timeline::before { left: 0; }
+  .timeline-item { grid-template-columns: 1fr; gap: 0.5rem; }
+  .timeline-date { text-align: left; padding-left: 1.5rem; }
+  .timeline-content { padding-left: 1.5rem; }
+  .timeline-content::before { left: -7px; }
+}
+
+@media (max-width: 500px) {
+  .hero h1 { font-size: 2.4rem; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .contact-links { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <a href="#" class="logo">t<span>.</span>mannhart</a>
+  <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('nav ul').classList.toggle('active')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-label">Professional AI Engineer · Zürich, CH</div>
+      <h1>Thomas<br>Rolf<br><em>Mannhart</em></h1>
+      <p class="hero-desc">Professional AI engineer at bbv Software Services. MSc in AI from the University of Zürich.</p>
+      <div class="hero-actions">
+        <a href="mailto:thomas_m@hotmail.ch" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Get in touch
+        </a>
+        <a href="https://github.com/thommann" target="_blank" class="btn-ghost">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-photo-wrap">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='420' fill='%231a1920'%3E%3Crect width='340' height='420'/%3E%3Ctext x='170' y='210' text-anchor='middle' fill='%23555' font-size='14' font-family='sans-serif'%3EPhoto%3C/text%3E%3C/svg%3E" alt="Thomas Mannhart" id="hero-photo">
+        <div class="hero-photo-accent">TM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section id="about">
+  <div class="section-header reveal">
+    <span class="section-number">01</span>
+    <h2 class="section-title">About</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I'm a <strong>professional AI engineer</strong> based in Zürich, currently working on the <strong>bbv AI Hub</strong> — a Swiss-made enterprise AI platform. I studied AI at the University of Zürich and have been building software professionally since 2019.</p>
+      <br>
+      <p>When I'm not coding I love hot tea, cold beer, good food, thick books, old music, and long boardgame nights.</p>
+    </div>
+    <div class="about-details reveal">
+      <div class="detail-block">
+        <h4>Location</h4>
+        <p>Zürich, Switzerland</p>
+      </div>
+      <div class="detail-block">
+        <h4>Born</h4>
+        <p>January 28, 1997</p>
+      </div>
+      <div class="detail-block">
+        <h4>Languages</h4>
+        <p>German (native)<br>English (proficient)<br>French (advanced)</p>
+      </div>
+      <div class="detail-block">
+        <h4>Focus</h4>
+        <p>Enterprise AI Platforms<br>Open Source<br>AI-Augmented Software Engineering</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Experience -->
+<section id="experience">
+  <div class="section-header reveal">
+    <span class="section-number">02</span>
+    <h2 class="section-title">Experience</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="timeline">
+
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2025 — now</div>
+      <div class="timeline-content">
+        <h3 class="timeline-role">Professional AI Engineer</h3>
+        <div class="timeline-company">bbv Software Services AG</div>
+        <div class="timeline-location">Zürich, Switzerland</div>
+        <p class="timeline-desc">Working on the bbv AI Hub, a Swiss-made enterprise AI platform. Building RAG pipelines, agentic workflows, and integrations across various LLMs and enterprise systems. The platform is model-agnostic, runs on Swiss cloud infrastructure, and is going open source.</p>
+        <div class="timeline-tech">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">LLMs / RAG</span>
+          <span class="tech-tag">Agentic AI</span>
+          <span class="tech-tag">Vector DB</span>
+          <span class="tech-tag">Azure</span>
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">Platform Engineering</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2023 — 2024</div>
+      <div class="timeline-content">
+        <h3 class="timeline-role">Professional Software Engineer</h3>
+        <div class="timeline-company">Ergon Informatik AG</div>
+        <div class="timeline-location">Zürich, Switzerland</div>
+        <p class="timeline-desc">Developed a time-tracking and workforce planning system for the retail sector. Handled end-to-end software delivery from requirements engineering and prototyping through to second/third-level support. Mentored new team members and contributed to youth outreach by organizing IT workshops for students.</p>
+        <div class="timeline-tech">
+          <span class="tech-tag">Java</span>
+          <span class="tech-tag">Kotlin</span>
+          <span class="tech-tag">Angular</span>
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">SQL</span>
+          <span class="tech-tag">Selenium</span>
+          <span class="tech-tag">Jenkins</span>
+          <span class="tech-tag">Git</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2020 — 2023</div>
+      <div class="timeline-content">
+        <h3 class="timeline-role">Senior Software Developer</h3>
+        <div class="timeline-company">PolygonSoftware</div>
+        <div class="timeline-location">Opfikon, Switzerland</div>
+        <p class="timeline-desc">Led full-stack development of web applications and computer vision / machine learning projects at a UZH-founded startup. Designed software architectures, supervised dev teams, and interfaced directly with product owners and clients. Recognized for outstanding quality, reliability, and initiative.</p>
+        <div class="timeline-tech">
+          <span class="tech-tag">Full Stack</span>
+          <span class="tech-tag">Computer Vision</span>
+          <span class="tech-tag">Machine Learning</span>
+          <span class="tech-tag">Web Apps</span>
+          <span class="tech-tag">DevOps</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2019 — 2020</div>
+      <div class="timeline-content">
+        <h3 class="timeline-role">Junior Software Developer</h3>
+        <div class="timeline-company">swissbiomechanics ag</div>
+        <div class="timeline-location">Zürich, Switzerland</div>
+        <p class="timeline-desc">Led an independent software project for this ETH spin-off, building a Java application to track biomedical analyses and automatically generate clinical reports. Handled stakeholder communication, requirements analysis, and coordinated with other developers.</p>
+        <div class="timeline-tech">
+          <span class="tech-tag">Java</span>
+          <span class="tech-tag">Report Generation</span>
+          <span class="tech-tag">Biomedical</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Education -->
+<section id="education">
+  <div class="section-header reveal">
+    <span class="section-number">03</span>
+    <h2 class="section-title">Education</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card reveal">
+      <div class="edu-degree">MSc in Informatics</div>
+      <div class="edu-school">University of Zürich</div>
+      <div class="edu-year">2020 — 2023</div>
+      <div class="edu-detail">Specialization in Artificial Intelligence. Thesis: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Supervised by Johannes Marti and Dan Olteanu at the Data Systems and Theory group.</div>
+    </div>
+    <div class="edu-card reveal">
+      <div class="edu-degree">BSc in Informatics</div>
+      <div class="edu-school">University of Zürich</div>
+      <div class="edu-year">2017 — 2020</div>
+      <div class="edu-detail">
+        Specialization in Software Systems. Thesis: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" style="color:var(--accent);text-decoration-color:var(--accent-dim);">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Supervised by Michael Böhlen and Anton Dignös at the Database Technology group.
+        <div class="award-badge">
+          <a href="https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:.5rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          UZH Semester Award 2020
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <div class="section-header reveal">
+    <span class="section-number">04</span>
+    <h2 class="section-title">Skills</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-group reveal">
+      <h3>Languages</h3>
+      <div class="skill-item">Python <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span></div></div>
+      <div class="skill-item">TypeScript / JS <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span></span></div></div>
+      <div class="skill-item">Java / Kotlin <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span></span></div></div>
+      <div class="skill-item">SQL <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span></span></div></div>
+    </div>
+    <div class="skill-group reveal">
+      <h3>AI</h3>
+      <div class="skill-item">Agent Orchestration <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span></div></div>
+      <div class="skill-item">RAG <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span></div></div>
+      <div class="skill-item">MCP <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span></span></div></div>
+    </div>
+    <div class="skill-group reveal">
+      <h3>Tools</h3>
+      <div class="skill-item">Claude Code <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span></div></div>
+      <div class="skill-item">Git / GitHub <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span></div></div>
+      <div class="skill-item">Docker <div class="skill-dot"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span><span></span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Talks -->
+<section id="featured">
+  <div class="section-header reveal">
+    <span class="section-number">05</span>
+    <h2 class="section-title">Talks</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="featured-grid" style="margin-bottom: 4rem;">
+    <a href="https://www.youtube.com/watch?v=CCc3SREchJE&t=539" target="_blank" rel="noopener" class="video-embed reveal">
+      <img src="https://img.youtube.com/vi/CCc3SREchJE/maxresdefault.jpg" alt="KI als Entwicklungspartner Webinar" loading="lazy">
+      <div class="play-btn">
+        <svg viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.64 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#d4a574"/><path d="M45 24L27 14v20" fill="#0c0b0f"/></svg>
+      </div>
+    </a>
+    <div class="featured-text reveal">
+      <h3>KI als Entwicklungspartner</h3>
+      <p>bbv webinar on practical methods, tools, and proven strategies for integrating AI into the software development lifecycle — from requirements analysis through code development to testing.</p>
+      <div class="featured-badges">
+        <a href="https://www.youtube.com/watch?v=CCc3SREchJE&t=539" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Watch on YouTube
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="featured-grid reveal">
+    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;">
+      <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem;">Alumni Event · FHNW · 2025</div>
+      <h3 style="font-family: var(--serif); font-size: 1.8rem; letter-spacing: -0.01em; margin-bottom: 0.75rem;">AI-Augmented<br>Software Engineering</h3>
+      <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.8;">Talk at the FHNW Data Science &amp; Data Engineering Alumni Event on integrating AI into the software development lifecycle — from enterprise AI strategy and the bbv AI Hub, to working with coding agents and the "Development Funnel" for context-driven AI workflows.</p>
+      <div class="featured-badges" style="margin-top: 1.25rem;">
+        <a href="https://www.linkedin.com/posts/bbv-software-services_ki-softwareengineering-activity-7341725714343227392-xVB4" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          bbv Post
+        </a>
+        <a href="https://de.linkedin.com/posts/hochschule-f%C3%BCr-informatik-fhnw_fhnw-informatik-hsi-activity-7341831303979270144--ISp" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          FHNW Post
+        </a>
+        <a href="AI_Augmented_Software_Engineering__FHNW.pdf" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+          Slides
+        </a>
+      </div>
+    </div>
+    <div class="featured-text reveal">
+      <h3>About the bbv AI Hub</h3>
+      <p>Swiss-made, model-agnostic enterprise AI platform — soon to be open-sourced. Listed on Siemens Xcelerator, certified Swiss Made Software.</p>
+      <div class="featured-badges">
+        <a href="https://ai-hub.bbv.ch/" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          bbv AI Hub
+        </a>
+        <a href="https://www.swissmadesoftware.org/en/companies/bbv-software-services-ag/home.html" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M12 8v8M8 12h8"/></svg>
+          Swiss Made Software
+        </a>
+        <a href="https://www.siemens.com/en-us/products/bbv-software-services-bbv-ai-hub-agentic-ai-platform/" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Siemens Xcelerator
+        </a>
+        <a href="https://en.bbv.ch/" target="_blank" class="badge">
+          <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          bbv Software Services
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="contact-section">
+  <h2 class="section-title reveal">Get in touch</h2>
+  <p class="contact-desc reveal">Feel free to reach out — I'm happy to chat.</p>
+  <div class="contact-links reveal">
+    <a href="mailto:thomas_m@hotmail.ch" class="contact-link">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      thomas_m@hotmail.ch
+    </a>
+    <a href="tel:+41799027871" class="contact-link">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      +41 79 902 78 71
+    </a>
+    <a href="https://github.com/thommann" target="_blank" class="contact-link">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      github.com/thommann
+    </a>
+    <a href="https://t.mannhart.ai" class="contact-link">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      t.mannhart.ai
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 Thomas Mannhart · Zürich, Switzerland</p>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Close mobile nav on link click
+document.querySelectorAll('nav ul a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelector('nav ul').classList.remove('active');
+  });
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
