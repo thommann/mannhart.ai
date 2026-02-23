@@ -29,17 +29,12 @@ $SSH "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo g
 $SSH "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list > /dev/null"
 $SSH "sudo apt-get update -qq && sudo apt-get install -y -qq caddy > /dev/null"
 
-echo "==> Deploying website files..."
-$SSH "sudo mkdir -p /var/www/mannhart.ai"
-$SCP index.html "ubuntu@$IP:/tmp/index.html"
-$SSH "sudo mv /tmp/index.html /var/www/mannhart.ai/index.html"
+echo "==> Building site..."
+npm run build
 
-# Copy photos if the directory exists
-if [ -d "Fotos FHNW" ]; then
-    echo "==> Deploying photos..."
-    $SCP -r "Fotos FHNW" "ubuntu@$IP:/tmp/fotos"
-    $SSH "sudo mv '/tmp/fotos' '/var/www/mannhart.ai/Fotos FHNW'"
-fi
+echo "==> Deploying _site/ to server..."
+$SSH "sudo mkdir -p /var/www/mannhart.ai && sudo chown ubuntu:ubuntu /var/www/mannhart.ai"
+rsync -avz --delete -e "ssh -o StrictHostKeyChecking=accept-new" _site/ "ubuntu@$IP:/var/www/mannhart.ai/"
 
 echo "==> Configuring Caddy..."
 $SSH "sudo tee /etc/caddy/Caddyfile > /dev/null" <<'CADDYFILE'
@@ -58,6 +53,5 @@ echo "  Site deployed!"
 echo "  https://t.mannhart.ai (once DNS propagates)"
 echo ""
 echo "  To update the site later:"
-echo "  scp index.html ubuntu@$IP:/tmp/index.html"
-echo "  ssh ubuntu@$IP 'sudo mv /tmp/index.html /var/www/mannhart.ai/index.html'"
+echo "  ./deploy.sh"
 echo "════════════════════════════════════════════════════"
