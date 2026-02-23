@@ -1,0 +1,25 @@
+<section id="experience">
+  <div class="section-header reveal">
+    <span class="section-number">{{ t.experience.number }}</span>
+    <h2 class="section-title">{{ t.experience.title }}</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="timeline">
+    {% for job in t.experience.jobs %}
+    <div class="timeline-item reveal">
+      <div class="timeline-date">{{ job.date }}</div>
+      <div class="timeline-content">
+        <h3 class="timeline-role">{{ job.role }}</h3>
+        <div class="timeline-company">{{ job.company }}</div>
+        <div class="timeline-location">{{ job.location }}</div>
+        <p class="timeline-desc">{{ job.desc }}</p>
+        <div class="timeline-tech">
+          {% for tag in job.tech %}
+          <span class="tech-tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
