@@ -1,2 +1,4 @@
 .env
 PCU-JW9FEX7-clouds.yaml
+node_modules/
+_site/
