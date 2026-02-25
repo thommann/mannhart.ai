@@ -80,8 +80,13 @@ The site runs on an **Infomaniak OpenStack** VM (Ubuntu 24.04) with **Caddy** fo
 
 ### Deploying updates
 
-```bash
-./deploy.sh    # builds _site/ and rsyncs to server
-```
+Pushes to `main` are deployed automatically via GitHub Actions (`.github/workflows/deploy.yml`). The workflow builds the site and rsyncs `_site/` to the server.
 
-Requires `SERVER_IP=<floating IP>` in `.env`.
+**Required GitHub Secrets** (Settings → Secrets and variables → Actions):
+
+| Secret | Value |
+|---|---|
+| `SSH_PRIVATE_KEY` | Ed25519 private key for `ubuntu@<server>` (no passphrase) |
+| `SERVER_IP` | Floating IP of the OpenStack VM |
+
+Manual deploy is still possible with `./deploy.sh` (requires `SERVER_IP` in `.env`).
