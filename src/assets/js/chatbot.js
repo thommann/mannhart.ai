@@ -33,10 +33,16 @@
     }
   });
 
+  var MAX_INPUT_LENGTH = 500;
+  input.setAttribute("maxlength", MAX_INPUT_LENGTH);
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var text = input.value.trim();
     if (!text) return;
+    if (text.length > MAX_INPUT_LENGTH) {
+      text = text.slice(0, MAX_INPUT_LENGTH);
+    }
 
     appendMessage(text, "user");
     history.push({ role: "user", content: text });
@@ -75,6 +81,9 @@
         body: JSON.stringify({ messages: msgs, locale: locale }),
       });
 
+      if (res.status === 429) {
+        throw new Error("rate_limited");
+      }
       if (!res.ok) {
         throw new Error("HTTP " + res.status);
       }
@@ -125,10 +134,17 @@
     } catch (err) {
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
-      errSpan.textContent =
-        locale === "de"
-          ? "Verbindungsfehler. Bitte versuche es erneut."
-          : "Connection error. Please try again.";
+      if (err.message === "rate_limited") {
+        errSpan.textContent =
+          locale === "de"
+            ? "Zu viele Anfragen. Bitte warte einen Moment."
+            : "Too many requests. Please wait a moment.";
+      } else {
+        errSpan.textContent =
+          locale === "de"
+            ? "Verbindungsfehler. Bitte versuche es erneut."
+            : "Connection error. Please try again.";
+      }
       typingEl.appendChild(errSpan);
     }
   }

@@ -88,32 +88,80 @@ PERSÖNLICHES:
 - Hobbys: heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende`,
 };
 
-// Simple in-memory rate limiter
-const rateMap = new Map();
-const RATE_LIMIT = 10;
-const RATE_WINDOW_MS = 60_000;
+// --- Abuse prevention ---
 
-function isRateLimited(ip) {
-  const now = Date.now();
-  const entry = rateMap.get(ip);
-  if (!entry || now - entry.start > RATE_WINDOW_MS) {
-    rateMap.set(ip, { start: now, count: 1 });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT;
+// Per-IP rate limiter: short burst + daily cap
+const rateMap = new Map();
+const BURST_LIMIT = 10; // max requests per minute
+const BURST_WINDOW_MS = 60_000;
+const DAILY_LIMIT_PER_IP = 50;
+
+// Global daily cap (safety net for total spend)
+let globalDailyCount = 0;
+const GLOBAL_DAILY_LIMIT = 500;
+
+function getClientIp(req) {
+  // x-forwarded-for from Caddy: "client, proxy1, proxy2"
+  // Take the leftmost (original client) IP
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return req.socket.remoteAddress;
 }
 
-// Clean up stale entries every 5 minutes
+function isRateLimited(ip) {
+  // Global daily cap
+  if (globalDailyCount >= GLOBAL_DAILY_LIMIT) return true;
+
+  const now = Date.now();
+  let entry = rateMap.get(ip);
+
+  if (!entry) {
+    entry = { burstStart: now, burstCount: 0, dailyCount: 0, dailyStart: now };
+    rateMap.set(ip, entry);
+  }
+
+  // Reset daily counter
+  if (now - entry.dailyStart > 86_400_000) {
+    entry.dailyCount = 0;
+    entry.dailyStart = now;
+  }
+
+  // Daily per-IP cap
+  if (entry.dailyCount >= DAILY_LIMIT_PER_IP) return true;
+
+  // Burst window
+  if (now - entry.burstStart > BURST_WINDOW_MS) {
+    entry.burstStart = now;
+    entry.burstCount = 0;
+  }
+
+  entry.burstCount++;
+  entry.dailyCount++;
+  globalDailyCount++;
+
+  return entry.burstCount > BURST_LIMIT;
+}
+
+// Reset global daily counter at midnight
+setInterval(() => {
+  globalDailyCount = 0;
+}, 86_400_000);
+
+// Clean up stale IP entries every 5 minutes
 setInterval(() => {
   const now = Date.now();
   for (const [ip, entry] of rateMap) {
-    if (now - entry.start > RATE_WINDOW_MS) rateMap.delete(ip);
+    if (now - entry.dailyStart > 86_400_000) rateMap.delete(ip);
   }
 }, 300_000);
 
+// Input validation constants
+const MAX_MESSAGE_LENGTH = 500; // chars per message
+const MAX_MESSAGES = 10;
+const ALLOWED_ROLES = new Set(["user", "assistant"]);
+
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "4kb" }));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -124,7 +172,7 @@ app.use((req, res, next) => {
 });
 
 app.post("/api/chat", async (req, res) => {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  const ip = getClientIp(req);
   if (isRateLimited(ip)) {
     return res.status(429).json({ error: "Too many requests" });
   }
@@ -134,8 +182,17 @@ app.post("/api/chat", async (req, res) => {
     return res.status(400).json({ error: "messages array is required" });
   }
 
-  // Limit conversation length to prevent abuse
-  const trimmed = messages.slice(-10);
+  // Validate each message: only user/assistant roles, bounded length
+  const trimmed = messages.slice(-MAX_MESSAGES);
+  for (const msg of trimmed) {
+    if (!ALLOWED_ROLES.has(msg.role)) {
+      return res.status(400).json({ error: "Invalid message role" });
+    }
+    if (typeof msg.content !== "string" || msg.content.length > MAX_MESSAGE_LENGTH) {
+      return res.status(400).json({ error: "Message too long" });
+    }
+  }
+
   const lang = locale === "de" ? "de" : "en";
 
   try {
