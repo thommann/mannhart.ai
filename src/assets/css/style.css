@@ -10,6 +10,7 @@ html { overflow-x: hidden; }
   --accent: #d4a574;
   --accent-bright: #e8c4a0;
   --border: #2a2830;
+  --bg-alt: #14121e;
   --serif: 'Instrument Serif', Georgia, serif;
   --sans: 'DM Sans', system-ui, sans-serif;
   --mono: 'JetBrains Mono', monospace;
@@ -116,6 +117,7 @@ nav ul .lang-switch::after {
 /* --- Hero --- */
 .hero {
   min-height: 100vh;
+  max-width: none;
   display: flex;
   align-items: center;
   padding: 8rem 3rem 4rem;
@@ -282,6 +284,56 @@ nav ul .lang-switch::after {
   opacity: 0.15;
   line-height: 1;
   user-select: none;
+}
+
+/* --- Section backgrounds & transitions --- */
+.section-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.section-wrap--alt {
+  background: var(--bg-alt);
+  --bg-card: #201e2a;
+}
+
+.section-wrap--alt section {
+  position: relative;
+  z-index: 3;
+}
+
+/* Diagonal transition: ╱ direction (default) */
+.section-wrap--alt::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--bg);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  z-index: 2;
+}
+
+.section-wrap--alt::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--bg);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  z-index: 2;
+}
+
+/* Diagonal transition: ╲ direction (alternate) */
+.section-wrap--alt.angle-reverse::before {
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.section-wrap--alt.angle-reverse::after {
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
 }
 
 /* --- Sections --- */
@@ -822,6 +874,9 @@ footer p {
   .timeline-date { text-align: left; padding-left: 1.5rem; }
   .timeline-content { padding-left: 1.5rem; }
   .timeline-content::before { left: -7px; }
+
+  .section-wrap--alt::before,
+  .section-wrap--alt::after { height: 50px; }
 }
 
 @media (max-width: 500px) {
