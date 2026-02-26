@@ -5,8 +5,11 @@ on:
     branches: [main]
 
 concurrency:
-  group: deploy
+  group: deploy-production
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
@@ -27,7 +30,7 @@ jobs:
 
       - uses: burnett01/rsync-deployments@v8
         with:
-          switches: -avz --delete
+          switches: -avz --delete --exclude='.well-known'
           path: _site/
           remote_path: /var/www/mannhart.ai/
           remote_host: ${{ secrets.SERVER_IP }}
