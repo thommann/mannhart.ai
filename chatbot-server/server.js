@@ -1,5 +1,17 @@
 import express from "express";
 import OpenAI from "openai";
+import { existsSync } from "fs";
+import { pathToFileURL } from "url";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Load translations: ./translations.js (deployed) or ../src/_data/translations.js (local dev)
+const localPath = resolve(__dirname, "translations.js");
+const devPath = resolve(__dirname, "../src/_data/translations.js");
+const translationsPath = existsSync(localPath) ? localPath : devPath;
+const translations = (await import(pathToFileURL(translationsPath))).default;
 
 const {
   LLM_API_KEY,
@@ -16,76 +28,79 @@ if (!LLM_API_KEY) {
 
 const openai = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL });
 
+function stripHtml(html) {
+  return html.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&copy;/g, "©").replace(/\s+/g, " ").trim();
+}
+
+const LEVEL_LABELS = {
+  en: { 5: "expert", 4: "advanced", 3: "intermediate" },
+  de: { 5: "Experte", 4: "fortgeschritten", 3: "mittel" },
+};
+
+function buildSystemPrompt(lang) {
+  const t = translations[lang];
+  const levels = LEVEL_LABELS[lang];
+
+  const intro = stripHtml(t.hero.desc);
+  const about = stripHtml(t.about.abstract + " " + t.about.prose);
+
+  const career = t.experience.jobs
+    .map((j) => `- ${j.date}: ${j.role}, ${j.company}, ${j.location}. ${j.desc}`)
+    .join("\n");
+
+  const education = t.education.items
+    .map((e) => {
+      let line = `- ${e.degree}, ${e.school}, ${e.year}. ${stripHtml(e.detail)}`;
+      if (e.award) line += ` ${e.award.label}.`;
+      return line;
+    })
+    .join("\n");
+
+  const skills = t.skills.groups
+    .map((g) => `- ${g.name}: ${g.items.map((i) => `${i.name} (${levels[i.level] || i.level})`).join(", ")}`)
+    .join("\n");
+
+  const talks = [
+    `- "${t.featured.webinar.title}" — ${stripHtml(t.featured.webinar.desc)}`,
+    `- "${stripHtml(t.featured.fhnw.title)}" — ${stripHtml(t.featured.fhnw.desc)}`,
+    `- ${t.featured.aiHub.title}: ${stripHtml(t.featured.aiHub.desc)}`,
+  ].join("\n");
+
+  const preamble = lang === "de"
+    ? `Du bist ein freundlicher, prägnanter KI-Assistent auf der persönlichen Website von Thomas Mannhart (t.mannhart.ai). Beantworte Fragen über Thomas basierend auf den folgenden Informationen. Wenn du etwas nicht über Thomas weisst, sag es ehrlich. Halte die Antworten kurz (2–4 Sätze), ausser der Nutzer fragt nach Details. Antworte auf Deutsch.`
+    : `You are a friendly, concise AI assistant on Thomas Mannhart's personal website (t.mannhart.ai). Answer questions about Thomas based on the following information. If asked something you don't know about Thomas, say so honestly. Keep answers brief (2-4 sentences) unless the user asks for detail. Respond in English.`;
+
+  const contactLabel = lang === "de" ? "KONTAKT" : "CONTACT";
+  const aboutLabel = lang === "de" ? "ÜBER THOMAS" : "ABOUT THOMAS";
+  const careerLabel = lang === "de" ? "KARRIERE" : "CAREER";
+  const eduLabel = lang === "de" ? "AUSBILDUNG" : "EDUCATION";
+  const skillsLabel = lang === "de" ? "SKILLS" : "SKILLS";
+  const talksLabel = lang === "de" ? "VORTRÄGE & PROJEKTE" : "TALKS & PROJECTS";
+
+  return `${preamble}
+
+${aboutLabel}:
+${about}
+
+${careerLabel}:
+${career}
+
+${eduLabel}:
+${education}
+
+${skillsLabel}:
+${skills}
+
+${talksLabel}:
+${talks}
+
+${contactLabel}:
+- REDACTED, REDACTED, github.com/thommann`;
+}
+
 const SYSTEM_PROMPT = {
-  en: `You are a friendly, concise AI assistant on Thomas Mannhart's personal website (t.mannhart.ai). Answer questions about Thomas based on the following information. If asked something you don't know about Thomas, say so honestly. Keep answers brief (2-4 sentences) unless the user asks for detail. Respond in English.
-
-ABOUT THOMAS:
-- Full name: Thomas Rolf Mannhart
-- Location: Zürich, Switzerland
-- Current role: Professional AI Engineer at bbv Software Services AG (since 2025)
-- Working on: bbv AI Hub — a Swiss-made, model-agnostic enterprise AI platform going open source
-- Day-to-day: Building RAG pipelines, agentic workflows, and LLM integrations across enterprise systems
-- Languages spoken: German (native), English (fluent), French (fluent)
-- Contact: REDACTED, REDACTED, github.com/thommann
-
-EDUCATION:
-- MSc in Informatics (AI specialization), University of Zürich, 2020–2023. Thesis: "KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition"
-- BSc in Informatics (Software Systems), University of Zürich, 2017–2020. Thesis: "A General-purpose Range Join Algorithm for PostgreSQL". Won the UZH Semester Award 2020.
-
-CAREER:
-- 2025–now: Professional AI Engineer at bbv Software Services AG, Zürich. RAG, agentic AI, LLM integrations, platform engineering.
-- 2023–2024: Professional Software Engineer at Ergon Informatik AG, Zürich. Time-tracking/workforce planning for retail. Java, Kotlin, Angular.
-- 2020–2023: Senior Software Developer at PolygonSoftware, Opfikon. Full-stack, computer vision, ML. Led dev teams.
-- 2019–2020: Junior Software Developer at swissbiomechanics ag (ETH spin-off), Zürich. Java biomedical analysis app.
-
-SKILLS:
-- Programming: Python (expert), TypeScript/JS (advanced), Java/Kotlin (advanced), SQL (advanced)
-- AI: Agent Orchestration (expert), RAG (expert), MCP (advanced)
-- Tools: Claude Code (expert), Git/GitHub (expert), Docker (advanced)
-
-TALKS & PROJECTS:
-- "KI als Entwicklungspartner" — bbv webinar on integrating AI into the software development lifecycle
-- "AI-Augmented Software Engineering" — talk at FHNW Alumni Event 2025
-- bbv AI Hub — Swiss-made enterprise AI platform, certified Swiss Made Software, listed on Siemens Xcelerator
-
-PERSONAL:
-- Grew up in Zürich, has been tinkering with computers since childhood (started with game modding)
-- Enjoys: hot tea, cold beer, good food, thick books, old music, and long board game nights`,
-
-  de: `Du bist ein freundlicher, prägnanter KI-Assistent auf der persönlichen Website von Thomas Mannhart (t.mannhart.ai). Beantworte Fragen über Thomas basierend auf den folgenden Informationen. Wenn du etwas nicht über Thomas weisst, sag es ehrlich. Halte die Antworten kurz (2–4 Sätze), ausser der Nutzer fragt nach Details. Antworte auf Deutsch.
-
-ÜBER THOMAS:
-- Vollständiger Name: Thomas Rolf Mannhart
-- Wohnort: Zürich, Schweiz
-- Aktuelle Rolle: Professional AI Engineer bei bbv Software Services AG (seit 2025)
-- Arbeitet an: bbv AI Hub — einer Schweizer, modell-agnostischen Enterprise-KI-Plattform, die Open Source wird
-- Alltag: Entwicklung von RAG-Pipelines, agentischen Workflows und LLM-Integrationen in Unternehmenssystemen
-- Sprachen: Deutsch (Muttersprache), Englisch (fliessend), Französisch (fliessend)
-- Kontakt: REDACTED, REDACTED, github.com/thommann
-
-AUSBILDUNG:
-- MSc in Informatik (Spezialisierung AI), Universität Zürich, 2020–2023. Masterarbeit: «KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition»
-- BSc in Informatik (Software Systems), Universität Zürich, 2017–2020. Bachelorarbeit: «A General-purpose Range Join Algorithm for PostgreSQL». UZH-Semesterpreis 2020.
-
-KARRIERE:
-- 2025–heute: Professional AI Engineer bei bbv Software Services AG, Zürich. RAG, Agentic AI, LLM-Integrationen, Platform Engineering.
-- 2023–2024: Professional Software Engineer bei Ergon Informatik AG, Zürich. Zeiterfassung/Personalplanung für Detailhandel. Java, Kotlin, Angular.
-- 2020–2023: Senior Software Developer bei PolygonSoftware, Opfikon. Full-Stack, Computer Vision, ML. Leitung Dev-Teams.
-- 2019–2020: Junior Software Developer bei swissbiomechanics ag (ETH-Spin-off), Zürich. Java-Anwendung für biomedizinische Analysen.
-
-SKILLS:
-- Programmierung: Python (Experte), TypeScript/JS (fortgeschritten), Java/Kotlin (fortgeschritten), SQL (fortgeschritten)
-- KI: Agent Orchestration (Experte), RAG (Experte), MCP (fortgeschritten)
-- Tools: Claude Code (Experte), Git/GitHub (Experte), Docker (fortgeschritten)
-
-VORTRÄGE & PROJEKTE:
-- «KI als Entwicklungspartner» — bbv-Webinar über Integration von KI in den Software-Entwicklungszyklus
-- «AI-Augmented Software Engineering» — Vortrag am FHNW Alumni Event 2025
-- bbv AI Hub — Schweizer Enterprise-KI-Plattform, zertifiziert als Swiss Made Software, gelistet auf Siemens Xcelerator
-
-PERSÖNLICHES:
-- In Zürich aufgewachsen, bastelt seit der Kindheit an Computern (angefangen mit Game-Modding)
-- Hobbys: heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende`,
+  en: buildSystemPrompt("en"),
+  de: buildSystemPrompt("de"),
 };
 
 // --- Abuse prevention ---
