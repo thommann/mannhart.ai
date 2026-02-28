@@ -155,6 +155,12 @@ export default {
       title: "Chat with AI",
       greeting: "Hi! Ask me anything about Thomas.",
       placeholder: "Ask a question...",
+      errors: {
+        rateLimited: "Too many requests. Please wait a moment.",
+        quotaExceeded: "The daily quota has been reached. Please try again tomorrow.",
+        connection: "Connection error. Please try again.",
+        emptyResponse: "Sorry, I couldn't generate a response.",
+      },
     },
     contact: {
       title: 'Get in <em>touch</em>',
@@ -321,6 +327,12 @@ export default {
       title: "KI-Chat",
       greeting: "Hallo! Frag mich was über Thomas.",
       placeholder: "Stelle eine Frage...",
+      errors: {
+        rateLimited: "Zu viele Anfragen. Bitte warte einen Moment.",
+        quotaExceeded: "Das Tageslimit wurde erreicht. Bitte versuche es morgen erneut.",
+        connection: "Verbindungsfehler. Bitte versuche es erneut.",
+        emptyResponse: "Entschuldigung, ich konnte keine Antwort generieren.",
+      },
     },
     contact: {
       title: '<em>Kontakt</em> aufnehmen',

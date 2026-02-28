@@ -35,5 +35,8 @@
     </form>
   </div>
 </div>
-<script>window.__chatbotLocale = "{{ locale }}";</script>
+<script>
+window.__chatbotLocale = "{{ locale }}";
+window.__chatbotStrings = {{ t.chatbot.errors | dump | safe }};
+</script>
 <script src="/assets/js/chatbot.js"></script>
