@@ -182,7 +182,7 @@
       }
 
       if (!botText) {
-        botText = strings.emptyResponse || "Sorry, I couldn't generate a response.";
+        botText = strings.emptyResponse;
         span.innerHTML = renderMarkdown(botText);
       }
 
@@ -191,11 +191,11 @@
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
       if (err.message === "rate_limited") {
-        errSpan.textContent = strings.rateLimited || "Too many requests. Please wait a moment.";
+        errSpan.textContent = strings.rateLimited;
       } else if (err.message === "quota_exceeded") {
-        errSpan.textContent = strings.quotaExceeded || "The daily quota has been reached. Please try again tomorrow.";
+        errSpan.textContent = strings.quotaExceeded;
       } else {
-        errSpan.textContent = strings.connection || "Connection error. Please try again.";
+        errSpan.textContent = strings.connection;
       }
       typingEl.appendChild(errSpan);
     }
