@@ -1131,10 +1131,10 @@ footer p {
 
 .theme-toggle {
   background: none;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  color: var(--accent);
   cursor: pointer;
-  padding: 0.35rem;
+  padding: 0.15rem 0.35rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1244,7 +1244,8 @@ footer p {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 0 12px 48px rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="light"] .lang-switch {
+[data-theme="light"] .lang-switch,
+[data-theme="light"] .theme-toggle {
   border-color: rgba(150, 96, 46, 0.35);
 }
 
