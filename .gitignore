@@ -1,4 +1,38 @@
+# Environment and secrets
 .env
-PCU-JW9FEX7-clouds.yaml
+.env.*
+!.env.example
+*clouds.yaml
+
+# SSH keys
+*.pem
+*.key
+id_*
+!.gitkeep
+
+# Dependencies
 node_modules/
+
+# Build output
 _site/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Claude Code local settings (repo settings.json should be committed)
+.claude/settings.local.json

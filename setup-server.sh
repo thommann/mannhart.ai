@@ -43,6 +43,10 @@ t.mannhart.ai {
     file_server
     encode gzip
 }
+
+mannhart.ai, www.mannhart.ai, thomas-mannhart.ch, www.thomas-mannhart.ch {
+    redir https://t.mannhart.ai{uri} permanent
+}
 CADDYFILE
 
 $SSH "sudo systemctl restart caddy"
