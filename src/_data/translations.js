@@ -151,6 +151,11 @@ export default {
         bbvSoftwareServices: "bbv Software Services",
       },
     },
+    chatbot: {
+      title: "Chat with AI",
+      greeting: "Hi! Ask me anything about Thomas.",
+      placeholder: "Ask a question...",
+    },
     contact: {
       title: 'Get in <em>touch</em>',
       desc: "Feel free to reach out — I'm happy to chat.",
@@ -311,6 +316,11 @@ export default {
         siemensXcelerator: "Siemens Xcelerator",
         bbvSoftwareServices: "bbv Software Services",
       },
+    },
+    chatbot: {
+      title: "KI-Chat",
+      greeting: "Hallo! Frag mich was über Thomas.",
+      placeholder: "Stelle eine Frage...",
     },
     contact: {
       title: '<em>Kontakt</em> aufnehmen',
