@@ -458,7 +458,11 @@ app.post("/api/chat", async (req, res) => {
   } catch (err) {
     console.error("LLM error:", err.message);
     if (!res.headersSent) {
-      res.status(502).json({ error: "LLM request failed" });
+      if (err.status === 429) {
+        res.status(503).json({ error: "quota_exceeded" });
+      } else {
+        res.status(502).json({ error: "LLM request failed" });
+      }
     }
   }
 });

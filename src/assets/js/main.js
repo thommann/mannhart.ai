@@ -58,7 +58,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       document.documentElement.removeAttribute('data-theme');
     }
     toggle.setAttribute('aria-label',
-      theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      theme === 'light' ? toggle.dataset.labelLight : toggle.dataset.labelDark);
   }
 
   applyTheme(getTheme());
