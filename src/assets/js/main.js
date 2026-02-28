@@ -16,6 +16,19 @@ document.querySelectorAll('nav ul a').forEach(link => {
   });
 });
 
+// About section expand/collapse
+const aboutToggle = document.getElementById('about-toggle');
+const aboutFull = document.getElementById('about-full');
+if (aboutToggle && aboutFull) {
+  aboutToggle.addEventListener('click', () => {
+    const expanded = aboutFull.classList.toggle('expanded');
+    aboutToggle.classList.toggle('expanded', expanded);
+    aboutToggle.querySelector('.about-toggle-text').textContent =
+      expanded ? aboutToggle.dataset.less : aboutToggle.dataset.more;
+    aboutToggle.setAttribute('aria-expanded', expanded);
+  });
+}
+
 // Smooth scroll for nav links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
