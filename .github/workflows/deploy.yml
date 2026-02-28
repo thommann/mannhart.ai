@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -28,7 +28,7 @@ jobs:
 
       - run: npm run build
 
-      - uses: burnett01/rsync-deployments@dc0d5d44c4728aad3f02154a87309809e62a960f # v8.0.4
+      - uses: burnett01/rsync-deployments@v8
         with:
           switches: -avz --delete --exclude='.well-known'
           strict_hostkeys_checking: true
@@ -37,3 +37,21 @@ jobs:
           remote_host: ${{ secrets.SERVER_IP }}
           remote_user: REDACTED
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - uses: burnett01/rsync-deployments@v8
+        with:
+          switches: -avz
+          strict_hostkeys_checking: true
+          path: chatbot-server/
+          remote_path: REDACTED_PATH/
+          remote_host: ${{ secrets.SERVER_IP }}
+          remote_user: REDACTED
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Restart chatbot server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: REDACTED
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: cd REDACTED_PATH && npm install --production && sudo systemctl restart $SERVICE
