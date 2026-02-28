@@ -803,6 +803,59 @@ section {
   stroke-width: 1.5;
 }
 
+/* --- FHNW Slideshow --- */
+.fhnw-slideshow {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.fhnw-slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.fhnw-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.fhnw-slide.active {
+  opacity: 1;
+}
+
+.fhnw-dots {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.fhnw-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s;
+}
+
+.fhnw-dot.active {
+  background: rgba(255, 255, 255, 0.9);
+}
+
 @media (max-width: 900px) {
   .featured-grid { grid-template-columns: 1fr; }
 }
