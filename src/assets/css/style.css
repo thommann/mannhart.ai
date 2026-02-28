@@ -992,6 +992,7 @@ footer p {
   nav ul.active { display: flex; }
 
   .nav-toggle { display: block; }
+  .nav-utilities { margin-left: 0; }
 
   .hero { padding: 7rem 1.5rem 3rem; }
   .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
