@@ -40,6 +40,46 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
+// FHNW slideshow
+(function() {
+  var slideshow = document.querySelector('.fhnw-slideshow');
+  if (!slideshow) return;
+
+  var slides = slideshow.querySelectorAll('.fhnw-slide');
+  var dots = slideshow.querySelectorAll('.fhnw-dot');
+  var current = 0;
+  var timer;
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function next() {
+    goTo((current + 1) % slides.length);
+  }
+
+  function startTimer() {
+    timer = setInterval(next, 5000);
+  }
+
+  dots.forEach(function(dot, i) {
+    dot.addEventListener('click', function() {
+      clearInterval(timer);
+      goTo(i);
+      startTimer();
+    });
+  });
+
+  slideshow.addEventListener('mouseenter', function() { clearInterval(timer); });
+  slideshow.addEventListener('mouseleave', startTimer);
+
+  startTimer();
+})();
+
 // Theme toggle
 (function() {
   var toggle = document.getElementById('theme-toggle');
