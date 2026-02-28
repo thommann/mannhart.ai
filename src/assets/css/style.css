@@ -505,6 +505,7 @@ section {
   font-size: 0.78rem;
   color: var(--text-muted);
   padding-top: 0.3rem;
+  padding-right: 1.25rem;
   text-align: right;
   letter-spacing: 0.02em;
 }
