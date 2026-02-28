@@ -1,7 +1,7 @@
 (function () {
   const API_URL = "/api/chat";
-  const locale = window.__chatbotLocale || "en";
-  const strings = window.__chatbotStrings || {};
+  const locale = window.__chatbotLocale;
+  const strings = window.__chatbotStrings;
 
   const toggle = document.getElementById("chatbot-toggle");
   const panel = document.getElementById("chatbot-panel");
