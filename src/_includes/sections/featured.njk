@@ -1,70 +1,72 @@
-<section id="featured">
-  <div class="section-header reveal">
-    <span class="section-number">{{ t.featured.number }}</span>
-    <h2 class="section-title">{{ t.featured.title }}</h2>
-    <div class="section-line"></div>
-  </div>
+<div class="section-wrap section-wrap--alt">
+  <section id="featured">
+    <div class="section-header reveal">
+      <span class="section-number">{{ t.featured.number }}</span>
+      <h2 class="section-title">{{ t.featured.title }}</h2>
+      <div class="section-line"></div>
+    </div>
 
-  <div class="featured-grid" style="margin-bottom: 4rem;">
-    <a href="https://www.youtube.com/watch?v=CCc3SREchJE&t=539" target="_blank" rel="noopener" class="video-embed reveal">
-      <img src="https://img.youtube.com/vi/CCc3SREchJE/maxresdefault.jpg" alt="{{ t.featured.webinar.title }}" loading="lazy">
-      <div class="play-btn">
-        <svg viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.64 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#d4a574"/><path d="M45 24L27 14v20" fill="#0c0b0f"/></svg>
-      </div>
-    </a>
-    <div class="featured-text reveal">
-      <h3>{{ t.featured.webinar.title }}</h3>
-      <p>{{ t.featured.webinar.desc }}</p>
-      <div class="featured-badges">
-        <a href="https://www.youtube.com/watch?v=CCc3SREchJE&t=539" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          {{ t.featured.webinar.watchOnYoutube }}
-        </a>
+    <div class="featured-grid" style="margin-bottom: 4rem;">
+      <a href="https://www.youtube.com/watch?v=CCc3SREchJE&t=539" target="_blank" rel="noopener" class="video-embed reveal">
+        <img src="https://img.youtube.com/vi/CCc3SREchJE/maxresdefault.jpg" alt="{{ t.featured.webinar.title }}" loading="lazy">
+        <div class="play-btn">
+          <svg viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.64 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#d4a574"/><path d="M45 24L27 14v20" fill="#0c0b0f"/></svg>
+        </div>
+      </a>
+      <div class="featured-text reveal">
+        <h3>{{ t.featured.webinar.title }}</h3>
+        <p>{{ t.featured.webinar.desc }}</p>
+        <div class="featured-badges">
+          <a href="https://www.youtube.com/watch?v=CCc3SREchJE&t=539" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            {{ t.featured.webinar.watchOnYoutube }}
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="featured-grid reveal">
-    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;">
-      <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem;">{{ t.featured.fhnw.label }}</div>
-      <h3 style="font-family: var(--serif); font-size: 1.8rem; letter-spacing: -0.01em; margin-bottom: 0.75rem;">{{ t.featured.fhnw.title | safe }}</h3>
-      <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.8;">{{ t.featured.fhnw.desc | safe }}</p>
-      <div class="featured-badges" style="margin-top: 1.25rem;">
-        <a href="https://www.linkedin.com/posts/bbv-software-services_ki-softwareengineering-activity-7341725714343227392-xVB4" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          {{ t.featured.fhnw.bbvPost }}
-        </a>
-        <a href="https://de.linkedin.com/posts/hochschule-f%C3%BCr-informatik-fhnw_fhnw-informatik-hsi-activity-7341831303979270144--ISp" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          {{ t.featured.fhnw.fhnwPost }}
-        </a>
-        <a href="/assets/pdf/AI_Augmented_Software_Engineering_FHNW.pdf" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
-          {{ t.featured.fhnw.slides }}
-        </a>
+    <div class="featured-grid reveal">
+      <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;">
+        <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem;">{{ t.featured.fhnw.label }}</div>
+        <h3 style="font-family: var(--serif); font-size: 1.8rem; letter-spacing: -0.01em; margin-bottom: 0.75rem;">{{ t.featured.fhnw.title | safe }}</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.8;">{{ t.featured.fhnw.desc | safe }}</p>
+        <div class="featured-badges" style="margin-top: 1.25rem;">
+          <a href="https://www.linkedin.com/posts/bbv-software-services_ki-softwareengineering-activity-7341725714343227392-xVB4" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            {{ t.featured.fhnw.bbvPost }}
+          </a>
+          <a href="https://de.linkedin.com/posts/hochschule-f%C3%BCr-informatik-fhnw_fhnw-informatik-hsi-activity-7341831303979270144--ISp" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            {{ t.featured.fhnw.fhnwPost }}
+          </a>
+          <a href="/assets/pdf/AI_Augmented_Software_Engineering_FHNW.pdf" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+            {{ t.featured.fhnw.slides }}
+          </a>
+        </div>
+      </div>
+      <div class="featured-text reveal">
+        <h3>{{ t.featured.aiHub.title }}</h3>
+        <p>{{ t.featured.aiHub.desc }}</p>
+        <div class="featured-badges">
+          <a href="https://ai-hub.bbv.ch/" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            {{ t.featured.aiHub.bbvAiHub }}
+          </a>
+          <a href="https://www.swissmadesoftware.org/en/companies/bbv-software-services-ag/home.html" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M12 8v8M8 12h8"/></svg>
+            {{ t.featured.aiHub.swissMadeSoftware }}
+          </a>
+          <a href="https://www.siemens.com/en-us/products/bbv-software-services-bbv-ai-hub-agentic-ai-platform/" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            {{ t.featured.aiHub.siemensXcelerator }}
+          </a>
+          <a href="https://en.bbv.ch/" target="_blank" class="badge">
+            <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+            {{ t.featured.aiHub.bbvSoftwareServices }}
+          </a>
+        </div>
       </div>
     </div>
-    <div class="featured-text reveal">
-      <h3>{{ t.featured.aiHub.title }}</h3>
-      <p>{{ t.featured.aiHub.desc }}</p>
-      <div class="featured-badges">
-        <a href="https://ai-hub.bbv.ch/" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-          {{ t.featured.aiHub.bbvAiHub }}
-        </a>
-        <a href="https://www.swissmadesoftware.org/en/companies/bbv-software-services-ag/home.html" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M12 8v8M8 12h8"/></svg>
-          {{ t.featured.aiHub.swissMadeSoftware }}
-        </a>
-        <a href="https://www.siemens.com/en-us/products/bbv-software-services-bbv-ai-hub-agentic-ai-platform/" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          {{ t.featured.aiHub.siemensXcelerator }}
-        </a>
-        <a href="https://en.bbv.ch/" target="_blank" class="badge">
-          <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-          {{ t.featured.aiHub.bbvSoftwareServices }}
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
+</div>
