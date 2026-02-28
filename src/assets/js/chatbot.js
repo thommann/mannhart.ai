@@ -138,6 +138,9 @@
       if (res.status === 429) {
         throw new Error("rate_limited");
       }
+      if (res.status === 503) {
+        throw new Error("quota_exceeded");
+      }
       if (!res.ok) {
         throw new Error("HTTP " + res.status);
       }
@@ -193,6 +196,11 @@
           locale === "de"
             ? "Zu viele Anfragen. Bitte warte einen Moment."
             : "Too many requests. Please wait a moment.";
+      } else if (err.message === "quota_exceeded") {
+        errSpan.textContent =
+          locale === "de"
+            ? "Das Tageslimit wurde erreicht. Bitte versuche es morgen erneut."
+            : "The daily quota has been reached. Please try again tomorrow.";
       } else {
         errSpan.textContent =
           locale === "de"
