@@ -81,13 +81,6 @@ export default {
       title: "Education",
       items: [
         {
-          degree: "MSc in Informatics",
-          school: "University of Zürich",
-          year: "2020 — 2023",
-          detail: 'Specialization in Artificial Intelligence. Thesis: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Supervised by Johannes Marti and Dan Olteanu at the Data Systems and Theory group.',
-          award: null,
-        },
-        {
           degree: "BSc in Informatics",
           school: "University of Zürich",
           year: "2017 — 2020",
@@ -96,6 +89,13 @@ export default {
             label: "UZH Semester Award 2020",
             href: "https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html",
           },
+        },
+        {
+          degree: "MSc in Informatics",
+          school: "University of Zürich",
+          year: "2020 — 2023",
+          detail: 'Specialization in Artificial Intelligence. Thesis: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Supervised by Johannes Marti and Dan Olteanu at the Data Systems and Theory group.',
+          award: null,
         },
       ],
     },
@@ -259,13 +259,6 @@ export default {
       title: "Ausbildung",
       items: [
         {
-          degree: "MSc in Informatik",
-          school: "Universität Zürich",
-          year: "2020 — 2023",
-          detail: 'Spezialisierung in Artificial Intelligence. Masterarbeit: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Betreut von Johannes Marti und Dan Olteanu in der Gruppe Data Systems and Theory.',
-          award: null,
-        },
-        {
           degree: "BSc in Informatik",
           school: "Universität Zürich",
           year: "2017 — 2020",
@@ -274,6 +267,13 @@ export default {
             label: "UZH-Semesterpreis 2020",
             href: "https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html",
           },
+        },
+        {
+          degree: "MSc in Informatik",
+          school: "Universität Zürich",
+          year: "2020 — 2023",
+          detail: 'Spezialisierung in Artificial Intelligence. Masterarbeit: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Betreut von Johannes Marti und Dan Olteanu in der Gruppe Data Systems and Theory.',
+          award: null,
         },
       ],
     },

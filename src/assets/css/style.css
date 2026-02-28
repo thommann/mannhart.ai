@@ -1001,7 +1001,7 @@ footer p {
   section { padding: 4rem 1.5rem; }
 
   .about-prose { font-size: 1rem; line-height: 1.9; }
-  .edu-grid { grid-template-columns: 1fr; }
+  .edu-grid { display: flex; flex-direction: column-reverse; }
   .skills-grid { grid-template-columns: 1fr; }
 
   .timeline::before { left: 0; }
