@@ -55,30 +55,7 @@ Each language lives in its own directory (`src/de/`, `src/en/`). A JSON data fil
 
 To add or edit content, update `translations.js`. To change layout or structure, edit the section partials.
 
-## Infrastructure
-
-The site runs on an **Infomaniak OpenStack** VM (Ubuntu 24.04) with **Caddy** for automatic HTTPS.
-
-| Script | Purpose |
-|---|---|
-| `provision-server.sh` | One-time: creates VM, network, security group, floating IP on OpenStack |
-| `setup-server.sh <IP>` | One-time: installs Caddy, builds site, deploys, configures HTTPS |
-| `deploy.sh` | Ongoing: builds and rsyncs `_site/` to the server |
-
-### Prerequisites
-
-- DNS: `t.mannhart.ai` A record pointing to the server's floating IP (managed on Hostpoint)
-- `.env` file with `OPEN_STACK_PASSWORD` and `SERVER_IP`
-
-### First-time setup
-
-```bash
-./provision-server.sh              # creates the VM, outputs a floating IP
-# Add DNS A record: t.mannhart.ai → <floating IP>
-./setup-server.sh <floating IP>    # installs Caddy, deploys site
-```
-
-### Deploying updates
+## Deploying
 
 Pushes to `main` are deployed automatically via GitHub Actions (`.github/workflows/deploy.yml`). The workflow builds the site and rsyncs `_site/` to the server.
 
