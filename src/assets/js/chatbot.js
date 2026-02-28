@@ -13,6 +13,60 @@
   let isOpen = false;
   let history = [];
 
+  // --- Markdown renderer (XSS-safe) ---
+
+  function renderMarkdown(text) {
+    // Step 1: escape all HTML entities
+    var s = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+    // Step 2: markdown links [text](url)
+    // Only allow safe URL schemes: https, http, mailto, tel, relative paths, anchors
+    s = s.replace(
+      /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:|\/#?|#)[^\s)]*)\)/g,
+      function (_, linkText, url) {
+        if (url.startsWith("#")) {
+          return (
+            '<a href="' + url + '" class="chatbot-link chatbot-section-link">' +
+            linkText + "</a>"
+          );
+        }
+        return (
+          '<a href="' + url + '" target="_blank" rel="noopener" class="chatbot-link">' +
+          linkText + "</a>"
+        );
+      }
+    );
+
+    // Step 3: bold and italic
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    s = s.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, "<em>$1</em>");
+
+    // Step 4: line breaks
+    s = s.replace(/\n\n/g, "<br><br>");
+    s = s.replace(/\n/g, "<br>");
+
+    return s;
+  }
+
+  // --- Section navigation (event delegation) ---
+
+  messages.addEventListener("click", function (e) {
+    var link = e.target.closest(".chatbot-section-link");
+    if (link) {
+      e.preventDefault();
+      var target = document.querySelector(link.getAttribute("href"));
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  });
+
+  // --- Chat UI ---
+
   toggle.addEventListener("click", function () {
     isOpen = !isOpen;
     if (isOpen) {
@@ -114,7 +168,7 @@
               parsed.choices[0].delta.content;
             if (delta) {
               botText += delta;
-              span.textContent = botText;
+              span.innerHTML = renderMarkdown(botText);
               messages.scrollTop = messages.scrollHeight;
             }
           } catch (_) {
@@ -127,7 +181,7 @@
         botText = locale === "de"
           ? "Entschuldigung, ich konnte keine Antwort generieren."
           : "Sorry, I couldn't generate a response.";
-        span.textContent = botText;
+        span.innerHTML = renderMarkdown(botText);
       }
 
       history.push({ role: "assistant", content: botText });
