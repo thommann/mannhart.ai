@@ -92,13 +92,8 @@ const RESOURCES = {
   // --- Contact ---
   email: {
     type: "contact",
-    url: "mailto:thomas_m@hotmail.ch",
-    title: { en: "Email: thomas_m@hotmail.ch", de: "E-Mail: thomas_m@hotmail.ch" },
-  },
-  phone: {
-    type: "contact",
-    url: "tel:+41799027871",
-    title: { en: "Phone: +41 79 902 78 71", de: "Telefon: +41 79 902 78 71" },
+    url: "mailto:thomas@mannhart.ai",
+    title: { en: "Email: thomas@mannhart.ai", de: "E-Mail: thomas@mannhart.ai" },
   },
   website: {
     type: "link",

@@ -57,7 +57,7 @@ function main() {
     .font("Helvetica")
     .fillColor(GRAY)
     .text(
-      "Zürich, Switzerland  ·  thomas_m@hotmail.ch  ·  +41 79 902 78 71  ·  github.com/thommann  ·  t.mannhart.ai",
+      "Zürich, Switzerland  ·  thomas@mannhart.ai  ·  github.com/thommann  ·  t.mannhart.ai",
       { align: "left" }
     );
 
