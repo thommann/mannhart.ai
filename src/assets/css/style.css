@@ -395,6 +395,47 @@ section {
   border-bottom-color: var(--accent);
 }
 
+.about-prose-full {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.6s ease, opacity 0.4s ease, margin 0.4s ease;
+  margin-top: 0;
+}
+
+.about-prose-full.expanded {
+  max-height: 3000px;
+  opacity: 1;
+  margin-top: 0;
+}
+
+.about-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.about-toggle:hover {
+  color: var(--accent-bright);
+}
+
+.about-toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.about-toggle.expanded .about-toggle-icon {
+  transform: rotate(180deg);
+}
+
 /* --- Experience --- */
 .timeline { position: relative; }
 
