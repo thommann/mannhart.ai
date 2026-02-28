@@ -49,7 +49,7 @@ TALKS & PROJECTS:
 - bbv AI Hub — Swiss-made enterprise AI platform, certified Swiss Made Software, listed on Siemens Xcelerator
 
 PERSONAL:
-- Grew up in Zürich, has been tinkering with computers since childhood (started with game modding)
+- Grew up in Zürich, has been tinkering with computers since childhood
 - Enjoys: hot tea, cold beer, good food, thick books, old music, and long board game nights`,
 
   de: `Du bist ein freundlicher, prägnanter KI-Assistent auf der persönlichen Website von Thomas Mannhart (t.mannhart.ai). Beantworte Fragen über Thomas basierend auf den folgenden Informationen. Wenn du etwas nicht über Thomas weisst, sag es ehrlich. Halte die Antworten kurz (2–4 Sätze), ausser der Nutzer fragt nach Details. Antworte auf Deutsch.
@@ -84,7 +84,7 @@ VORTRÄGE & PROJEKTE:
 - bbv AI Hub — Schweizer Enterprise-KI-Plattform, zertifiziert als Swiss Made Software, gelistet auf Siemens Xcelerator
 
 PERSÖNLICHES:
-- In Zürich aufgewachsen, bastelt seit der Kindheit an Computern (angefangen mit Game-Modding)
+- In Zürich aufgewachsen, bastelt seit der Kindheit an Computern
 - Hobbys: heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende`,
 };
 
