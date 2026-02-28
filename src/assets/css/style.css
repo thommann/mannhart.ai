@@ -299,6 +299,10 @@ nav ul a:hover::after { width: 100%; }
 
 .hero-photo-wrap:hover::before { transform: rotate(0deg); }
 
+.hero-photo-wrap {
+  background: var(--bg-card);
+}
+
 .hero-photo-wrap img {
   width: 100%;
   height: 100%;
