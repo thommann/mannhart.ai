@@ -152,7 +152,7 @@ ABOUT THOMAS:
 - Working on: bbv AI Hub — a Swiss-made, model-agnostic enterprise AI platform going open source
 - Day-to-day: Building RAG pipelines, agentic workflows, and LLM integrations across enterprise systems
 - Languages spoken: German (native), English (fluent), French (fluent)
-- Contact: REDACTED, REDACTED, github.com/thommann
+- Contact: thomas@mannhart.ai, github.com/thommann
 
 EDUCATION:
 - MSc in Informatics (AI specialization), University of Zürich, 2020–2023. Thesis: "KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition"
@@ -190,7 +190,7 @@ You have access to tools that provide links to Thomas's resources. When a user a
 - Arbeitet an: bbv AI Hub — einer Schweizer, modell-agnostischen Enterprise-KI-Plattform, die Open Source wird
 - Alltag: Entwicklung von RAG-Pipelines, agentischen Workflows und LLM-Integrationen in Unternehmenssystemen
 - Sprachen: Deutsch (Muttersprache), Englisch (fliessend), Französisch (fliessend)
-- Kontakt: REDACTED, REDACTED, github.com/thommann
+- Kontakt: thomas@mannhart.ai, github.com/thommann
 
 AUSBILDUNG:
 - MSc in Informatik (Spezialisierung AI), Universität Zürich, 2020–2023. Masterarbeit: «KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition»

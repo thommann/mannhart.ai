@@ -92,13 +92,8 @@ const RESOURCES = {
   // --- Contact ---
   email: {
     type: "contact",
-    url: "mailto:REDACTED",
-    title: { en: "Email: REDACTED", de: "E-Mail: REDACTED" },
-  },
-  phone: {
-    type: "contact",
-    url: "tel:REDACTED",
-    title: { en: "Phone: REDACTED", de: "Telefon: REDACTED" },
+    url: "mailto:thomas@mannhart.ai",
+    title: { en: "Email: thomas@mannhart.ai", de: "E-Mail: thomas@mannhart.ai" },
   },
   website: {
     type: "link",
