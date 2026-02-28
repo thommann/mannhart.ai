@@ -1,6 +1,7 @@
 (function () {
   const API_URL = "/api/chat";
-  const locale = window.__chatbotLocale || "en";
+  const locale = window.__chatbotLocale;
+  const strings = window.__chatbotStrings;
 
   const toggle = document.getElementById("chatbot-toggle");
   const panel = document.getElementById("chatbot-panel");
@@ -138,6 +139,9 @@
       if (res.status === 429) {
         throw new Error("rate_limited");
       }
+      if (res.status === 503) {
+        throw new Error("quota_exceeded");
+      }
       if (!res.ok) {
         throw new Error("HTTP " + res.status);
       }
@@ -178,9 +182,7 @@
       }
 
       if (!botText) {
-        botText = locale === "de"
-          ? "Entschuldigung, ich konnte keine Antwort generieren."
-          : "Sorry, I couldn't generate a response.";
+        botText = strings.emptyResponse;
         span.innerHTML = renderMarkdown(botText);
       }
 
@@ -189,15 +191,11 @@
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
       if (err.message === "rate_limited") {
-        errSpan.textContent =
-          locale === "de"
-            ? "Zu viele Anfragen. Bitte warte einen Moment."
-            : "Too many requests. Please wait a moment.";
+        errSpan.textContent = strings.rateLimited;
+      } else if (err.message === "quota_exceeded") {
+        errSpan.textContent = strings.quotaExceeded;
       } else {
-        errSpan.textContent =
-          locale === "de"
-            ? "Verbindungsfehler. Bitte versuche es erneut."
-            : "Connection error. Please try again.";
+        errSpan.textContent = strings.connection;
       }
       typingEl.appendChild(errSpan);
     }

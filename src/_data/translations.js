@@ -8,6 +8,10 @@ export default {
       contact: "Contact",
       langSwitch: "DE",
       langSwitchHref: "/de/",
+      menuAriaLabel: "Menu",
+      themeAriaLabel: "Toggle theme",
+      themeLightAriaLabel: "Switch to dark mode",
+      themeDarkAriaLabel: "Switch to light mode",
     },
     hero: {
       label: "Professional AI Engineer · Zürich, CH",
@@ -155,6 +159,14 @@ export default {
       title: "Chat with AI",
       greeting: "Hi! Ask me anything about Thomas.",
       placeholder: "Ask a question...",
+      toggleAriaLabel: "Chat",
+      sendAriaLabel: "Send",
+      errors: {
+        rateLimited: "Too many requests. Please wait a moment.",
+        quotaExceeded: "The daily quota has been reached. Please try again tomorrow.",
+        connection: "Connection error. Please try again.",
+        emptyResponse: "Sorry, I couldn't generate a response.",
+      },
     },
     contact: {
       title: 'Get in <em>touch</em>',
@@ -174,6 +186,10 @@ export default {
       contact: "Kontakt",
       langSwitch: "EN",
       langSwitchHref: "/en/",
+      menuAriaLabel: "Menü",
+      themeAriaLabel: "Farbschema wechseln",
+      themeLightAriaLabel: "Zum dunklen Modus wechseln",
+      themeDarkAriaLabel: "Zum hellen Modus wechseln",
     },
     hero: {
       label: "Professional AI Engineer · Zürich, CH",
@@ -321,6 +337,14 @@ export default {
       title: "KI-Chat",
       greeting: "Hallo! Frag mich was über Thomas.",
       placeholder: "Stelle eine Frage...",
+      toggleAriaLabel: "Chat",
+      sendAriaLabel: "Senden",
+      errors: {
+        rateLimited: "Zu viele Anfragen. Bitte warte einen Moment.",
+        quotaExceeded: "Das Tageslimit wurde erreicht. Bitte versuche es morgen erneut.",
+        connection: "Verbindungsfehler. Bitte versuche es erneut.",
+        emptyResponse: "Entschuldigung, ich konnte keine Antwort generieren.",
+      },
     },
     contact: {
       title: '<em>Kontakt</em> aufnehmen',
