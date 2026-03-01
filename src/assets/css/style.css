@@ -225,6 +225,7 @@ nav ul a:hover::after { width: 100%; }
 
 .hero-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
   opacity: 0;
@@ -246,6 +247,7 @@ nav ul a:hover::after { width: 100%; }
   border: none;
   cursor: pointer;
   transition: all 0.3s;
+  white-space: nowrap;
 }
 
 .btn-primary:hover {
@@ -259,7 +261,7 @@ nav ul a:hover::after { width: 100%; }
   align-items: center;
   gap: 0.5rem;
   color: var(--text-muted);
-  padding: 0.85rem 1.5rem;
+  padding: 0.85rem 1.25rem;
   font-family: var(--sans);
   font-size: 0.85rem;
   font-weight: 400;
@@ -267,6 +269,7 @@ nav ul a:hover::after { width: 100%; }
   text-decoration: none;
   border: 1px solid var(--border);
   transition: all 0.3s;
+  white-space: nowrap;
 }
 
 .btn-ghost:hover {
