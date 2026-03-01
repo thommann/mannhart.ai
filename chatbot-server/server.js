@@ -89,12 +89,18 @@ const TOOLS = [
 
 // --- Tool execution ---
 
+function resolveUrl(resource, lang) {
+  return typeof resource.url === "string"
+    ? resource.url
+    : resource.url[lang] || resource.url.en;
+}
+
 function executeGetResource(args, lang) {
   const resource = RESOURCES[args.resource_key];
   if (!resource) return { error: "Resource not found" };
   return {
     type: resource.type,
-    url: resource.url,
+    url: resolveUrl(resource, lang),
     title: resource.title[lang] || resource.title.en,
     description: resource.description?.[lang] || resource.description?.en || "",
   };
@@ -106,7 +112,7 @@ function executeNavigateToSection(args, lang) {
   if (!resource) return { error: "Section not found" };
   return {
     type: "section",
-    url: resource.url,
+    url: resolveUrl(resource, lang),
     title: resource.title[lang] || resource.title.en,
   };
 }
@@ -114,17 +120,17 @@ function executeNavigateToSection(args, lang) {
 function executeGetContactInfo(args, lang) {
   if (args.method === "all") {
     return {
-      email: { url: RESOURCES.email.url, title: RESOURCES.email.title[lang] },
+      email: { url: resolveUrl(RESOURCES.email, lang), title: RESOURCES.email.title[lang] },
       website: {
-        url: RESOURCES.website.url,
+        url: resolveUrl(RESOURCES.website, lang),
         title: RESOURCES.website.title[lang],
       },
-      github: { url: RESOURCES.github.url, title: RESOURCES.github.title[lang] },
+      github: { url: resolveUrl(RESOURCES.github, lang), title: RESOURCES.github.title[lang] },
     };
   }
   const resource = RESOURCES[args.method];
   if (!resource) return { error: "Contact method not found" };
-  return { url: resource.url, title: resource.title[lang] };
+  return { url: resolveUrl(resource, lang), title: resource.title[lang] };
 }
 
 function executeTool(name, args, lang) {
@@ -199,7 +205,7 @@ function buildContext(locale) {
   return `<context>
 <bio>
 ${bio}
-${t.about.languages}. ${locale === "de" ? "Kontakt" : "Contact"}: thomas@mannhart.ai. GitHub: github.com/thommann.
+${t.about.languages}. ${locale === "de" ? "Kontakt" : "Contact"}: ${RESOURCES.email.title[locale]}. GitHub: ${RESOURCES.github.url}.
 </bio>
 
 <career>
