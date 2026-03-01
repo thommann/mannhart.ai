@@ -19,6 +19,7 @@ export default {
       desc: "Building enterprise AI in Zürich. I architect custom AI solutions, lead customer projects, and write about how AI is changing the way we build software.",
       getInTouch: "Get in touch",
       github: "GitHub",
+      downloadCV: "Download CV",
     },
     about: {
       number: "01",
@@ -199,6 +200,7 @@ export default {
       desc: "Ich entwickle Enterprise-KI in Zürich. Ich entwerfe kundenspezifische KI-Lösungen, leite Kundenprojekte und schreibe darüber, wie KI die Softwareentwicklung verändert.",
       getInTouch: "Kontakt aufnehmen",
       github: "GitHub",
+      downloadCV: "CV herunterladen",
     },
     about: {
       number: "01",
