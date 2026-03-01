@@ -2,6 +2,7 @@ import express from "express";
 import OpenAI from "openai";
 import RESOURCES from "./resources.js";
 import translations from "./translations.js";
+import { stripHtml, SKILL_LEVELS } from "./utils.js";
 
 const {
   LLM_API_KEY,
@@ -147,25 +148,6 @@ function executeTool(name, args, lang) {
 }
 
 // --- System prompt generation ---
-
-function stripHtml(html) {
-  return html
-    .replace(/<br\s*\/?>/gi, " ")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&copy;/g, "(c)")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-const SKILL_LEVELS = {
-  en: { 5: "expert", 4: "advanced", 3: "intermediate" },
-  de: { 5: "Experte", 4: "fortgeschritten", 3: "fortgeschritten" },
-};
 
 function buildContext(locale) {
   const t = translations[locale];
@@ -555,6 +537,10 @@ app.post("/api/chat", async (req, res) => {
       }
     }
   }
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
 });
 
 app.listen(Number(PORT), () => {

@@ -2,245 +2,419 @@ import PDFDocument from "pdfkit";
 import { createWriteStream } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import translations from "../src/_data/translations.js";
+import { stripHtml, SKILL_LEVELS } from "../src/_data/utils.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUTPUT = join(__dirname, "..", "src", "assets", "pdf", "Thomas_Mannhart_CV.pdf");
+const OUTPUT_DIR = join(__dirname, "..", "src", "assets", "pdf");
+const PHOTO = join(__dirname, "..", "src", "assets", "img", "photo-cv.jpg");
 
-const ACCENT = [180, 140, 95]; // warm bronze
-const BLACK = [30, 28, 35];
-const GRAY = [100, 96, 108];
-const RULE = [200, 195, 205];
+// Palette
+const BLACK = [35, 35, 40];
+const DARK = [50, 50, 58];
+const GRAY = [110, 110, 118];
+const LIGHT = [165, 165, 172];
+const ACCENT = [160, 125, 80];
+const RULE_DARK = [60, 60, 68];
+const RULE_LIGHT = [200, 200, 206];
 
-function drawRule(doc, y) {
-  doc
-    .moveTo(50, y)
-    .lineTo(545, y)
-    .strokeColor(RULE)
-    .lineWidth(0.5)
-    .stroke();
+// Layout
+const L = 50;
+const R = 545;
+const W = R - L;
+const DATE_W = 92;
+const COL_GAP = 10;
+const CX = L + DATE_W + COL_GAP;
+const CW = R - CX;
+
+// Photo
+const PHOTO_SIZE = 72;
+const PHOTO_X = R - PHOTO_SIZE;
+const PHOTO_Y = 42;
+const HEADER_W = PHOTO_X - L - 15;
+
+// Section labels per language
+const LABELS = {
+  en: {
+    profile: "Profile",
+    experience: "Experience",
+    education: "Education",
+    skills: "Skills",
+    talks: "Talks & Projects",
+    programming: "Programming",
+    languages: "Languages",
+    location: "Zürich, Switzerland",
+  },
+  de: {
+    profile: "Profil",
+    experience: "Berufserfahrung",
+    education: "Ausbildung",
+    skills: "Skills",
+    talks: "Vorträge & Projekte",
+    programming: "Programmierung",
+    languages: "Sprachen",
+    location: "Zürich, Schweiz",
+  },
+};
+
+/* ── data builders ─────────────────────────────────── */
+
+function buildJobs(t) {
+  return t.experience.jobs.map((j) => ({
+    date: j.date.replace("now", "present"),
+    role: j.role,
+    company: `${j.company}, ${j.location.replace(/, (Switzerland|Schweiz)/g, "")}`,
+    desc: j.desc,
+    tech: j.tech.join(", "),
+  }));
 }
 
-function sectionTitle(doc, title) {
+function buildEducation(t) {
+  return t.education.items
+    .slice()
+    .reverse()
+    .map((e) => {
+      const detail = stripHtml(e.detail);
+      const thesisMatch = detail.match(
+        /(Thesis|Bachelorarbeit|Masterarbeit):\s*(.+)/
+      );
+      let line = thesisMatch
+        ? `${thesisMatch[1]}: ${thesisMatch[2]}`
+        : detail;
+      if (e.award) line += ` ${e.award.label}.`;
+      return {
+        year: e.year,
+        degree: `${e.degree} (${e.specialization})`,
+        school: e.school,
+        detail: line,
+      };
+    });
+}
+
+function buildSkills(t, lang) {
+  const levels = SKILL_LEVELS[lang];
+  const labels = LABELS[lang];
+  const progNames = ["Languages", "Sprachen"];
+
+  const groups = t.skills.groups.map((g) => {
+    const items = g.items
+      .map((s) => {
+        const level = levels[s.level];
+        return level ? `${s.name} (${level})` : s.name;
+      })
+      .join(", ");
+    return {
+      category: progNames.includes(g.name) ? labels.programming : g.name,
+      items,
+    };
+  });
+  groups.push({
+    category: labels.languages,
+    items: t.about.languages,
+  });
+  return groups;
+}
+
+function buildTalks(t) {
+  return [
+    {
+      title: stripHtml(t.featured.webinar.title),
+      desc: stripHtml(t.featured.webinar.desc),
+    },
+    {
+      title: stripHtml(t.featured.fhnw.title),
+      desc: stripHtml(t.featured.fhnw.desc),
+    },
+    {
+      title: stripHtml(t.featured.aiHub.title),
+      desc: stripHtml(t.featured.aiHub.desc),
+    },
+  ];
+}
+
+/* ── icon helpers ──────────────────────────────────── */
+
+function drawIcon(doc, type, x, y, size, color) {
+  const s = size;
+  const cx = x + s / 2;
+  const cy = y + s / 2;
+  const lw = Math.max(0.55, s * 0.075);
+
+  doc.save();
+
+  switch (type) {
+    case "location": {
+      doc.fillColor(color);
+      const pr = s * 0.28;
+      const pcy = y + s * 0.34;
+      doc.circle(cx, pcy, pr).fill();
+      doc
+        .path(
+          `M${cx - pr * 0.7} ${pcy + pr * 0.5} L${cx} ${y + s * 0.92} L${cx + pr * 0.7} ${pcy + pr * 0.5}`
+        )
+        .fill();
+      doc.fillColor([255, 255, 255]);
+      doc.circle(cx, pcy, pr * 0.35).fill();
+      break;
+    }
+    case "email": {
+      doc
+        .strokeColor(color)
+        .lineWidth(lw)
+        .lineCap("round")
+        .lineJoin("round");
+      const pad = s * 0.08;
+      const top = y + s * 0.22;
+      const bot = y + s * 0.78;
+      doc.rect(x + pad, top, s - 2 * pad, bot - top).stroke();
+      doc
+        .path(
+          `M${x + pad} ${top} L${cx} ${y + s * 0.53} L${x + s - pad} ${top}`
+        )
+        .stroke();
+      break;
+    }
+    case "code": {
+      doc
+        .strokeColor(color)
+        .lineWidth(lw * 1.1)
+        .lineCap("round")
+        .lineJoin("round");
+      doc
+        .path(
+          `M${x + s * 0.38} ${y + s * 0.18} L${x + s * 0.12} ${cy} L${x + s * 0.38} ${y + s * 0.82}`
+        )
+        .stroke();
+      doc
+        .path(
+          `M${x + s * 0.62} ${y + s * 0.18} L${x + s * 0.88} ${cy} L${x + s * 0.62} ${y + s * 0.82}`
+        )
+        .stroke();
+      break;
+    }
+    case "globe": {
+      doc.strokeColor(color).lineWidth(lw);
+      const r = s * 0.4;
+      doc.circle(cx, cy, r).stroke();
+      doc
+        .moveTo(x + s * 0.1, cy)
+        .lineTo(x + s * 0.9, cy)
+        .stroke();
+      doc.ellipse(cx, cy, r * 0.45, r).stroke();
+      break;
+    }
+  }
+
+  doc.restore();
+}
+
+/* ── layout helpers ────────────────────────────────── */
+
+function rule(doc, y, color = RULE_LIGHT, width = 0.4) {
+  doc.moveTo(L, y).lineTo(R, y).strokeColor(color).lineWidth(width).stroke();
+}
+
+function heading(doc, label) {
+  doc.moveDown(0.45);
   doc
-    .fontSize(11)
-    .fillColor(ACCENT)
+    .fontSize(9)
     .font("Helvetica-Bold")
-    .text(title.toUpperCase(), { continued: false });
-  drawRule(doc, doc.y + 2);
-  doc.moveDown(0.4);
+    .fillColor(DARK)
+    .text(label.toUpperCase(), L, doc.y, { characterSpacing: 1.5 });
+  rule(doc, doc.y + 3, RULE_DARK, 0.6);
+  doc.y += 10;
 }
 
-function main() {
+/* ── generate one CV ───────────────────────────────── */
+
+function generateCV(lang) {
+  const t = translations[lang];
+  const labels = LABELS[lang];
+  const output = join(
+    OUTPUT_DIR,
+    `Thomas_Mannhart_CV_${lang.toUpperCase()}.pdf`
+  );
+
   const doc = new PDFDocument({
     size: "A4",
-    margins: { top: 45, bottom: 45, left: 50, right: 50 },
+    margins: { top: 42, bottom: 38, left: L, right: 50 },
   });
+  doc.pipe(createWriteStream(output));
 
-  doc.pipe(createWriteStream(OUTPUT));
-
-  // --- Header ---
+  /* ── photo ── */
+  doc.save();
   doc
-    .fontSize(26)
+    .circle(PHOTO_X + PHOTO_SIZE / 2, PHOTO_Y + PHOTO_SIZE / 2, PHOTO_SIZE / 2)
+    .clip();
+  doc.image(PHOTO, PHOTO_X, PHOTO_Y, { width: PHOTO_SIZE });
+  doc.restore();
+  doc
+    .circle(PHOTO_X + PHOTO_SIZE / 2, PHOTO_Y + PHOTO_SIZE / 2, PHOTO_SIZE / 2)
+    .strokeColor(RULE_LIGHT)
+    .lineWidth(0.5)
+    .stroke();
+
+  /* ── header ── */
+  doc
+    .fontSize(22)
     .font("Helvetica-Bold")
     .fillColor(BLACK)
-    .text("Thomas Rolf Mannhart", { align: "left" });
+    .text("Thomas Rolf Mannhart", L, 42, { width: HEADER_W });
 
   doc
-    .fontSize(12)
+    .fontSize(11)
     .font("Helvetica")
     .fillColor(ACCENT)
-    .text("Professional AI Engineer", { align: "left" });
+    .text("Professional AI Engineer", { width: HEADER_W });
 
   doc.moveDown(0.3);
+
+  /* ── contact info with icons ── */
+  const iconS = 9;
+  const iconGap = 3;
+  const col2X = L + 155;
+  const contactY1 = doc.y;
+  const contactY2 = contactY1 + 14;
+
+  drawIcon(doc, "location", L, contactY1, iconS, GRAY);
   doc
-    .fontSize(8.5)
+    .fontSize(8)
     .font("Helvetica")
     .fillColor(GRAY)
-    .text(
-      "Zürich, Switzerland  ·  thomas@mannhart.ai  ·  github.com/thommann  ·  t.mannhart.ai",
-      { align: "left" }
-    );
+    .text(labels.location, L + iconS + iconGap, contactY1 + 1, {
+      lineBreak: false,
+    });
 
-  doc.moveDown(0.8);
-  drawRule(doc, doc.y);
-  doc.moveDown(0.6);
+  drawIcon(doc, "email", col2X, contactY1, iconS, GRAY);
+  doc.text("thomas@mannhart.ai", col2X + iconS + iconGap, contactY1 + 1, {
+    lineBreak: false,
+  });
 
-  // --- Summary ---
-  sectionTitle(doc, "Summary");
+  drawIcon(doc, "code", L, contactY2, iconS, GRAY);
+  doc.text("github.com/thommann", L + iconS + iconGap, contactY2 + 1, {
+    lineBreak: false,
+  });
+
+  drawIcon(doc, "globe", col2X, contactY2, iconS, GRAY);
+  doc.text("t.mannhart.ai", col2X + iconS + iconGap, contactY2 + 1, {
+    lineBreak: false,
+  });
+
+  doc.y = contactY2 + 18;
+  rule(doc, doc.y, RULE_DARK, 0.8);
+  doc.y += 6;
+
+  /* ── profile ── */
+  heading(doc, labels.profile);
   doc
-    .fontSize(9.5)
+    .fontSize(9)
     .font("Helvetica")
     .fillColor(BLACK)
-    .text(
-      "Professional AI Engineer at bbv Software Services in Zürich, building the bbv AI Hub — a Swiss-made, model-agnostic enterprise AI platform. I architect and implement customized AI solutions (especially RAG systems) for enterprise customers, lead AI projects as Dev Lead, and consult on IT and AI strategy. MSc and BSc in Informatics from the University of Zürich with AI specialization. Shipping software professionally since 2019 — from biomedical Java apps to full-stack web platforms to LLM-powered agentic systems.",
-      { lineGap: 2.5 }
-    );
-  doc.moveDown(0.7);
+    .text(stripHtml(t.about.abstract), L, doc.y, { width: W, lineGap: 2.2 });
 
-  // --- Experience ---
-  sectionTitle(doc, "Experience");
+  /* ── experience ── */
+  heading(doc, labels.experience);
 
-  const jobs = [
-    {
-      date: "2025 — present",
-      role: "Professional AI Engineer",
-      company: "bbv Software Services AG, Zürich",
-      desc: "Development of a comprehensive enterprise AI platform (bbv AI Hub), including architecture design with the software architect. Architecture and implementation of customized AI solutions — especially RAG systems — for customer projects in industry and market research. Technical leadership (Dev Lead) of customer AI projects. Operation and maintenance of the AI platform at customer sites. Consulting customers on IT and AI strategy.",
-      tech: "Python, LLMs/RAG, Agentic AI, MCP, Azure, TypeScript, Platform Engineering",
-    },
-    {
-      date: "2023 — 2024",
-      role: "Professional Software Engineer",
-      company: "Ergon Informatik AG, Zürich",
-      desc: "Developed a time-tracking and workforce planning system for the retail sector. End-to-end software delivery from requirements engineering and prototyping to second/third-level support. Mentored new team members and organized IT workshops for students.",
-      tech: "Java, Kotlin, Angular, TypeScript, SQL, Selenium, Jenkins",
-    },
-    {
-      date: "2020 — 2023",
-      role: "Senior Software Developer",
-      company: "PolygonSoftware, Opfikon",
-      desc: "Led full-stack development of web applications and computer vision / machine learning projects at a UZH-founded startup. Designed software architectures, supervised dev teams, and interfaced directly with product owners and clients.",
-      tech: "Full Stack, Computer Vision, Machine Learning, Web Apps, DevOps",
-    },
-    {
-      date: "2019 — 2020",
-      role: "Junior Software Developer",
-      company: "swissbiomechanics ag (ETH spin-off), Zürich",
-      desc: "Led an independent software project building a Java application to track biomedical analyses and automatically generate clinical reports. Handled stakeholder communication, requirements analysis, and developer coordination.",
-      tech: "Java, Report Generation, Biomedical",
-    },
-  ];
+  for (const job of buildJobs(t)) {
+    const y0 = doc.y;
 
-  for (const job of jobs) {
-    doc
-      .fontSize(9)
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text(job.date, { continued: false });
-    doc
-      .fontSize(10)
-      .font("Helvetica-Bold")
-      .fillColor(BLACK)
-      .text(job.role, { continued: true })
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text("  —  " + job.company);
-    doc
-      .fontSize(9)
-      .font("Helvetica")
-      .fillColor(BLACK)
-      .text(job.desc, { lineGap: 1.5 });
     doc
       .fontSize(8)
-      .font("Helvetica-Oblique")
-      .fillColor(GRAY)
-      .text(job.tech);
-    doc.moveDown(0.5);
-  }
-
-  // --- Education ---
-  sectionTitle(doc, "Education");
-
-  const education = [
-    {
-      year: "2020 — 2023",
-      degree: "MSc in Informatics (AI specialization)",
-      school: "University of Zürich",
-      detail:
-        'Thesis: "KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition." Supervised by Johannes Marti and Dan Olteanu, Data Systems and Theory group.',
-    },
-    {
-      year: "2017 — 2020",
-      degree: "BSc in Informatics (Software Systems)",
-      school: "University of Zürich",
-      detail:
-        'Thesis: "A General-purpose Range Join Algorithm for PostgreSQL." Supervised by Michael Böhlen and Anton Dignös, Database Technology group. UZH Semester Award 2020.',
-    },
-  ];
-
-  for (const edu of education) {
-    doc
-      .fontSize(9)
       .font("Helvetica")
       .fillColor(GRAY)
-      .text(edu.year, { continued: false });
-    doc
-      .fontSize(10)
-      .font("Helvetica-Bold")
-      .fillColor(BLACK)
-      .text(edu.degree, { continued: true })
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text("  —  " + edu.school);
-    doc
-      .fontSize(9)
-      .font("Helvetica")
-      .fillColor(BLACK)
-      .text(edu.detail, { lineGap: 1.5 });
-    doc.moveDown(0.4);
-  }
+      .text(job.date, L, y0, { width: DATE_W });
+    const yDate = doc.y;
 
-  // --- Skills ---
-  sectionTitle(doc, "Skills");
-
-  const skills = [
-    { category: "Programming", items: "Python (expert), TypeScript/JS (advanced), Java/Kotlin (advanced), SQL (advanced)" },
-    { category: "AI", items: "Agent Orchestration (expert), RAG (expert), MCP (advanced), LLM Integration" },
-    { category: "Tools", items: "Claude Code (expert), Git/GitHub (expert), Docker (advanced), Azure" },
-    { category: "Languages", items: "German (native), English (fluent), French (fluent)" },
-  ];
-
-  for (const skill of skills) {
     doc
       .fontSize(9.5)
       .font("Helvetica-Bold")
       .fillColor(BLACK)
-      .text(skill.category + ":  ", { continued: true })
+      .text(job.role, CX, y0, { width: CW, continued: true })
+      .font("Helvetica")
+      .fillColor(GRAY)
+      .text(`  —  ${job.company}`);
+
+    doc
+      .fontSize(8.5)
+      .font("Helvetica")
+      .fillColor(BLACK)
+      .text(job.desc, CX, doc.y, { width: CW, lineGap: 1.5 });
+
+    doc
+      .fontSize(7.5)
+      .font("Helvetica-Oblique")
+      .fillColor(LIGHT)
+      .text(job.tech, CX, doc.y + 1, { width: CW });
+
+    doc.y = Math.max(doc.y, yDate) + 7;
+  }
+
+  /* ── education ── */
+  heading(doc, labels.education);
+
+  for (const edu of buildEducation(t)) {
+    const y0 = doc.y;
+
+    doc
+      .fontSize(8)
+      .font("Helvetica")
+      .fillColor(GRAY)
+      .text(edu.year, L, y0, { width: DATE_W });
+    const yDate = doc.y;
+
+    doc
+      .fontSize(9.5)
+      .font("Helvetica-Bold")
+      .fillColor(BLACK)
+      .text(edu.degree, CX, y0, { width: CW, continued: true })
+      .font("Helvetica")
+      .fillColor(GRAY)
+      .text(`  —  ${edu.school}`);
+
+    doc
+      .fontSize(8.5)
+      .font("Helvetica")
+      .fillColor(BLACK)
+      .text(edu.detail, CX, doc.y, { width: CW, lineGap: 1.5 });
+
+    doc.y = Math.max(doc.y, yDate) + 5;
+  }
+
+  /* ── skills ── */
+  heading(doc, labels.skills);
+
+  for (const skill of buildSkills(t, lang)) {
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .fillColor(BLACK)
+      .text(`${skill.category}:  `, L, doc.y, { width: W, continued: true })
       .font("Helvetica")
       .fillColor(GRAY)
       .text(skill.items);
+    doc.moveDown(0.1);
   }
-  doc.moveDown(0.7);
 
-  // --- Talks & Projects ---
-  sectionTitle(doc, "Talks & Projects");
+  /* ── talks & projects ── */
+  heading(doc, labels.talks);
 
-  doc
-    .fontSize(9.5)
-    .font("Helvetica-Bold")
-    .fillColor(BLACK)
-    .text("KI als Entwicklungspartner", { continued: true })
-    .font("Helvetica")
-    .fillColor(GRAY)
-    .text(
-      "  —  bbv webinar on practical methods, tools, and strategies for integrating AI into the software development lifecycle."
-    );
-  doc.moveDown(0.2);
-  doc
-    .fontSize(9.5)
-    .font("Helvetica-Bold")
-    .fillColor(BLACK)
-    .text("AI-Augmented Software Engineering", { continued: true })
-    .font("Helvetica")
-    .fillColor(GRAY)
-    .text(
-      "  —  Talk at the FHNW Data Science & Data Engineering Alumni Event 2025."
-    );
-  doc.moveDown(0.2);
-  doc
-    .fontSize(9.5)
-    .font("Helvetica-Bold")
-    .fillColor(BLACK)
-    .text("bbv AI Hub", { continued: true })
-    .font("Helvetica")
-    .fillColor(GRAY)
-    .text(
-      "  —  Swiss-made, model-agnostic enterprise AI platform. Listed on Siemens Xcelerator, certified Swiss Made Software."
-    );
+  for (const talk of buildTalks(t)) {
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .fillColor(BLACK)
+      .text(talk.title, L, doc.y, { width: W, continued: true })
+      .font("Helvetica")
+      .fillColor(GRAY)
+      .text(`  —  ${talk.desc}`);
+    doc.moveDown(0.15);
+  }
 
-  // --- Finalize ---
   doc.end();
-  console.log("CV generated:", OUTPUT);
+  console.log(`CV (${lang.toUpperCase()}) generated → ${output}`);
 }
 
-main();
+/* ── run ───────────────────────────────────────────── */
+
+generateCV("en");
+generateCV("de");

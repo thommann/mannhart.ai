@@ -38,7 +38,9 @@ jobs:
           remote_user: REDACTED
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - run: cp src/_data/translations.js chatbot-server/translations.js
+      - run: |
+          cp src/_data/translations.js chatbot-server/translations.js
+          cp src/_data/utils.js chatbot-server/utils.js
 
       - uses: burnett01/rsync-deployments@v8
         with:
@@ -56,4 +58,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: REDACTED
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: cd REDACTED_PATH && npm install --production && sudo systemctl restart $SERVICE
+          script: |
+            cd REDACTED_PATH && npm install --production && sudo systemctl restart $SERVICE
+            sleep 2
+            curl --fail --retry 3 --retry-delay 2 http://localhost:PORT/api/health

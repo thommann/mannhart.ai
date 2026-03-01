@@ -17,6 +17,7 @@ node_modules/
 _site/
 dist/
 chatbot-server/translations.js
+chatbot-server/utils.js
 
 # IDE
 .vscode/
