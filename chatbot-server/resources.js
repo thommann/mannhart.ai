@@ -28,7 +28,10 @@ const RESOURCES = {
   },
   cv_pdf: {
     type: "pdf",
-    url: "/assets/pdf/Thomas_Mannhart_CV.pdf",
+    url: {
+      en: "/assets/pdf/Thomas_Mannhart_CV_EN.pdf",
+      de: "/assets/pdf/Thomas_Mannhart_CV_DE.pdf",
+    },
     title: {
       en: "Thomas Mannhart — CV",
       de: "Thomas Mannhart — Lebenslauf",
