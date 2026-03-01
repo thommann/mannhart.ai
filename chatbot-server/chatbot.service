@@ -4,11 +4,16 @@ After=network.target
 
 [Service]
 Type=simple
+User=www-data
+Group=www-data
 WorkingDirectory=/var/www/chatbot-server
 ExecStart=/usr/bin/node server.js
 EnvironmentFile=/var/www/chatbot-server/.env
 Restart=on-failure
 RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/www/chatbot-server
 
 [Install]
 WantedBy=multi-user.target

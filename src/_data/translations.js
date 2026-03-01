@@ -1,5 +1,8 @@
 export default {
   en: {
+    meta: {
+      description: "Thomas Mannhart — Professional AI Engineer at bbv Software Services in Zürich. Building enterprise AI solutions, RAG systems, and agentic workflows.",
+    },
     nav: {
       about: "About",
       experience: "Experience",
@@ -85,9 +88,10 @@ export default {
       items: [
         {
           degree: "BSc in Informatics",
+          specialization: "Software Systems",
           school: "University of Zürich",
           year: "2017 — 2020",
-          detail: 'Specialization in Software Systems. Thesis: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" style="color:var(--accent);text-decoration-color:var(--accent-dim);">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Supervised by Michael Böhlen and Anton Dignös at the Database Technology group.',
+          detail: 'Specialization in Software Systems. Thesis: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" class="thesis-link">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Supervised by Michael Böhlen and Anton Dignös at the Database Technology group.',
           award: {
             label: "UZH Semester Award 2020",
             href: "https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html",
@@ -95,6 +99,7 @@ export default {
         },
         {
           degree: "MSc in Informatics",
+          specialization: "Artificial Intelligence",
           school: "University of Zürich",
           year: "2020 — 2023",
           detail: 'Specialization in Artificial Intelligence. Thesis: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Supervised by Johannes Marti and Dan Olteanu at the Data Systems and Theory group.',
@@ -181,6 +186,9 @@ export default {
   },
 
   de: {
+    meta: {
+      description: "Thomas Mannhart — Professional AI Engineer bei bbv Software Services in Zürich. Enterprise-KI-Lösungen, RAG-Systeme und agentische Workflows.",
+    },
     nav: {
       about: "Über mich",
       experience: "Erfahrung",
@@ -266,9 +274,10 @@ export default {
       items: [
         {
           degree: "BSc in Informatik",
+          specialization: "Software Systems",
           school: "Universität Zürich",
           year: "2017 — 2020",
-          detail: 'Spezialisierung in Software Systems. Bachelorarbeit: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" style="color:var(--accent);text-decoration-color:var(--accent-dim);">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Betreut von Michael Böhlen und Anton Dignös in der Gruppe Database Technology.',
+          detail: 'Spezialisierung in Software Systems. Bachelorarbeit: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" class="thesis-link">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Betreut von Michael Böhlen und Anton Dignös in der Gruppe Database Technology.',
           award: {
             label: "UZH-Semesterpreis 2020",
             href: "https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html",
@@ -276,6 +285,7 @@ export default {
         },
         {
           degree: "MSc in Informatik",
+          specialization: "Artificial Intelligence",
           school: "Universität Zürich",
           year: "2020 — 2023",
           detail: 'Spezialisierung in Artificial Intelligence. Masterarbeit: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Betreut von Johannes Marti und Dan Olteanu in der Gruppe Data Systems and Theory.',

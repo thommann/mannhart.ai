@@ -38,7 +38,9 @@ jobs:
           remote_user: ubuntu
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - run: cp src/_data/translations.js chatbot-server/translations.js
+      - run: |
+          cp src/_data/translations.js chatbot-server/translations.js
+          cp src/_data/utils.js chatbot-server/utils.js
 
       - uses: burnett01/rsync-deployments@v8
         with:
@@ -56,4 +58,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: cd /var/www/chatbot-server && npm install --production && sudo systemctl restart chatbot
+          script: |
+            cd /var/www/chatbot-server && npm install --production && sudo systemctl restart chatbot
+            sleep 2
+            curl --fail --retry 3 --retry-delay 2 http://localhost:3001/api/health
