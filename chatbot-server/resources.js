@@ -57,7 +57,7 @@ const RESOURCES = {
   },
   bbv: {
     type: "link",
-    url: "https://en.bbv.ch/",
+    url: { en: "https://en.bbv.ch/", de: "https://www.bbv.ch/" },
     title: { en: "bbv Software Services", de: "bbv Software Services" },
   },
   bbv_ai_hub: {
