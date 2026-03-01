@@ -557,6 +557,10 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.listen(Number(PORT), () => {
   console.log(`Chatbot server running on port ${PORT}`);
   console.log(`Model: ${LLM_MODEL} via ${LLM_BASE_URL}`);

@@ -9,6 +9,7 @@ html { overflow-x: hidden; }
   --text-muted: #8a857d;
   --accent: #d4a574;
   --accent-bright: #e8c4a0;
+  --accent-dim: rgba(212, 165, 116, 0.4);
   --border: #2a2830;
   --bg-alt: #14121e;
   --serif: 'Instrument Serif', Georgia, serif;
@@ -25,6 +26,7 @@ html { overflow-x: hidden; }
   --text-muted: #55504a;
   --accent: #96602e;
   --accent-bright: #7d4f20;
+  --accent-dim: rgba(150, 96, 46, 0.4);
   --border: #cec7bc;
   --bg-alt: #e5e0d7;
 }

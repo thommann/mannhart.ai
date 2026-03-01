@@ -89,6 +89,7 @@
   });
 
   var MAX_INPUT_LENGTH = 500;
+  var MAX_HISTORY = 10;
   input.setAttribute("maxlength", MAX_INPUT_LENGTH);
 
   form.addEventListener("submit", function (e) {
@@ -101,6 +102,7 @@
 
     appendMessage(text, "user");
     history.push({ role: "user", content: text });
+    if (history.length > MAX_HISTORY) history = history.slice(-MAX_HISTORY);
     input.value = "";
 
     var typingEl = appendTyping();
@@ -129,11 +131,14 @@
   }
 
   async function sendMessage(msgs, typingEl) {
+    var controller = new AbortController();
+    var timeout = setTimeout(function () { controller.abort(); }, 30000);
     try {
       var res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: msgs, locale: locale }),
+        signal: controller.signal,
       });
 
       if (res.status === 429) {
@@ -198,6 +203,8 @@
         errSpan.textContent = strings.connection;
       }
       typingEl.appendChild(errSpan);
+    } finally {
+      clearTimeout(timeout);
     }
   }
 })();
