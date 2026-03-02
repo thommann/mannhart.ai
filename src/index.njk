@@ -2,13 +2,14 @@
 layout: false
 permalink: /index.html
 ---
+{% set t = translations.en %}
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="refresh" content="0; url=/de/">
-<title>Thomas Mannhart — Professional AI Engineer · Zürich, CH</title>
-<meta name="description" content="Thomas Mannhart — Professional AI Engineer at bbv Software Services in Zürich. Building enterprise AI solutions, RAG systems, and agentic workflows.">
+<title>Thomas Mannhart — {{ t.hero.label }}</title>
+<meta name="description" content="{{ t.meta.description }}">
 <link rel="canonical" href="https://t.mannhart.ai/de/">
 <link rel="alternate" hreflang="de" href="https://t.mannhart.ai/de/">
 <link rel="alternate" hreflang="en" href="https://t.mannhart.ai/en/">
@@ -17,8 +18,8 @@ permalink: /index.html
 <body>
 <script>window.location.href = '/de/';</script>
 <h1>Thomas Mannhart</h1>
-<p>Professional AI Engineer · Zürich, CH</p>
-<p>Building enterprise AI in Zürich. I architect custom AI solutions, lead customer projects, and write about how AI is changing the way we build software.</p>
+<p>{{ t.hero.label }}</p>
+<p>{{ t.hero.desc }}</p>
 <p><a href="/de/">Deutsch</a> | <a href="/en/">English</a></p>
 </body>
 </html>
