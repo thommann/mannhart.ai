@@ -23,6 +23,8 @@ Live site: https://t.mannhart.ai
 
 ## Commands
 
+Always run `npm run build` after changes to verify they compile.
+
 ```bash
 npm install          # Install dependencies
 npm run dev          # Local dev server at http://localhost:8080
@@ -41,61 +43,26 @@ CV generation:
 node scripts/generate-cv.js   # Generates PDF CVs to src/assets/pdf/
 ```
 
-## Project Structure
+## Things to Avoid
 
-```
-src/
-├── _data/
-│   ├── translations.js       # ALL content (DE + EN), organized by section
-│   └── utils.js               # stripHtml(), SKILL_LEVELS constants
-├── _includes/
-│   ├── base.njk               # HTML shell (head, fonts, theme script, JS)
-│   ├── partials/
-│   │   ├── lang-switcher.njk
-│   │   └── lang-switcher-inline.njk
-│   └── sections/              # Page section partials
-│       ├── nav.njk
-│       ├── hero.njk
-│       ├── about.njk
-│       ├── experience.njk
-│       ├── education.njk
-│       ├── skills.njk
-│       ├── featured.njk
-│       ├── contact.njk
-│       ├── chatbot.njk
-│       └── footer.njk
-├── assets/
-│   ├── css/style.css          # Single CSS file (~1200 lines)
-│   ├── js/
-│   │   ├── main.js            # Scroll reveal, theme toggle, nav, slideshow
-│   │   └── chatbot.js         # Chatbot widget UI & API integration
-│   ├── fonts/                 # Self-hosted WOFF2 fonts
-│   ├── img/
-│   └── pdf/                   # Generated CV PDFs
-├── de/
-│   ├── de.json                # {"locale":"de","lang":"de","layout":"base.njk"}
-│   └── index.njk
-├── en/
-│   ├── en.json                # {"locale":"en","lang":"en","layout":"base.njk"}
-│   └── index.njk
-└── index.njk                  # Root redirect → /de/
+- **Never duplicate content** — all text content lives in `src/_data/translations.js` and is referenced from templates. Do not hardcode strings in `.njk` files, JS, or elsewhere
+- **Do not add build tools, linters, or frameworks** unless explicitly requested — the project deliberately uses minimal tooling
+- **Do not use `innerHTML`** for user-supplied content (XSS risk) — follow the safe rendering pattern in `chatbot.js`
+- **Do not commit `.env` files** or secrets — only `.env.example` is tracked
+- **Do not commit `chatbot-server/translations.js` or `chatbot-server/utils.js`** — these are generated at deploy time
+- **Do not modify `_site/`** — this is the build output directory, regenerated on every build
+- **Do not add external analytics, tracking scripts, or third-party CDN dependencies** without explicit approval
 
-chatbot-server/
-├── server.js                  # Express API with OpenAI function calling
-├── resources.js               # Bilingual resource links (CVs, videos, etc.)
-├── .env.example               # LLM provider config template
-├── chatbot.service            # systemd unit file
-└── package.json
+## Key Entry Points
 
-scripts/
-└── generate-cv.js             # PDFKit CV generator (reads translations.js)
-
-.github/workflows/
-├── build-check.yml            # PR: npm audit + build check
-└── deploy.yml                 # main: build + rsync site + deploy chatbot
-
-eleventy.config.js             # i18n plugin + passthrough copy config
-```
+- `src/_data/translations.js` — ALL content (DE + EN), organized by section
+- `src/_includes/base.njk` — HTML shell (head, fonts, theme script, JS)
+- `src/_includes/sections/` — page section partials (nav, hero, about, skills, etc.)
+- `src/assets/css/style.css` — single CSS file
+- `src/assets/js/main.js` — scroll reveal, theme toggle, nav, slideshow
+- `src/assets/js/chatbot.js` — chatbot widget UI & API integration
+- `chatbot-server/server.js` — Express API with OpenAI function calling
+- `eleventy.config.js` — i18n plugin + passthrough copy config
 
 ## Architecture & Key Patterns
 
@@ -110,39 +77,9 @@ In templates:
 {{ t.about.text | safe }}
 ```
 
-Routes:
-- `/` redirects to `/de/` (meta refresh + JS fallback)
-- `/de/` → German page (`<html lang="de">`)
-- `/en/` → English page (`<html lang="en">`)
+Routes: `/` redirects to `/de/` (meta refresh + JS fallback). `/de/` → German, `/en/` → English.
 
-**To add or edit content**: update `translations.js`. To change layout: edit section partials.
-
-### Styling Conventions
-
-- **Single CSS file**: `src/assets/css/style.css`
-- **CSS custom properties** for theming (dark mode default):
-  - Colors: `--bg`, `--bg-elevated`, `--bg-card`, `--text`, `--text-muted`, `--accent` (#d4a574), `--border`, `--bg-alt`
-  - Fonts: `--serif` (Instrument Serif), `--sans` (DM Sans), `--mono` (JetBrains Mono)
-- **Light mode**: toggled via `[data-theme="light"]` attribute on `<html>`
-- **BEM-inspired class names**: `.section-wrap`, `.timeline-item`, `.skill-group`
-- **Animations**: `.reveal` class triggers fade-in via IntersectionObserver; keyframes: `fadeUp`, `fadeIn`, `slideIn`
-- **Responsive**: mobile-first with `@media (max-width: ...)` breakpoints
-
-### JavaScript Conventions
-
-- **No frameworks or libraries** — everything is vanilla JS
-- `main.js`: scroll reveal (IntersectionObserver), mobile nav toggle, theme toggle (localStorage), smooth scroll, FHNW slideshow
-- `chatbot.js`: standalone chatbot widget with safe markdown rendering (no `innerHTML` for user content), XSS-safe
-- DOM manipulation via `document.querySelector()`, classList methods
-- Theme preference persisted to `localStorage`
-
-### HTML Conventions
-
-- Semantic elements: `<nav>`, `<section>`, `<footer>`
-- ARIA attributes: `aria-label`, `aria-expanded`
-- Section IDs for anchor navigation: `id="about"`, `id="experience"`, etc.
-- SVG icons inlined for performance
-- `{{ content | safe }}` only for trusted HTML from translations
+**To add or edit content**: update `translations.js` (both `en` and `de` keys). To change layout: edit section partials.
 
 ### Chatbot Server
 
@@ -150,7 +87,20 @@ Routes:
 - Configuration via `.env`: `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`, `ALLOWED_ORIGIN`, `PORT`
 - Implements function calling with tools: `get_resource()`, `navigate_to_section()`, `get_contact_info()`
 - System prompt auto-generated from `translations.js` and `resources.js`
-- During deployment, `translations.js` and `utils.js` are copied from `src/_data/` into `chatbot-server/`
+- During deployment, `translations.js` and `utils.js` are copied from `src/_data/` into `chatbot-server/` (not committed there)
+
+## Development Guidelines
+
+### Adding a New Section
+1. Create `src/_includes/sections/<name>.njk`
+2. Add translation keys in `translations.js` under both `en` and `de`
+3. Include the section in both `src/de/index.njk` and `src/en/index.njk`
+4. Add styles in `src/assets/css/style.css`
+5. Add a section ID for anchor navigation if needed
+
+### CV Updates
+- Edit content in `translations.js`, then run `node scripts/generate-cv.js`
+- Output goes to `src/assets/pdf/`
 
 ## CI/CD
 
@@ -168,136 +118,6 @@ Routes:
 
 **Required GitHub Secrets**: `SSH_PRIVATE_KEY`, `SERVER_IP`
 
-## Development Guidelines
+## Additional Rules
 
-### Content Changes
-1. Edit `src/_data/translations.js` — all text lives here, organized by section
-2. Always update **both** `en` and `de` keys when adding/modifying content
-3. Run `npm run build` to verify changes compile correctly
-
-### Adding a New Section
-1. Create `src/_includes/sections/<name>.njk`
-2. Add the corresponding translation keys in `translations.js` under both locales
-3. Include the section in both `src/de/index.njk` and `src/en/index.njk`
-4. Add styles in `src/assets/css/style.css`
-5. Add a section ID for anchor navigation if needed
-
-### Chatbot Changes
-- `chatbot-server/server.js` — API logic and LLM integration
-- `chatbot-server/resources.js` — resource links shown in responses
-- `src/assets/js/chatbot.js` — frontend widget
-- `src/_includes/sections/chatbot.njk` — widget HTML template
-- Remember: `translations.js` and `utils.js` are copied into `chatbot-server/` at deploy time (not committed there)
-
-### CV Updates
-- Edit content in `translations.js`, then run `node scripts/generate-cv.js`
-- Output goes to `src/assets/pdf/`
-- The script reads from `translations.js` and uses `utils.js` helpers
-
-## SEO Guidelines
-
-### Current State
-The site has good SEO fundamentals: meta descriptions, Open Graph tags, `hreflang` alternates, semantic HTML, and proper heading hierarchy. The following areas need attention.
-
-### Requirements for All New Pages/Content
-- **Meta tags**: every page must have `<title>`, `<meta name="description">`, `og:title`, `og:description`, `og:image`, `og:url` — these are already templated in `base.njk`
-- **Hreflang**: always maintain `<link rel="alternate" hreflang="de">`, `hreflang="en"`, and `hreflang="x-default">` on every page
-- **Canonical URLs**: add `<link rel="canonical" href="...">` pointing to the preferred language version of each page
-- **Heading hierarchy**: one `<h1>` per page (hero section), `<h2>` for section titles, `<h3>` for subsections — never skip levels
-
-### Missing SEO Features (To Be Added)
-- **robots.txt** — add to `src/` with passthrough copy in `eleventy.config.js`
-- **sitemap.xml** — generate via Eleventy plugin or static file listing `/de/` and `/en/`
-- **JSON-LD structured data** — add `Person` schema in `base.njk` `<head>` with name, jobTitle, url, sameAs (LinkedIn, GitHub)
-- **Twitter Card tags** — add `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image` in `base.njk`
-- **Canonical tags** — add `<link rel="canonical">` for each language page
-- **Favicon / Apple Touch Icon** — add proper favicon meta tags
-
-### Image SEO
-- All `<img>` elements **must** have descriptive `alt` text (already done — maintain this)
-- Use `loading="lazy"` on images below the fold
-- Prefer modern formats (WebP) with `<picture>` fallbacks when adding new images
-- Keep image file sizes under 200KB where possible
-
-### Bilingual SEO Rules
-- Content in `translations.js` must be **native-language content**, not machine-translated
-- Meta descriptions should be unique and compelling per language (not direct translations)
-- URL structure (`/de/`, `/en/`) is correct — do not change to query parameters or subdomains
-
-## Accessibility (a11y) Guidelines
-
-Target: **WCAG 2.2 Level AA** compliance.
-
-### Current State
-The site uses semantic HTML, ARIA attributes on key interactive elements, and proper heading hierarchy. The following areas need improvement.
-
-### Semantic HTML Requirements
-- Wrap page content in a `<main>` landmark element (currently missing)
-- Use `<nav>`, `<section>`, `<header>`, `<footer>` for all landmark regions
-- Every `<section>` should have an accessible name via `aria-labelledby` pointing to its heading, or `aria-label`
-- Use `<button>` for interactive elements, not styled `<div>` or `<span>`
-
-### Keyboard Navigation
-- **All interactive elements** must be reachable and operable via keyboard (Tab, Enter, Space, Escape, Arrow keys)
-- **Skip link**: add a "Skip to main content" link as the first focusable element in `base.njk`
-- **Escape key**: close mobile nav, chatbot panel, and any overlay when Escape is pressed
-- **Focus trapping**: when chatbot panel or mobile nav is open, trap focus within the panel
-- **Arrow keys**: support arrow key navigation in the slideshow dots
-
-### Focus Styles
-- **Every interactive element** must have a visible `:focus-visible` style — currently only the theme toggle has one
-- Use a consistent focus ring: `outline: 2px solid var(--accent); outline-offset: 2px`
-- Apply to: nav links, buttons (`.btn-primary`, `.btn-ghost`), about toggle, chatbot input, chatbot send button, slideshow dots, contact links, social links
-- Never use `outline: none` without an alternative visible indicator
-
-### Color & Contrast
-- Maintain minimum **4.5:1** contrast ratio for normal text, **3:1** for large text (18px+ or 14px+ bold) in both dark and light themes
-- **Do not rely on color alone** to convey information — the skill proficiency dots should include text labels or patterns alongside color
-- When choosing new colors, test contrast against both `--bg` (dark) and light mode backgrounds
-- `--text-muted` values must meet 4.5:1 against their respective backgrounds
-
-### Motion & Animation
-- **Add `prefers-reduced-motion` media query** in `style.css` to disable or reduce all animations and transitions:
-  ```css
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
-  ```
-- This affects: scroll reveal (`fadeUp`, `fadeIn`, `slideIn`), theme toggle transitions, grain overlay animation, slideshow transitions
-- The `.reveal` class elements should still become visible — just without animation
-
-### ARIA & Screen Readers
-- **Chatbot messages container** (`#chatbot-messages`): add `aria-live="polite"` so new messages are announced to screen readers
-- **Chatbot input**: add an associated `<label>` element (can be visually hidden with `.sr-only` class)
-- **Theme toggle**: already has dynamic `aria-label` — maintain this pattern for all toggles
-- **Decorative elements**: use `aria-hidden="true"` on section numbers (`.section-number`), decorative SVGs, and the grain overlay
-- **Loading states**: announce chatbot typing indicator via `aria-live` region
-
-### Forms
-- Every `<input>` must have an associated `<label>` (use `.sr-only` / visually-hidden class if label should not be visible)
-- Error messages should be linked to inputs via `aria-describedby`
-- Use `autocomplete` attributes where applicable
-
-### Touch Targets
-- Minimum interactive target size: **44×44px** (WCAG 2.2 Level AA) — verify chatbot send button, nav toggle, slideshow dots, social links
-- Add sufficient padding/margin if elements are visually smaller
-
-### Testing Accessibility
-- Test keyboard navigation by tabbing through the entire page without a mouse
-- Test with a screen reader (VoiceOver on Mac, NVDA on Windows)
-- Verify both dark and light themes pass contrast checks
-- Test with `prefers-reduced-motion` enabled in browser dev tools
-- Use browser accessibility audit (Lighthouse > Accessibility) as a baseline
-
-## Things to Avoid
-
-- **Do not add build tools, linters, or frameworks** unless explicitly requested — the project deliberately uses minimal tooling
-- **Do not use `innerHTML`** for user-supplied content (XSS risk) — follow the safe rendering pattern in `chatbot.js`
-- **Do not commit `.env` files** or secrets — only `.env.example` is tracked
-- **Do not commit `chatbot-server/translations.js` or `chatbot-server/utils.js`** — these are generated at deploy time
-- **Do not modify `_site/`** — this is the build output directory, regenerated on every build
-- **Do not add external analytics, tracking scripts, or third-party CDN dependencies** without explicit approval
+SEO and accessibility guidelines are in `.claude/rules/` and load automatically when working on relevant files.
