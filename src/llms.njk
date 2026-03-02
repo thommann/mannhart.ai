@@ -1,0 +1,39 @@
+---
+layout: false
+permalink: /llms.txt
+eleventyExcludeFromCollections: true
+---
+{% set t = translations.en %}
+# Thomas Mannhart
+
+> {{ t.meta.description }}
+
+## Pages
+
+- [German (default)](https://t.mannhart.ai/de/): Main portfolio page in German
+- [English](https://t.mannhart.ai/en/): Main portfolio page in English
+
+## Experience
+{% for job in t.experience.jobs %}
+- **{{ job.company }}** ({{ job.date }}): {{ job.role }} — {{ job.desc }}
+{%- endfor %}
+
+## Education
+{% for item in t.education.items %}
+- **{{ item.degree }}**, {{ item.specialization }} — {{ item.school }} ({{ item.year }})
+{%- endfor %}
+
+## Skills
+{% for group in t.skills.groups %}
+- {{ group.name }}: {% for item in group.items %}{{ item.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+{%- endfor %}
+
+## Talks
+
+- "{{ t.featured.fhnw.title | replace("<br>", " ") }}" — {{ t.featured.fhnw.label }}
+- "{{ t.featured.webinar.title }}" — {{ t.featured.webinar.desc }}
+
+## Contact
+
+- Website: https://t.mannhart.ai
+- GitHub: https://github.com/thommann
