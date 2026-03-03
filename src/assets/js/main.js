@@ -1,3 +1,13 @@
+// Set --nav-h from actual nav height
+(function() {
+  var nav = document.querySelector('nav');
+  function setNavH() {
+    document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+  }
+  setNavH();
+  window.addEventListener('resize', setNavH);
+})();
+
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -33,9 +43,11 @@ if (aboutToggle && aboutFull) {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
     e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
+    const href = this.getAttribute('href');
+    const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', href);
     }
   });
 });
@@ -113,5 +125,35 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     if (!localStorage.getItem('theme')) {
       applyTheme(e.matches ? 'light' : 'dark');
     }
+  });
+})();
+
+// Keep language toggle href in sync with current section
+(function() {
+  var langLink = document.querySelector('.floating-utilities a[href^="/"]');
+  if (!langLink) return;
+  var baseHref = langLink.getAttribute('href');
+  var sections = document.querySelectorAll('section[id]');
+  var ticking = false;
+  var hashTimer;
+
+  window.addEventListener('scroll', function() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function() {
+      var current = '';
+      var offset = window.innerHeight / 3;
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i].getBoundingClientRect().top <= offset) {
+          current = sections[i].id;
+        }
+      }
+      langLink.setAttribute('href', current ? baseHref + '#' + current : baseHref);
+      clearTimeout(hashTimer);
+      hashTimer = setTimeout(function() {
+        history.replaceState(null, '', current ? '#' + current : location.pathname);
+      }, 150);
+      ticking = false;
+    });
   });
 })();

@@ -167,7 +167,7 @@ export default {
     beyondWork: {
       number: "06",
       title: "Beyond Work",
-      intro: `<p>Some of my most formative experiences happened far from a desk — locked in an Airbnb during a pandemic, navigating Taipei on a scooter, or stumbling through Mandarin with classmates from three different countries.</p>`,
+      intro: `<p>Some of my most formative experiences happened far from a desk — locked in an Airbnb during a pandemic, exploring Taiwan during an exchange semester, or stumbling through Mandarin with classmates from all over the world.</p>`,
       stories: [
         {
           location: "Bozen, South Tyrol",
@@ -176,12 +176,12 @@ export default {
         },
         {
           location: "Taipei, Taiwan",
-          context: "Exchange semester · NTU",
+          context: "Exchange semester · NTU · 2022–2023",
           text: "I lived in Taipei for about four months during my Master's, studying at the National Taiwan University. I took a semester of Mandarin — I still remember some, but not nearly enough for a real conversation. I travelled around the island whenever I could.",
         },
         {
           location: "Korea & Japan",
-          context: "Side trips from Taipei",
+          context: "Side trips from Taipei · 2023",
           text: "From Taipei I went to Korea for a week with two Japanese friends from my Mandarin course. Towards the end of the semester my girlfriend visited, and we travelled to Japan together, flying back to Switzerland from Tokyo. I also visited one of my Japanese friends in his hometown Sasebo.",
         },
       ],
@@ -376,7 +376,7 @@ export default {
     beyondWork: {
       number: "06",
       title: "Persönliches",
-      intro: `<p>Einige meiner prägendsten Erfahrungen fanden fernab vom Schreibtisch statt — eingesperrt in einem Airbnb während einer Pandemie, auf dem Roller durch Taipei oder beim Stammeln auf Mandarin mit Kommilitonen aus drei verschiedenen Ländern.</p>`,
+      intro: `<p>Einige meiner prägendsten Erfahrungen fanden fernab vom Schreibtisch statt — eingesperrt in einem Airbnb während einer Pandemie, auf Entdeckungstour in Taiwan während eines Austauschsemesters oder beim Stammeln auf Mandarin mit Kommilitonen aus aller Welt.</p>`,
       stories: [
         {
           location: "Bozen, Südtirol",
@@ -385,12 +385,12 @@ export default {
         },
         {
           location: "Taipei, Taiwan",
-          context: "Austauschsemester · NTU",
+          context: "Austauschsemester · NTU · 2022–2023",
           text: "Während meines Masters lebte ich etwa vier Monate in Taipei und studierte an der National Taiwan University. Ich belegte einen Semesterkurs Mandarin — ich erinnere mich noch an einiges, aber bei weitem nicht genug für ein richtiges Gespräch. Wann immer ich konnte, reiste ich über die Insel.",
         },
         {
           location: "Korea & Japan",
-          context: "Abstecher von Taipei",
+          context: "Abstecher von Taipei · 2023",
           text: "Von Taipei aus fuhr ich für eine Woche nach Korea, mit zwei japanischen Freunden aus meinem Mandarinkurs. Gegen Ende des Semesters besuchte mich meine Freundin, und wir reisten zusammen nach Japan und flogen von Tokio zurück in die Schweiz. Ich besuchte auch einen meiner japanischen Freunde in seiner Heimatstadt Sasebo.",
         },
       ],
