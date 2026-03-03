@@ -188,7 +188,7 @@ export default {
     },
     chatbot: {
       title: "Chat with AI",
-      greeting: "Hi! Ask me anything about Thomas.",
+      greeting: "Hi! Ask me anything about Thomas. I can also toggle dark mode or switch the language for you.",
       placeholder: "Ask a question...",
       toggleAriaLabel: "Chat",
       sendAriaLabel: "Send",
@@ -397,7 +397,7 @@ export default {
     },
     chatbot: {
       title: "KI-Chat",
-      greeting: "Hallo! Frag mich was über Thomas.",
+      greeting: "Hallo! Frag mich was über Thomas. Ich kann auch den Dark Mode umschalten oder die Sprache wechseln.",
       placeholder: "Stelle eine Frage...",
       toggleAriaLabel: "Chat",
       sendAriaLabel: "Senden",

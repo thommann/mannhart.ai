@@ -28,6 +28,12 @@
     s = s.replace(
       /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:|\/#?|#)[^\s)]*)\)/g,
       function (_, linkText, url) {
+        if (url.startsWith("#action:")) {
+          return (
+            '<a href="' + url + '" class="chatbot-link chatbot-action-link">' +
+            linkText + "</a>"
+          );
+        }
         if (url.startsWith("#")) {
           return (
             '<a href="' + url + '" class="chatbot-link chatbot-section-link">' +
@@ -62,6 +68,36 @@
       if (target) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+    }
+  });
+
+  // --- Action link handler (theme toggle, language switch) ---
+
+  messages.addEventListener("click", function (e) {
+    var link = e.target.closest(".chatbot-action-link");
+    if (!link) return;
+    e.preventDefault();
+    var href = link.getAttribute("href");
+
+    if (href === "#action:toggle-theme") {
+      var stored = localStorage.getItem("theme");
+      var current = stored ||
+        (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      var next = current === "light" ? "dark" : "light";
+      localStorage.setItem("theme", next);
+      if (next === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+      var themeBtn = document.getElementById("theme-toggle");
+      if (themeBtn) {
+        themeBtn.setAttribute("aria-label",
+          next === "light" ? themeBtn.dataset.labelLight : themeBtn.dataset.labelDark);
+      }
+    } else if (href.startsWith("#action:switch-lang-")) {
+      var targetLang = href.replace("#action:switch-lang-", "");
+      window.location.href = "/" + targetLang + "/";
     }
   });
 
@@ -138,7 +174,12 @@
       var res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: msgs, locale: locale }),
+        body: JSON.stringify({
+          messages: msgs,
+          locale: locale,
+          theme: localStorage.getItem("theme") ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"),
+        }),
         signal: controller.signal,
       });
 

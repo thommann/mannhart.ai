@@ -86,6 +86,34 @@ const TOOLS = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "toggle_theme",
+      description:
+        "Toggle the website between dark and light mode. Use when the user asks to switch theme, enable/disable dark mode, or change the appearance.",
+      parameters: { type: "object", properties: {}, required: [] },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "switch_language",
+      description:
+        "Switch the website language between German and English. Use when the user asks to change language or view the site in a different language.",
+      parameters: {
+        type: "object",
+        properties: {
+          language: {
+            type: "string",
+            enum: ["en", "de"],
+            description: "The target language to switch to",
+          },
+        },
+        required: ["language"],
+      },
+    },
+  },
 ];
 
 // --- Tool execution ---
@@ -134,7 +162,32 @@ function executeGetContactInfo(args, lang) {
   return { url: resolveUrl(resource, lang), title: resource.title[lang] };
 }
 
-function executeTool(name, args, lang) {
+function executeToggleTheme(args, lang, currentTheme) {
+  const next = currentTheme === "light" ? "dark" : "light";
+  const labels = {
+    en: { dark: "Switch to dark mode", light: "Switch to light mode" },
+    de: { dark: "Zum Dark Mode wechseln", light: "Zum Light Mode wechseln" },
+  };
+  return {
+    type: "action",
+    url: "#action:toggle-theme",
+    label: labels[lang][next],
+    currentTheme: currentTheme,
+    newTheme: next,
+  };
+}
+
+function executeSwitchLanguage(args, lang) {
+  const target = args.language;
+  return {
+    type: "action",
+    url: `#action:switch-lang-${target}`,
+    label: target === "de" ? "Zu Deutsch wechseln" : "Switch to English",
+    targetLanguage: target,
+  };
+}
+
+function executeTool(name, args, lang, currentTheme) {
   switch (name) {
     case "get_resource":
       return executeGetResource(args, lang);
@@ -142,6 +195,10 @@ function executeTool(name, args, lang) {
       return executeNavigateToSection(args, lang);
     case "get_contact_info":
       return executeGetContactInfo(args, lang);
+    case "toggle_theme":
+      return executeToggleTheme(args, lang, currentTheme);
+    case "switch_language":
+      return executeSwitchLanguage(args, lang);
     default:
       return { error: "Unknown tool" };
   }
@@ -235,14 +292,18 @@ You are the AI assistant on Thomas Mannhart's personal website (t.mannhart.ai). 
 - Do not compare Thomas to other people or rank him against others.
 </rules>`,
     tools: `<tools>
-You have three tools: get_resource, navigate_to_section, and get_contact_info.
+You have five tools: get_resource, navigate_to_section, get_contact_info, toggle_theme, and switch_language.
 
 Use them proactively — don't wait for the user to explicitly ask for a link:
 - When discussing a topic with a relevant resource (CV, talk video, slides, GitHub, thesis), include it.
 - When mentioning a website section, use navigate_to_section for an anchor link.
 - When the user asks how to reach Thomas, use get_contact_info.
+- When the user asks to switch theme or toggle dark/light mode, use toggle_theme. Always include the action link from the result so the user can click to apply the change.
+- When the user asks to switch language, use switch_language with the target language. Always include the action link from the result so the user can click to switch.
 
-Format links as markdown: [text](url). For sections, use the anchor from the result (e.g., [Experience](#experience)). Never paste raw URLs. If a tool returns an error, answer without the link.
+Format links as markdown: [text](url). For sections, use the anchor from the result (e.g., [Experience](#experience)). For action links (toggle_theme, switch_language), use the label and url from the result (e.g., [Switch to light mode](#action:toggle-theme)). Never paste raw URLs. If a tool returns an error, answer without the link.
+
+Check the <state> block for the current theme and language. Use this to give context-aware responses (e.g., "You're currently in dark mode" or "The site is already in English").
 </tools>`,
     examples: `<examples>
 User: "Hey, who is Thomas?"
@@ -268,14 +329,18 @@ Du bist der KI-Assistent auf der persönlichen Website von Thomas Mannhart (t.ma
 - Vergleiche Thomas nicht mit anderen Personen und erstelle keine Rankings.
 </rules>`,
     tools: `<tools>
-Du hast drei Tools: get_resource, navigate_to_section und get_contact_info.
+Du hast fünf Tools: get_resource, navigate_to_section, get_contact_info, toggle_theme und switch_language.
 
 Nutze sie proaktiv — warte nicht, bis der Nutzer explizit nach einem Link fragt:
 - Wenn du über ein Thema sprichst, zu dem es eine relevante Ressource gibt (CV, Video, Slides, GitHub, Abschlussarbeit), binde sie ein.
 - Wenn du einen Website-Bereich erwähnst, nutze navigate_to_section für einen Anker-Link.
 - Wenn der Nutzer fragt, wie er Thomas erreichen kann, nutze get_contact_info.
+- Wenn der Nutzer das Farbschema wechseln oder den Dark/Light Mode umschalten möchte, nutze toggle_theme. Füge immer den Action-Link aus dem Ergebnis ein, damit der Nutzer klicken kann.
+- Wenn der Nutzer die Sprache wechseln möchte, nutze switch_language mit der Zielsprache. Füge immer den Action-Link aus dem Ergebnis ein.
 
-Formatiere Links als Markdown: [Text](url). Für Bereiche nutze den Anker aus dem Ergebnis (z.B. [Erfahrung](#experience)). Niemals nackte URLs. Falls ein Tool einen Fehler zurückgibt, antworte ohne Link.
+Formatiere Links als Markdown: [Text](url). Für Bereiche nutze den Anker aus dem Ergebnis (z.B. [Erfahrung](#experience)). Für Action-Links (toggle_theme, switch_language) nutze Label und URL aus dem Ergebnis (z.B. [Zum Light Mode wechseln](#action:toggle-theme)). Niemals nackte URLs. Falls ein Tool einen Fehler zurückgibt, antworte ohne Link.
+
+Prüfe den <state>-Block für das aktuelle Farbschema und die Sprache. Nutze dies für kontextbezogene Antworten (z.B. "Du bist aktuell im Dark Mode" oder "Die Seite ist bereits auf Deutsch").
 </tools>`,
     examples: `<examples>
 User: "Hey, wer ist Thomas?"
@@ -290,16 +355,15 @@ Assistant: "Ich bin hier, um Fragen über Thomas zu beantworten — bei Programm
   },
 };
 
-function buildSystemPrompt(locale) {
+function buildSystemPrompt(locale, theme) {
   const s = STATIC_PROMPTS[locale];
   const context = buildContext(locale);
-  return `${s.identity}\n\n${s.rules}\n\n${context}\n\n${s.tools}\n\n${s.examples}`;
+  const state = `<state>
+Current language: ${locale === "de" ? "German (de)" : "English (en)"}
+Current theme: ${theme === "light" ? "light" : "dark"}
+</state>`;
+  return `${s.identity}\n\n${s.rules}\n\n${context}\n\n${s.tools}\n\n${state}\n\n${s.examples}`;
 }
-
-const SYSTEM_PROMPT = {
-  en: buildSystemPrompt("en"),
-  de: buildSystemPrompt("de"),
-};
 
 // --- Abuse prevention ---
 
@@ -420,7 +484,7 @@ app.post("/api/chat", async (req, res) => {
     return res.status(429).json({ error: "Too many requests" });
   }
 
-  const { messages, locale } = req.body;
+  const { messages, locale, theme } = req.body;
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: "messages array is required" });
   }
@@ -446,8 +510,9 @@ app.post("/api/chat", async (req, res) => {
     res.setHeader("Connection", "keep-alive");
 
     const write = (chunk) => res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+    const currentTheme = theme === "light" ? "light" : "dark";
     let currentMessages = [
-      { role: "system", content: SYSTEM_PROMPT[lang] },
+      { role: "system", content: buildSystemPrompt(lang, currentTheme) },
       ...trimmed,
     ];
 
@@ -510,7 +575,7 @@ app.post("/api/chat", async (req, res) => {
         } catch {
           args = {};
         }
-        const toolResult = executeTool(tc.name, args, lang);
+        const toolResult = executeTool(tc.name, args, lang, currentTheme);
         currentMessages.push({
           role: "tool",
           tool_call_id: tc.id,
