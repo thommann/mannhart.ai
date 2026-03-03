@@ -958,6 +958,72 @@ section {
   .featured-grid { grid-template-columns: 1fr; }
 }
 
+/* --- Beyond Work --- */
+.beyond-intro {
+  font-size: 1.08rem;
+  line-height: 2;
+  max-width: 720px;
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+
+.beyond-intro p { margin: 0; }
+
+.beyond-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.beyond-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.4s, transform 0.4s;
+}
+
+.beyond-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.beyond-card:hover { border-color: rgba(212, 165, 116, 0.3); transform: translateY(-4px); }
+.beyond-card:hover::before { opacity: 1; }
+
+.beyond-location {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.beyond-context {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.beyond-card p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .beyond-grid { grid-template-columns: 1fr; }
+}
+
 /* --- Contact --- */
 .contact-section {
   text-align: center;
@@ -1358,11 +1424,13 @@ footer p {
   border-bottom-color: rgba(150, 96, 46, 0.4);
 }
 
-[data-theme="light"] .edu-card {
+[data-theme="light"] .edu-card,
+[data-theme="light"] .beyond-card {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.03);
 }
 
-[data-theme="light"] .edu-card:hover {
+[data-theme="light"] .edu-card:hover,
+[data-theme="light"] .beyond-card:hover {
   border-color: rgba(150, 96, 46, 0.45);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
 }
