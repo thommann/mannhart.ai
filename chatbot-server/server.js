@@ -184,6 +184,10 @@ function buildContext(locale) {
     `${stripHtml(t.featured.aiHub.title)} — ${stripHtml(t.featured.aiHub.desc)}`,
   ].join("\n");
 
+  const beyondWork = t.beyondWork.stories
+    .map((s) => `${s.location} (${s.context}): ${stripHtml(s.text)}`)
+    .join("\n");
+
   return `<context>
 <bio>
 ${bio}
@@ -209,6 +213,11 @@ ${talks}
 <personal>
 ${t.about.personal}
 </personal>
+
+<beyond-work>
+${stripHtml(t.beyondWork.intro)}
+${beyondWork}
+</beyond-work>
 </context>`;
 }
 
