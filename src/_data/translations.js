@@ -192,6 +192,8 @@ export default {
       placeholder: "Ask a question...",
       toggleAriaLabel: "Chat",
       sendAriaLabel: "Send",
+      confirmLangSwitchNote: "This will reload the page and reset the chat.",
+      confirmLangSwitchLink: "Switch to German?",
       errors: {
         rateLimited: "Too many requests. Please wait a moment.",
         quotaExceeded: "The daily quota has been reached. Please try again tomorrow.",
@@ -401,6 +403,8 @@ export default {
       placeholder: "Stelle eine Frage...",
       toggleAriaLabel: "Chat",
       sendAriaLabel: "Senden",
+      confirmLangSwitchNote: "Die Seite wird neu geladen und der Chat zurückgesetzt.",
+      confirmLangSwitchLink: "Zu Englisch wechseln?",
       errors: {
         rateLimited: "Zu viele Anfragen. Bitte warte einen Moment.",
         quotaExceeded: "Das Tageslimit wurde erreicht. Bitte versuche es morgen erneut.",

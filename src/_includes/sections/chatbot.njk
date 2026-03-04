@@ -38,6 +38,6 @@
 </div>
 <script>
 window.__chatbotLocale = "{{ locale }}";
-window.__chatbotStrings = {{ t.chatbot.errors | dump | safe }};
+window.__chatbotStrings = {{ { confirmLangSwitchNote: t.chatbot.confirmLangSwitchNote, confirmLangSwitchLink: t.chatbot.confirmLangSwitchLink, rateLimited: t.chatbot.errors.rateLimited, quotaExceeded: t.chatbot.errors.quotaExceeded, connection: t.chatbot.errors.connection, emptyResponse: t.chatbot.errors.emptyResponse } | dump | safe }};
 </script>
 <script src="/assets/js/chatbot.js"></script>

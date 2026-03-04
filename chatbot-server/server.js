@@ -299,7 +299,7 @@ Use them proactively — don't wait for the user to explicitly ask for a link:
 
 Format resource links as markdown: [text](url). For sections, use the anchor from the result (e.g., [Experience](#experience)). Never paste raw URLs. If a tool returns an error, answer without the link.
 
-For toggle_theme and switch_language, the action executes automatically on the user's page. Simply describe what happened in natural language (e.g., "Done — I've switched to dark mode" or "Switching to English now"). Do not include action links or clickable URLs for these actions. Note: switching language reloads the page and resets the chat — mention this briefly so the user isn't surprised.
+For toggle_theme, the action executes automatically. Describe what happened (e.g., "Done — I've switched to dark mode"). For switch_language, the user will see a confirmation prompt — do not add any text, just call the tool.
 
 Check the <state> block for the current theme and language. Use this to give context-aware responses (e.g., "You're currently in dark mode" or "The site is already in English").
 </tools>`,
@@ -338,7 +338,7 @@ Nutze sie proaktiv — warte nicht, bis der Nutzer explizit nach einem Link frag
 
 Formatiere Ressourcen-Links als Markdown: [Text](url). Für Bereiche nutze den Anker aus dem Ergebnis (z.B. [Erfahrung](#experience)). Niemals nackte URLs. Falls ein Tool einen Fehler zurückgibt, antworte ohne Link.
 
-Bei toggle_theme und switch_language wird die Aktion automatisch auf der Seite des Nutzers ausgeführt. Beschreibe einfach in natürlicher Sprache, was passiert ist (z.B. "Erledigt — ich habe zum Dark Mode gewechselt" oder "Wechsle jetzt zu Englisch"). Füge keine Action-Links oder klickbare URLs für diese Aktionen ein. Hinweis: Ein Sprachwechsel lädt die Seite neu und setzt den Chat zurück — erwähne das kurz, damit der Nutzer nicht überrascht wird.
+Bei toggle_theme wird die Aktion automatisch ausgeführt. Beschreibe, was passiert ist (z.B. "Erledigt — ich habe zum Dark Mode gewechselt"). Bei switch_language sieht der Nutzer eine Bestätigungsaufforderung — füge keinen Text hinzu, rufe einfach das Tool auf.
 
 Prüfe den <state>-Block für das aktuelle Farbschema und die Sprache. Nutze dies für kontextbezogene Antworten (z.B. "Du bist aktuell im Dark Mode" oder "Die Seite ist bereits auf Deutsch").
 </tools>`,

@@ -78,9 +78,19 @@
       if (themeBtn) themeBtn.click();
     },
     switch_language: function (action) {
-      if (action.language === "en" || action.language === "de") {
-        window.location.href = "/" + action.language + "/";
-      }
+      if (action.language !== "en" && action.language !== "de") return;
+      var div = document.createElement("div");
+      div.className = "chatbot-msg chatbot-msg-bot";
+      var span = document.createElement("span");
+      span.textContent = strings.confirmLangSwitchNote + " ";
+      var link = document.createElement("a");
+      link.href = "/" + action.language + "/";
+      link.className = "chatbot-link";
+      link.textContent = strings.confirmLangSwitchLink;
+      span.appendChild(link);
+      div.appendChild(span);
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
     },
     scroll_to_section: function (action) {
       if (VALID_SECTIONS.indexOf(action.section) !== -1) {
@@ -196,6 +206,7 @@
       typingEl.appendChild(span);
 
       var pendingEventType = null;
+      var hadActions = false;
 
       while (true) {
         var result = await reader.read();
@@ -220,6 +231,7 @@
             try {
               var actionsPayload = JSON.parse(data);
               if (actionsPayload.actions && Array.isArray(actionsPayload.actions)) {
+                hadActions = true;
                 for (var k = 0; k < actionsPayload.actions.length; k++) {
                   executeStructuredAction(actionsPayload.actions[k]);
                 }
@@ -249,12 +261,16 @@
         }
       }
 
-      if (!botText) {
+      if (!botText && !hadActions) {
         botText = strings.emptyResponse;
         span.innerHTML = renderMarkdown(botText);
       }
 
-      history.push({ role: "assistant", content: botText });
+      if (!botText && hadActions) {
+        typingEl.remove();
+      } else {
+        history.push({ role: "assistant", content: botText });
+      }
     } catch (err) {
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");

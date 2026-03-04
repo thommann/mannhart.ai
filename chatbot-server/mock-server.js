@@ -74,14 +74,14 @@ function getResponse(userMsg, locale) {
     if (msg.includes("english") || msg.includes("en")) {
       if (isDe) {
         actions.push({ type: "switch_language", language: "en" });
-        text = "Ich wechsle zu Englisch!";
+        text = "";
       } else {
         text = "You're already on the English version!";
       }
     } else {
       if (!isDe) {
         actions.push({ type: "switch_language", language: "de" });
-        text = "Switching to German!";
+        text = "";
       } else {
         text = "Du bist bereits auf Deutsch!";
       }
