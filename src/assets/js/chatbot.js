@@ -261,7 +261,7 @@
       }
 
       if (!botText && hadActions) {
-        typingEl.remove();
+        if (typingEl.parentNode) typingEl.remove();
       } else {
         history.push({ role: "assistant", content: botText });
       }

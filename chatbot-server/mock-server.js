@@ -96,17 +96,14 @@ function getResponse(userMsg, locale) {
       ? `Hier ist Thomas' CV: [CV herunterladen](${cvUrl})`
       : `Here's Thomas's CV: [Download CV](${cvUrl})`;
   } else if (msg.includes("erfahrung") || msg.includes("experience")) {
-    actions.push({ type: "scroll_to_section", section: "experience" });
     text = isDe
       ? "Schau dir Thomas' Berufserfahrung an: [Erfahrung](#experience)"
       : "Check out Thomas's work experience: [Experience](#experience)";
   } else if (msg.includes("skill")) {
-    actions.push({ type: "scroll_to_section", section: "skills" });
     text = isDe
       ? "Hier sind Thomas' Skills: [Skills](#skills)"
       : "Here are Thomas's skills: [Skills](#skills)";
   } else if (msg.includes("ausbildung") || msg.includes("education")) {
-    actions.push({ type: "scroll_to_section", section: "education" });
     text = isDe
       ? "Hier ist Thomas' Ausbildung: [Ausbildung](#education)"
       : "Here's Thomas's education: [Education](#education)";

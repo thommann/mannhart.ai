@@ -17,7 +17,7 @@
     </div>
     <div id="chatbot-messages">
       <div class="chatbot-msg chatbot-msg-bot">
-        <span>{{ t.chatbot.greeting }} I can:
+        <span>{{ t.chatbot.greeting }}
           <ul class="chatbot-greeting-list">
             {% for feature in t.chatbot.greetingFeatures %}
             <li>{{ feature }}</li>
@@ -44,6 +44,7 @@
 </div>
 <script>
 window.__chatbotLocale = "{{ locale }}";
-window.__chatbotStrings = {{ { confirmLangSwitchNote: t.chatbot.confirmLangSwitchNote, confirmLangSwitchLink: t.chatbot.confirmLangSwitchLink, rateLimited: t.chatbot.errors.rateLimited, quotaExceeded: t.chatbot.errors.quotaExceeded, connection: t.chatbot.errors.connection, emptyResponse: t.chatbot.errors.emptyResponse } | dump | safe }};
+window.__chatbotStrings = {{ t.chatbot.errors | dump | safe }};
+Object.assign(window.__chatbotStrings, {{ { confirmLangSwitchNote: t.chatbot.confirmLangSwitchNote, confirmLangSwitchLink: t.chatbot.confirmLangSwitchLink } | dump | safe }});
 </script>
 <script src="/assets/js/chatbot.js"></script>

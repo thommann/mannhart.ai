@@ -188,7 +188,7 @@ export default {
     },
     chatbot: {
       title: "Chat with AI",
-      greeting: "Hi! I'm Thomas's AI assistant.",
+      greeting: "Hi! I'm Thomas's AI assistant. I can:",
       greetingFeatures: [
         "Answer questions about Thomas",
         "Download his CV",
@@ -406,7 +406,7 @@ export default {
     },
     chatbot: {
       title: "KI-Chat",
-      greeting: "Hallo! Ich bin Thomas' KI-Assistent.",
+      greeting: "Hallo! Ich bin Thomas' KI-Assistent. Ich kann:",
       greetingFeatures: [
         "Fragen über Thomas beantworten",
         "Seinen CV herunterladen",
