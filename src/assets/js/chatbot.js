@@ -28,8 +28,10 @@
     s = s.replace(
       /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:|\/#?|#)[^\s)]*)\)/g,
       function (_, linkText, url) {
+        // Safety net: strip #action: URLs in case the LLM hallucinates them.
+        // Real actions are delivered via structured SSE events, not inline links.
         if (url.startsWith("#action:")) {
-          return linkText; // Strip action URLs — actions come via structured SSE events
+          return linkText;
         }
         if (url.startsWith("#")) {
           return (
@@ -70,8 +72,6 @@
 
   // --- Structured action executor (allowlist-validated) ---
 
-  var VALID_SECTIONS = ["about", "experience", "education", "skills", "featured", "contact"];
-
   var ACTION_HANDLERS = {
     toggle_theme: function () {
       var themeBtn = document.getElementById("theme-toggle");
@@ -91,12 +91,6 @@
       div.appendChild(span);
       messages.appendChild(div);
       messages.scrollTop = messages.scrollHeight;
-    },
-    scroll_to_section: function (action) {
-      if (VALID_SECTIONS.indexOf(action.section) !== -1) {
-        var el = document.getElementById(action.section);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
     },
   };
 

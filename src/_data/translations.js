@@ -188,7 +188,14 @@ export default {
     },
     chatbot: {
       title: "Chat with AI",
-      greeting: "Hi! I'm Thomas's AI assistant. I can:<br>• Answer questions about Thomas<br>• Download his CV<br>• Navigate to any section<br>• Toggle dark mode<br>• Switch language (DE/EN)",
+      greeting: "Hi! I'm Thomas's AI assistant.",
+      greetingFeatures: [
+        "Answer questions about Thomas",
+        "Download his CV",
+        "Navigate to any section",
+        "Toggle dark mode",
+        "Switch language (DE/EN)",
+      ],
       placeholder: "Ask a question...",
       toggleAriaLabel: "Chat",
       sendAriaLabel: "Send",
@@ -399,7 +406,14 @@ export default {
     },
     chatbot: {
       title: "KI-Chat",
-      greeting: "Hallo! Ich bin Thomas' KI-Assistent. Ich kann:<br>• Fragen über Thomas beantworten<br>• Seinen CV herunterladen<br>• Zu jedem Bereich navigieren<br>• Dark Mode umschalten<br>• Sprache wechseln (DE/EN)",
+      greeting: "Hallo! Ich bin Thomas' KI-Assistent.",
+      greetingFeatures: [
+        "Fragen über Thomas beantworten",
+        "Seinen CV herunterladen",
+        "Zu jedem Bereich navigieren",
+        "Dark Mode umschalten",
+        "Sprache wechseln (DE/EN)",
+      ],
       placeholder: "Stelle eine Frage...",
       toggleAriaLabel: "Chat",
       sendAriaLabel: "Senden",
