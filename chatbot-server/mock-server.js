@@ -52,7 +52,7 @@ function getResponse(userMsg, locale) {
   const isDe = locale === "de";
   const actions = [];
 
-  let text;
+  let text = "";
 
   if (
     msg.includes("dark") ||

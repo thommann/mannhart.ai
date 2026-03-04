@@ -17,13 +17,13 @@
     </div>
     <div id="chatbot-messages">
       <div class="chatbot-msg chatbot-msg-bot">
-        <span>{{ t.chatbot.greeting }}
+        <div>{{ t.chatbot.greeting }}
           <ul class="chatbot-greeting-list">
             {% for feature in t.chatbot.greetingFeatures %}
             <li>{{ feature }}</li>
             {% endfor %}
           </ul>
-        </span>
+        </div>
       </div>
     </div>
     <form id="chatbot-form">
