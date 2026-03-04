@@ -5,8 +5,7 @@
 
   const toggle = document.getElementById("chatbot-toggle");
   const panel = document.getElementById("chatbot-panel");
-  const iconOpen = document.getElementById("chatbot-icon-open");
-  const iconClose = document.getElementById("chatbot-icon-close");
+  const closeBtn = document.getElementById("chatbot-close");
   const form = document.getElementById("chatbot-form");
   const input = document.getElementById("chatbot-input");
   const messages = document.getElementById("chatbot-messages");
@@ -68,25 +67,27 @@
 
   // --- Chat UI ---
 
-  toggle.addEventListener("click", function () {
-    isOpen = !isOpen;
-    if (isOpen) {
-      panel.style.display = "flex";
-      requestAnimationFrame(function () {
-        panel.classList.add("open");
-      });
-      iconOpen.style.display = "none";
-      iconClose.style.display = "block";
-      input.focus();
-    } else {
-      panel.classList.remove("open");
-      setTimeout(function () {
-        panel.style.display = "none";
-      }, 250);
-      iconOpen.style.display = "block";
-      iconClose.style.display = "none";
-    }
-  });
+  function openChat() {
+    isOpen = true;
+    toggle.style.display = "none";
+    panel.style.display = "flex";
+    requestAnimationFrame(function () {
+      panel.classList.add("open");
+    });
+    input.focus();
+  }
+
+  function closeChat() {
+    isOpen = false;
+    panel.classList.remove("open");
+    setTimeout(function () {
+      panel.style.display = "none";
+      toggle.style.display = "flex";
+    }, 250);
+  }
+
+  toggle.addEventListener("click", openChat);
+  closeBtn.addEventListener("click", closeChat);
 
   var MAX_INPUT_LENGTH = 500;
   var MAX_HISTORY = 10;

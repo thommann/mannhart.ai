@@ -1225,7 +1225,7 @@ footer p {
 
 #chatbot-panel {
   position: fixed;
-  bottom: 5rem;
+  bottom: 1.5rem;
   right: 1.5rem;
   z-index: 1001;
   width: 380px;
@@ -1268,6 +1268,21 @@ footer p {
   border-radius: 50%;
   background: var(--accent);
 }
+
+#chatbot-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+}
+
+#chatbot-close:hover { color: var(--text); }
 
 #chatbot-messages {
   flex: 1;
