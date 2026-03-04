@@ -1439,7 +1439,7 @@ footer p {
   #chatbot-panel {
     width: calc(100vw - 1.5rem);
     right: 0.75rem;
-    bottom: 4.5rem;
+    bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
     height: 60vh;
   }
 }

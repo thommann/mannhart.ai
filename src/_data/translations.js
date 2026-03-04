@@ -433,7 +433,7 @@ export default {
       confirmLangSwitchNote: "Die Seite wird neu geladen und der Chat zurückgesetzt.",
       confirmLangSwitchLink: "Zu Englisch wechseln?",
       alreadyOnLanguage: "Die Seite ist bereits auf Deutsch!",
-      alreadyOnTheme: "Das Farbschema ist bereits auf {theme} eingestellt!",
+      alreadyOnTheme: "Die Seite ist bereits im {theme}!",
       toggleThemeResponse: "Klar, ich schalte das für dich um!",
       fallbackGreeting: "Ich bin Thomas' KI-Assistent! Frag mich etwas über ihn, oder ich kann den Dark Mode umschalten, die Sprache wechseln oder dir seinen CV zeigen.",
       cvResponse: "Hier ist Thomas' CV: [CV herunterladen]({url})",

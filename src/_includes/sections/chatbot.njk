@@ -5,7 +5,7 @@
     </svg>
   </button>
 
-  <div id="chatbot-panel">
+  <div id="chatbot-panel" role="dialog" aria-labelledby="chatbot-header-title">
     <div id="chatbot-header">
       <span id="chatbot-header-title">{{ t.chatbot.title }}</span>
       <span id="chatbot-header-dot"></span>
@@ -31,6 +31,7 @@
         id="chatbot-input"
         type="text"
         placeholder="{{ t.chatbot.placeholder }}"
+        aria-label="{{ t.chatbot.placeholder }}"
         autocomplete="off"
       />
       <button type="submit" id="chatbot-send" aria-label="{{ t.chatbot.sendAriaLabel }}">

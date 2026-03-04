@@ -93,7 +93,7 @@
       if (action.theme !== "dark" && action.theme !== "light") return;
       if (action.theme === getCurrentTheme()) {
         var themeName = action.theme;
-        if (locale === "de") themeName = action.theme === "dark" ? "Dark" : "Light";
+        if (locale === "de") themeName = action.theme === "dark" ? "Dark Mode" : "Light Mode";
         showBotMessage(strings.alreadyOnTheme.replace("{theme}", themeName));
         return;
       }
@@ -138,12 +138,17 @@
 
   // --- Chat UI ---
 
+  var closeTimeout = null;
+
   function openChat() {
+    if (closeTimeout) { clearTimeout(closeTimeout); closeTimeout = null; }
     isOpen = true;
     toggle.style.display = "none";
     panel.style.display = "flex";
     requestAnimationFrame(function () {
-      panel.classList.add("open");
+      requestAnimationFrame(function () {
+        panel.classList.add("open");
+      });
     });
     input.focus();
   }
@@ -151,7 +156,8 @@
   function closeChat() {
     isOpen = false;
     panel.classList.remove("open");
-    setTimeout(function () {
+    closeTimeout = setTimeout(function () {
+      closeTimeout = null;
       panel.style.display = "none";
       toggle.style.display = "flex";
     }, 250);
@@ -159,6 +165,9 @@
 
   toggle.addEventListener("click", openChat);
   closeBtn.addEventListener("click", closeChat);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && isOpen) closeChat();
+  });
 
   var MAX_INPUT_LENGTH = 500;
   var MAX_HISTORY = 10;
@@ -235,6 +244,7 @@
       var botText = "";
       var span = document.createElement("span");
       typingEl.innerHTML = "";
+      typingEl.setAttribute("aria-live", "off");
       typingEl.appendChild(span);
 
       var pendingEventType = null;
@@ -254,6 +264,12 @@
           // Detect SSE named events (e.g. "event: actions")
           if (line.startsWith("event: ")) {
             pendingEventType = line.slice(7);
+            continue;
+          }
+
+          // Reset pending event type on blank lines (SSE event boundary)
+          if (line === "") {
+            pendingEventType = null;
             continue;
           }
 
@@ -296,6 +312,8 @@
         }
       }
 
+      typingEl.removeAttribute("aria-live");
+
       if (!botText && !hadActions) {
         botText = strings.emptyResponse;
         span.innerHTML = renderMarkdown(botText);
@@ -304,10 +322,11 @@
       if (!botText && hadActions) {
         if (typingEl.parentNode) typingEl.remove();
       }
-      if (botText || hadActions) {
-        history.push({ role: "assistant", content: botText || "(action executed)" });
+      if (botText) {
+        history.push({ role: "assistant", content: botText });
       }
     } catch (err) {
+      typingEl.removeAttribute("aria-live");
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
       if (err.message === "rate_limited") {

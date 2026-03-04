@@ -228,6 +228,7 @@ const server = http.createServer((req, res) => {
     let body = "";
     let aborted = false;
     const MAX_BODY = 8 * 1024; // 8 KB
+    req.on("error", () => { aborted = true; });
     req.on("data", (chunk) => {
       body += chunk;
       if (body.length > MAX_BODY && !aborted) {

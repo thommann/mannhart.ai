@@ -412,6 +412,7 @@ function isRateLimited(ip) {
   }
 
   if (now - entry.dailyStart > 86_400_000) {
+    globalDailyCount = Math.max(0, globalDailyCount - entry.dailyCount);
     entry.dailyCount = 0;
     entry.dailyStart = now;
   }
@@ -505,6 +506,9 @@ app.post("/api/chat", async (req, res) => {
     return res.status(429).json({ error: "Too many requests" });
   }
 
+  if (!req.body) {
+    return res.status(400).json({ error: "Request body is required" });
+  }
   const { messages, locale, theme } = req.body;
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: "messages array is required" });
@@ -530,6 +534,8 @@ app.post("/api/chat", async (req, res) => {
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
+    let activeStream = null;
+    res.on("close", () => { if (activeStream) activeStream.controller?.abort(); });
     const write = (chunk) => res.write(`data: ${JSON.stringify(chunk)}\n\n`);
     const currentTheme = theme === "light" ? "light" : "dark";
     let currentMessages = [
@@ -549,6 +555,7 @@ app.post("/api/chat", async (req, res) => {
         tool_choice: "auto",
         stream: true,
       });
+      activeStream = stream;
     } catch (toolErr) {
       // Provider might not support tools — fall back to plain request
       if (toolErr.status === 400 || toolErr.message?.includes("tool")) {
@@ -560,6 +567,7 @@ app.post("/api/chat", async (req, res) => {
           messages: currentMessages,
           stream: true,
         });
+        activeStream = fallbackStream;
         for await (const chunk of fallbackStream) {
           write(chunk);
         }
@@ -622,6 +630,7 @@ app.post("/api/chat", async (req, res) => {
         messages: currentMessages,
         stream: true,
       });
+      activeStream = finalStream;
       await consumeStream(finalStream, write);
 
       // Emit structured actions as a named SSE event
