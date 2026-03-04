@@ -130,7 +130,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Keep language toggle href in sync with current section
 (function() {
-  var langLink = document.querySelector('.floating-utilities a[href^="/"]');
+  var langLink = document.querySelector('.nav-actions a[href^="/"]');
   if (!langLink) return;
   var baseHref = langLink.getAttribute('href');
   var sections = document.querySelectorAll('section[id]');

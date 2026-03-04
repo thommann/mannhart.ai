@@ -116,7 +116,7 @@ html { overflow-x: hidden; }
   --bg-alt: #e5e0d7;
 }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h, 80px); font-size: 16px; }
 
 body {
   background: var(--bg);
@@ -171,9 +171,10 @@ nav .logo span { color: var(--accent); }
 nav ul {
   list-style: none;
   display: flex;
-  gap: 2.5rem;
+  gap: clamp(1rem, 2vw, 2.5rem);
   flex: 1;
   justify-content: center;
+  min-width: 0;
 }
 
 nav ul a {
@@ -202,29 +203,26 @@ nav ul a::after {
 nav ul a:hover { color: var(--text); }
 nav ul a:hover::after { width: 100%; }
 
-/* --- Floating utilities (lang + theme) --- */
-.floating-utilities {
-  position: fixed;
-  top: calc(var(--nav-h) + 0.75rem);
-  right: 1.5rem;
-  z-index: 101;
+/* --- Nav actions (lang + theme + hamburger) --- */
+.nav-actions {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
-.floating-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--accent-dim);
-  background: var(--bg-card);
-  color: var(--accent);
+.nav-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: color 0.3s, border-color 0.3s;
   text-decoration: none;
   font-family: var(--sans);
   font-size: 0.65rem;
@@ -234,10 +232,9 @@ nav ul a:hover::after { width: 100%; }
   line-height: 1;
 }
 
-.floating-btn:hover {
+.nav-btn:hover {
+  color: var(--accent);
   border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* --- Hero --- */
@@ -470,6 +467,10 @@ nav ul a:hover::after { width: 100%; }
 }
 
 /* --- Sections --- */
+section[id] {
+  scroll-margin-top: var(--nav-h, 80px);
+}
+
 section {
   padding: 6rem 3rem;
   max-width: 1200px;
@@ -1132,8 +1133,6 @@ footer p {
 }
 
 /* --- Mobile nav toggle --- */
-.nav-actions { display: none; }
-
 .nav-toggle {
   display: none;
   background: none;
@@ -1145,14 +1144,14 @@ footer p {
 .nav-toggle span {
   display: block;
   width: 24px;
-  height: 1.5px;
+  height: 2px;
   background: var(--text);
-  margin: 6px 0;
+  margin: 5px 0;
   transition: transform 0.3s, opacity 0.3s;
 }
 
 /* --- Responsive --- */
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   nav { padding: 1rem 1.5rem; }
 
   nav ul {
@@ -1170,10 +1169,7 @@ footer p {
 
   nav ul.active { display: flex; }
 
-  .nav-actions { display: block; margin-left: auto; }
   .nav-toggle { display: block; }
-  .floating-utilities { right: 1rem; }
-
   .hero { padding: 7rem 1.5rem 3rem; }
   .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
   .hero-visual { order: -1; }
@@ -1207,8 +1203,8 @@ footer p {
   bottom: 1.5rem;
   right: 1.5rem;
   z-index: 1000;
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 1px solid var(--accent-dim);
   background: var(--bg-card);
@@ -1231,7 +1227,7 @@ footer p {
   position: fixed;
   bottom: 5rem;
   right: 1.5rem;
-  z-index: 1000;
+  z-index: 1001;
   width: 380px;
   height: 480px;
   background: var(--bg-elevated);
@@ -1384,23 +1380,7 @@ footer p {
   }
 }
 
-/* --- Theme toggle button --- */
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.theme-toggle {
-  background: none;
-  cursor: pointer;
-}
-
-.theme-toggle:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
+/* --- Theme toggle icons --- */
 .theme-icon { display: block; }
 .theme-icon--moon { display: none; }
 [data-theme="light"] .theme-icon--sun { display: none; }
