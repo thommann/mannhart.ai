@@ -412,7 +412,6 @@ function isRateLimited(ip) {
   }
 
   if (now - entry.dailyStart > 86_400_000) {
-    globalDailyCount = Math.max(0, globalDailyCount - entry.dailyCount);
     entry.dailyCount = 0;
     entry.dailyStart = now;
   }
@@ -534,8 +533,8 @@ app.post("/api/chat", async (req, res) => {
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    let activeStream = null;
-    res.on("close", () => { if (activeStream) activeStream.controller?.abort(); });
+    const abortController = new AbortController();
+    res.on("close", () => abortController.abort());
     const write = (chunk) => res.write(`data: ${JSON.stringify(chunk)}\n\n`);
     const currentTheme = theme === "light" ? "light" : "dark";
     let currentMessages = [
@@ -554,8 +553,8 @@ app.post("/api/chat", async (req, res) => {
         tools: TOOLS,
         tool_choice: "auto",
         stream: true,
+        signal: abortController.signal,
       });
-      activeStream = stream;
     } catch (toolErr) {
       // Provider might not support tools — fall back to plain request
       if (toolErr.status === 400 || toolErr.message?.includes("tool")) {
@@ -566,8 +565,8 @@ app.post("/api/chat", async (req, res) => {
           temperature: 0.7,
           messages: currentMessages,
           stream: true,
+          signal: abortController.signal,
         });
-        activeStream = fallbackStream;
         for await (const chunk of fallbackStream) {
           write(chunk);
         }
@@ -629,8 +628,8 @@ app.post("/api/chat", async (req, res) => {
         temperature: 0.7,
         messages: currentMessages,
         stream: true,
+        signal: abortController.signal,
       });
-      activeStream = finalStream;
       await consumeStream(finalStream, write);
 
       // Emit structured actions as a named SSE event

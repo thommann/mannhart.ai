@@ -97,17 +97,9 @@
         showBotMessage(strings.alreadyOnTheme.replace("{theme}", themeName));
         return;
       }
-      localStorage.setItem("theme", action.theme);
-      if (action.theme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-      } else {
-        document.documentElement.removeAttribute("data-theme");
-      }
+      // Delegate to main.js theme toggle to avoid duplicating theme application logic
       var themeBtn = document.getElementById("theme-toggle");
-      if (themeBtn) {
-        themeBtn.setAttribute("aria-label",
-          action.theme === "light" ? themeBtn.dataset.labelLight : themeBtn.dataset.labelDark);
-      }
+      if (themeBtn) themeBtn.click();
     },
     switch_language: function (action) {
       if (action.language !== "en" && action.language !== "de") return;
@@ -244,7 +236,7 @@
       var botText = "";
       var span = document.createElement("span");
       typingEl.innerHTML = "";
-      typingEl.setAttribute("aria-live", "off");
+      messages.setAttribute("aria-busy", "true");
       typingEl.appendChild(span);
 
       var pendingEventType = null;
@@ -292,8 +284,6 @@
             continue;
           }
 
-          pendingEventType = null;
-
           try {
             var parsed = JSON.parse(data);
             var delta =
@@ -312,7 +302,7 @@
         }
       }
 
-      typingEl.removeAttribute("aria-live");
+      messages.removeAttribute("aria-busy");
 
       if (!botText && !hadActions) {
         botText = strings.emptyResponse;
@@ -326,7 +316,7 @@
         history.push({ role: "assistant", content: botText });
       }
     } catch (err) {
-      typingEl.removeAttribute("aria-live");
+      messages.removeAttribute("aria-busy");
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
       if (err.message === "rate_limited") {

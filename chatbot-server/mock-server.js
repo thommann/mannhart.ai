@@ -130,23 +130,25 @@ function streamResponse(res, { text, actions }) {
   let lastIdx = 0;
   let match;
 
+  function pushWordChunks(str) {
+    const words = str.split(" ").filter((w) => w);
+    for (let i = 0; i < words.length; i += 3) {
+      parts.push(words.slice(i, i + 3).join(" ") + " ");
+    }
+  }
+
   while ((match = linkRegex.exec(text)) !== null) {
     const before = text.slice(lastIdx, match.index);
-    if (before) {
-      const words = before.split(" ").filter((w) => w);
-      for (let i = 0; i < words.length; i += 3) {
-        parts.push(words.slice(i, i + 3).join(" ") + " ");
-      }
-    }
+    if (before) pushWordChunks(before);
     parts.push(match[0]);
     lastIdx = match.index + match[0].length;
   }
   const tail = text.slice(lastIdx);
-  if (tail) {
-    const words = tail.split(" ").filter((w) => w);
-    for (let i = 0; i < words.length; i += 3) {
-      parts.push(words.slice(i, i + 3).join(" ") + " ");
-    }
+  if (tail) pushWordChunks(tail);
+
+  // Remove trailing space from the last text chunk
+  if (parts.length > 0) {
+    parts[parts.length - 1] = parts[parts.length - 1].trimEnd();
   }
 
   let i = 0;
@@ -174,7 +176,7 @@ function serveStatic(req, res) {
   let filePath = resolve(join(SITE_DIR, pathname));
 
   // Prevent directory traversal
-  if (!filePath.startsWith(SITE_DIR)) {
+  if (!filePath.startsWith(SITE_DIR + "/") && filePath !== SITE_DIR) {
     res.writeHead(403, { "Content-Type": "text/plain" });
     res.end("Forbidden");
     return;
