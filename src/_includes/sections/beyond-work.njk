@@ -1,0 +1,21 @@
+<div class="section-wrap">
+  <section id="beyond-work">
+    <a href="#beyond-work" class="section-header reveal">
+      <span class="section-number">{{ t.beyondWork.number }}</span>
+      <h2 class="section-title">{{ t.beyondWork.title }}</h2>
+      <div class="section-line"></div>
+    </a>
+    <div class="beyond-intro reveal">
+      {{ t.beyondWork.intro | safe }}
+    </div>
+    <div class="beyond-grid">
+      {% for story in t.beyondWork.stories %}
+      <div class="beyond-card reveal">
+        <div class="beyond-location">{{ story.location }}</div>
+        <div class="beyond-context">{{ story.context }}</div>
+        <p>{{ story.text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>

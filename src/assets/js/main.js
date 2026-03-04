@@ -1,3 +1,13 @@
+// Set --nav-h from actual nav height
+(function() {
+  var nav = document.querySelector('nav');
+  function setNavH() {
+    document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+  }
+  setNavH();
+  window.addEventListener('resize', setNavH);
+})();
+
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -9,12 +19,19 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Close mobile nav on link click
-document.querySelectorAll('nav ul a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelector('nav ul').classList.remove('active');
+// Mobile nav toggle
+var navToggle = document.querySelector('.nav-toggle');
+var navList = document.querySelector('nav ul');
+if (navToggle && navList) {
+  navToggle.addEventListener('click', function() {
+    navList.classList.toggle('active');
   });
-});
+  navList.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      navList.classList.remove('active');
+    });
+  });
+}
 
 // About section expand/collapse
 const aboutToggle = document.getElementById('about-toggle');
@@ -30,12 +47,17 @@ if (aboutToggle && aboutFull) {
 }
 
 // Smooth scroll for nav links
+var scrollClickActive = false;
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
     e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
+    const href = this.getAttribute('href');
+    const target = document.querySelector(href);
     if (target) {
+      scrollClickActive = true;
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', href);
+      setTimeout(function() { scrollClickActive = false; }, 800);
     }
   });
 });
@@ -58,11 +80,16 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     dots[current].classList.add('active');
   }
 
+  function prev() {
+    goTo((current - 1 + slides.length) % slides.length);
+  }
+
   function next() {
     goTo((current + 1) % slides.length);
   }
 
   function startTimer() {
+    clearInterval(timer);
     timer = setInterval(next, 5000);
   }
 
@@ -73,6 +100,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       startTimer();
     });
   });
+
+  var prevBtn = slideshow.querySelector('.fhnw-arrow--prev');
+  var nextBtn = slideshow.querySelector('.fhnw-arrow--next');
+  if (prevBtn) prevBtn.addEventListener('click', function() { clearInterval(timer); prev(); startTimer(); });
+  if (nextBtn) nextBtn.addEventListener('click', function() { clearInterval(timer); next(); startTimer(); });
 
   slideshow.addEventListener('mouseenter', function() { clearInterval(timer); });
   slideshow.addEventListener('mouseleave', startTimer);
@@ -113,5 +145,37 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     if (!localStorage.getItem('theme')) {
       applyTheme(e.matches ? 'light' : 'dark');
     }
+  });
+})();
+
+// Keep language toggle href in sync with current section
+(function() {
+  var langLink = document.querySelector('.nav-actions a[href^="/"]');
+  if (!langLink) return;
+  var baseHref = langLink.getAttribute('href');
+  var sections = document.querySelectorAll('section[id]');
+  var ticking = false;
+  var hashTimer;
+
+  window.addEventListener('scroll', function() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function() {
+      var current = '';
+      var offset = window.innerHeight / 3;
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i].getBoundingClientRect().top <= offset) {
+          current = sections[i].id;
+        }
+      }
+      langLink.setAttribute('href', current ? baseHref + '#' + current : baseHref);
+      if (!scrollClickActive) {
+        clearTimeout(hashTimer);
+        hashTimer = setTimeout(function() {
+          history.replaceState(null, '', current ? '#' + current : location.pathname);
+        }, 150);
+      }
+      ticking = false;
+    });
   });
 })();
