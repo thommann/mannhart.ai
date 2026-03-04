@@ -302,6 +302,29 @@
         }
       }
 
+      // Process any remaining buffer content after stream ends
+      if (buffer.trim()) {
+        var remaining = buffer.trim();
+        if (remaining.startsWith("data: ")) {
+          var data = remaining.slice(6);
+          if (data !== "[DONE]") {
+            try {
+              var parsed = JSON.parse(data);
+              var delta =
+                parsed.choices &&
+                parsed.choices[0] &&
+                parsed.choices[0].delta &&
+                parsed.choices[0].delta.content;
+              if (delta) {
+                botText += delta;
+                span.innerHTML = renderMarkdown(botText);
+                messages.scrollTop = messages.scrollHeight;
+              }
+            } catch (_) {}
+          }
+        }
+      }
+
       messages.removeAttribute("aria-busy");
 
       if (!botText && !hadActions) {

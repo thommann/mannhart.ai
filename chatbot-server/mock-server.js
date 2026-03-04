@@ -91,7 +91,7 @@ function getResponse(userMsg, locale, currentTheme) {
     msg.includes("lebenslauf") ||
     msg.includes("resume")
   ) {
-    const cvUrl = locale === "de" ? "/assets/pdf/cv-de.pdf" : "/assets/pdf/cv-en.pdf";
+    const cvUrl = locale === "de" ? "/assets/pdf/Thomas_Mannhart_CV_DE.pdf" : "/assets/pdf/Thomas_Mannhart_CV_EN.pdf";
     text = t.cvResponse.replace("{url}", cvUrl);
   } else if (msg.includes("erfahrung") || msg.includes("experience")) {
     text = t.experienceResponse;

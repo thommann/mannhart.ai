@@ -154,6 +154,9 @@ export default {
         bbvPost: "bbv Post",
         fhnwPost: "FHNW Post",
         slides: "Slides",
+        prevSlide: "Previous slide",
+        nextSlide: "Next slide",
+        slide: "Slide",
       },
       aiHub: {
         title: "About the Swiss AI Hub",
@@ -386,6 +389,9 @@ export default {
         bbvPost: "bbv Post",
         fhnwPost: "FHNW Post",
         slides: "Slides",
+        prevSlide: "Vorheriges Bild",
+        nextSlide: "Nächstes Bild",
+        slide: "Bild",
       },
       aiHub: {
         title: "Über den Swiss AI Hub",
