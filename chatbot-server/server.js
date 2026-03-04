@@ -587,7 +587,7 @@ app.post("/api/chat", async (req, res) => {
         // Collect validated structured actions (navigate_to_section is handled
         // via anchor links in the LLM's text response, so no SSE action needed)
         if (tc.name === "toggle_theme") {
-          collectedActions.push({ type: "toggle_theme" });
+          collectedActions.push({ type: "toggle_theme", theme: toolResult.newTheme });
         } else if (tc.name === "switch_language" && VALID_LANGUAGES.has(args.language)) {
           collectedActions.push({ type: "switch_language", language: args.language });
         }

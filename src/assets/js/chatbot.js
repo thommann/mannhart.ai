@@ -72,13 +72,37 @@
 
   // --- Structured action executor (allowlist-validated) ---
 
+  function showBotMessage(text) {
+    var div = document.createElement("div");
+    div.className = "chatbot-msg chatbot-msg-bot";
+    var span = document.createElement("span");
+    span.textContent = text;
+    div.appendChild(span);
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function getCurrentTheme() {
+    var stored = localStorage.getItem("theme");
+    if (stored) return stored;
+    return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+
   var ACTION_HANDLERS = {
-    toggle_theme: function () {
+    toggle_theme: function (action) {
+      if (action.theme && action.theme === getCurrentTheme()) {
+        showBotMessage(strings.alreadyOnTheme.replace("{theme}", action.theme));
+        return;
+      }
       var themeBtn = document.getElementById("theme-toggle");
       if (themeBtn) themeBtn.click();
     },
     switch_language: function (action) {
       if (action.language !== "en" && action.language !== "de") return;
+      if (action.language === locale) {
+        showBotMessage(strings.alreadyOnLanguage);
+        return;
+      }
       var div = document.createElement("div");
       div.className = "chatbot-msg chatbot-msg-bot";
       var span = document.createElement("span");

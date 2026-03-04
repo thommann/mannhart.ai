@@ -47,7 +47,7 @@ const MIME_TYPES = {
 
 // --- Mock response logic ---
 
-function getResponse(userMsg, locale) {
+function getResponse(userMsg, locale, currentTheme) {
   const msg = userMsg.toLowerCase();
   const isDe = locale === "de";
   const actions = [];
@@ -61,7 +61,8 @@ function getResponse(userMsg, locale) {
     msg.includes("umschalten") ||
     msg.includes("modus")
   ) {
-    actions.push({ type: "toggle_theme" });
+    const newTheme = currentTheme === "light" ? "dark" : "light";
+    actions.push({ type: "toggle_theme", theme: newTheme });
     text = isDe
       ? "Klar, ich schalte das für dich um!"
       : "Sure, toggling for you!";
@@ -232,7 +233,7 @@ const server = http.createServer((req, res) => {
     req.on("data", (chunk) => (body += chunk));
     req.on("end", () => {
       try {
-        const { messages, locale } = JSON.parse(body);
+        const { messages, locale, theme } = JSON.parse(body);
         if (!Array.isArray(messages) || messages.length === 0) {
           res.writeHead(400, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: "messages array is required" }));
@@ -240,7 +241,8 @@ const server = http.createServer((req, res) => {
         }
         const lastMsg = messages[messages.length - 1]?.content || "";
         const lang = locale === "de" ? "de" : "en";
-        streamResponse(res, getResponse(lastMsg, lang));
+        const currentTheme = theme === "light" ? "light" : "dark";
+        streamResponse(res, getResponse(lastMsg, lang, currentTheme));
       } catch {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Invalid JSON" }));

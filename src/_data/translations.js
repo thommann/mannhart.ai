@@ -201,6 +201,8 @@ export default {
       sendAriaLabel: "Send",
       confirmLangSwitchNote: "This will reload the page and reset the chat.",
       confirmLangSwitchLink: "Switch to German?",
+      alreadyOnLanguage: "The site is already in English!",
+      alreadyOnTheme: "The site is already in {theme} mode!",
       errors: {
         rateLimited: "Too many requests. Please wait a moment.",
         quotaExceeded: "The daily quota has been reached. Please try again tomorrow.",
@@ -419,6 +421,8 @@ export default {
       sendAriaLabel: "Senden",
       confirmLangSwitchNote: "Die Seite wird neu geladen und der Chat zurückgesetzt.",
       confirmLangSwitchLink: "Zu Englisch wechseln?",
+      alreadyOnLanguage: "Die Seite ist bereits auf Deutsch!",
+      alreadyOnTheme: "Die Seite ist bereits im {theme}-Modus!",
       errors: {
         rateLimited: "Zu viele Anfragen. Bitte warte einen Moment.",
         quotaExceeded: "Das Tageslimit wurde erreicht. Bitte versuche es morgen erneut.",
