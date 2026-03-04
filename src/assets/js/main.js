@@ -19,12 +19,19 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Close mobile nav on link click
-document.querySelectorAll('nav ul a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelector('nav ul').classList.remove('active');
+// Mobile nav toggle
+var navToggle = document.querySelector('.nav-toggle');
+var navList = document.querySelector('nav ul');
+if (navToggle && navList) {
+  navToggle.addEventListener('click', function() {
+    navList.classList.toggle('active');
   });
-});
+  navList.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      navList.classList.remove('active');
+    });
+  });
+}
 
 // About section expand/collapse
 const aboutToggle = document.getElementById('about-toggle');
@@ -40,14 +47,17 @@ if (aboutToggle && aboutFull) {
 }
 
 // Smooth scroll for nav links
+var scrollClickActive = false;
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
     e.preventDefault();
     const href = this.getAttribute('href');
     const target = document.querySelector(href);
     if (target) {
+      scrollClickActive = true;
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       history.replaceState(null, '', href);
+      setTimeout(function() { scrollClickActive = false; }, 800);
     }
   });
 });
@@ -149,10 +159,12 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
       }
       langLink.setAttribute('href', current ? baseHref + '#' + current : baseHref);
-      clearTimeout(hashTimer);
-      hashTimer = setTimeout(function() {
-        history.replaceState(null, '', current ? '#' + current : location.pathname);
-      }, 150);
+      if (!scrollClickActive) {
+        clearTimeout(hashTimer);
+        hashTimer = setTimeout(function() {
+          history.replaceState(null, '', current ? '#' + current : location.pathname);
+        }, 150);
+      }
       ticking = false;
     });
   });

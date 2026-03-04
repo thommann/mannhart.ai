@@ -185,7 +185,7 @@ function buildContext(locale) {
   ].join("\n");
 
   const beyondWork = t.beyondWork.stories
-    .map((s) => `${s.location} (${s.context}): ${s.text}`)
+    .map((s) => `${s.location} (${s.context}): ${stripHtml(s.text)}`)
     .join("\n");
 
   return `<context>
