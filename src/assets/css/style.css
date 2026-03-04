@@ -1424,15 +1424,6 @@ footer p {
 .chatbot-msg-bot a.chatbot-link:hover {
   text-decoration-color: var(--accent);
 }
-.chatbot-msg-bot a.chatbot-action-link {
-  color: var(--accent);
-  text-decoration: none;
-  cursor: pointer;
-}
-.chatbot-msg-bot a.chatbot-action-link:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-}
 .chatbot-msg-bot strong { color: var(--text); font-weight: 600; }
 .chatbot-msg-bot em { font-style: italic; }
 

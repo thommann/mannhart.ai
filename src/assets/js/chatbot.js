@@ -29,10 +29,7 @@
       /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:|\/#?|#)[^\s)]*)\)/g,
       function (_, linkText, url) {
         if (url.startsWith("#action:")) {
-          return (
-            '<a href="' + url + '" class="chatbot-action-link">' +
-            linkText + "</a>"
-          );
+          return linkText; // Strip action URLs — actions come via structured SSE events
         }
         if (url.startsWith("#")) {
           return (
@@ -71,31 +68,33 @@
     }
   });
 
-  // --- Action link handler (theme toggle, language switch) ---
+  // --- Structured action executor (allowlist-validated) ---
 
-  function executeAction(href) {
-    if (href === "#action:toggle-theme") {
+  var VALID_SECTIONS = ["about", "experience", "education", "skills", "featured", "contact"];
+
+  var ACTION_HANDLERS = {
+    toggle_theme: function () {
       var themeBtn = document.getElementById("theme-toggle");
       if (themeBtn) themeBtn.click();
-    } else if (href.startsWith("#action:switch-lang-")) {
-      var targetLang = href.replace("#action:switch-lang-", "");
-      window.location.href = "/" + targetLang + "/";
-    } else if (href.startsWith("#") && !href.startsWith("#action:")) {
-      var target = document.querySelector(href);
-      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else if (href.startsWith("mailto:") || href.startsWith("tel:")) {
-      window.open(href);
-    } else if (href.startsWith("http") || href.startsWith("/")) {
-      window.open(href, "_blank", "noopener");
-    }
-  }
+    },
+    switch_language: function (action) {
+      if (action.language === "en" || action.language === "de") {
+        window.location.href = "/" + action.language + "/";
+      }
+    },
+    scroll_to_section: function (action) {
+      if (VALID_SECTIONS.indexOf(action.section) !== -1) {
+        var el = document.getElementById(action.section);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    },
+  };
 
-  messages.addEventListener("click", function (e) {
-    var link = e.target.closest(".chatbot-action-link");
-    if (!link) return;
-    e.preventDefault();
-    executeAction(link.getAttribute("href"));
-  });
+  function executeStructuredAction(action) {
+    if (!action || !action.type) return;
+    var handler = ACTION_HANDLERS[action.type];
+    if (handler) handler(action);
+  }
 
   // --- Chat UI ---
 
@@ -196,6 +195,8 @@
       typingEl.innerHTML = "";
       typingEl.appendChild(span);
 
+      var pendingEventType = null;
+
       while (true) {
         var result = await reader.read();
         if (result.done) break;
@@ -203,9 +204,33 @@
         var lines = chunk.split("\n");
         for (var i = 0; i < lines.length; i++) {
           var line = lines[i].trim();
+
+          // Detect SSE named events (e.g. "event: actions")
+          if (line.startsWith("event: ")) {
+            pendingEventType = line.slice(7);
+            continue;
+          }
+
           if (!line.startsWith("data: ")) continue;
           var data = line.slice(6);
           if (data === "[DONE]") break;
+
+          // Handle structured actions event
+          if (pendingEventType === "actions") {
+            try {
+              var actionsPayload = JSON.parse(data);
+              if (actionsPayload.actions && Array.isArray(actionsPayload.actions)) {
+                for (var k = 0; k < actionsPayload.actions.length; k++) {
+                  executeStructuredAction(actionsPayload.actions[k]);
+                }
+              }
+            } catch (_) {}
+            pendingEventType = null;
+            continue;
+          }
+
+          pendingEventType = null;
+
           try {
             var parsed = JSON.parse(data);
             var delta =
@@ -230,12 +255,6 @@
       }
 
       history.push({ role: "assistant", content: botText });
-
-      // Auto-execute all links in bot response
-      var allLinks = typingEl.querySelectorAll("a[href]");
-      for (var j = 0; j < allLinks.length; j++) {
-        executeAction(allLinks[j].getAttribute("href"));
-      }
     } catch (err) {
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");

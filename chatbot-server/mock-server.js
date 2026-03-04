@@ -9,8 +9,8 @@
  *   npm run dev:mock   # builds site, then serves with mock chatbot on :8080
  *
  * Responds to keywords in user messages:
- *   dark/light/theme/umschalten  → toggle_theme action link
- *   english/deutsch/sprache      → switch_language action link
+ *   dark/light/theme/umschalten  → toggle_theme structured action
+ *   english/deutsch/sprache      → switch_language structured action
  *   cv/lebenslauf/resume         → CV download link
  *   erfahrung/experience         → section navigation link
  *   kontakt/contact/email        → contact link
@@ -50,6 +50,9 @@ const MIME_TYPES = {
 function getResponse(userMsg, locale) {
   const msg = userMsg.toLowerCase();
   const isDe = locale === "de";
+  const actions = [];
+
+  let text;
 
   if (
     msg.includes("dark") ||
@@ -58,82 +61,80 @@ function getResponse(userMsg, locale) {
     msg.includes("umschalten") ||
     msg.includes("modus")
   ) {
-    const label = isDe ? "Dark Mode umschalten" : "Toggle dark mode";
-    return isDe
-      ? `Klar, ich schalte das für dich um! [${label}](#action:toggle-theme)`
-      : `Sure, toggling for you! [${label}](#action:toggle-theme)`;
-  }
-
-  if (
+    actions.push({ type: "toggle_theme" });
+    text = isDe
+      ? "Klar, ich schalte das für dich um!"
+      : "Sure, toggling for you!";
+  } else if (
     msg.includes("english") ||
     msg.includes("deutsch") ||
     msg.includes("sprache") ||
     msg.includes("language")
   ) {
     if (msg.includes("english") || msg.includes("en")) {
-      return isDe
-        ? "Ich wechsle zu Englisch! [Switch to English](#action:switch-lang-en)"
-        : "You're already on the English version!";
+      if (isDe) {
+        actions.push({ type: "switch_language", language: "en" });
+        text = "Ich wechsle zu Englisch!";
+      } else {
+        text = "You're already on the English version!";
+      }
+    } else {
+      if (!isDe) {
+        actions.push({ type: "switch_language", language: "de" });
+        text = "Switching to German!";
+      } else {
+        text = "Du bist bereits auf Deutsch!";
+      }
     }
-    return isDe
-      ? "Du bist bereits auf Deutsch!"
-      : "Switching to German! [Zu Deutsch wechseln](#action:switch-lang-de)";
-  }
-
-  if (
+  } else if (
     msg.includes("cv") ||
     msg.includes("lebenslauf") ||
     msg.includes("resume")
   ) {
     const cvUrl = isDe ? "/assets/pdf/cv-de.pdf" : "/assets/pdf/cv-en.pdf";
-    return isDe
+    text = isDe
       ? `Hier ist Thomas' CV: [CV herunterladen](${cvUrl})`
       : `Here's Thomas's CV: [Download CV](${cvUrl})`;
-  }
-
-  if (msg.includes("erfahrung") || msg.includes("experience")) {
-    return isDe
+  } else if (msg.includes("erfahrung") || msg.includes("experience")) {
+    actions.push({ type: "scroll_to_section", section: "experience" });
+    text = isDe
       ? "Schau dir Thomas' Berufserfahrung an: [Erfahrung](#experience)"
       : "Check out Thomas's work experience: [Experience](#experience)";
-  }
-
-  if (msg.includes("skill")) {
-    return isDe
+  } else if (msg.includes("skill")) {
+    actions.push({ type: "scroll_to_section", section: "skills" });
+    text = isDe
       ? "Hier sind Thomas' Skills: [Skills](#skills)"
       : "Here are Thomas's skills: [Skills](#skills)";
-  }
-
-  if (msg.includes("ausbildung") || msg.includes("education")) {
-    return isDe
+  } else if (msg.includes("ausbildung") || msg.includes("education")) {
+    actions.push({ type: "scroll_to_section", section: "education" });
+    text = isDe
       ? "Hier ist Thomas' Ausbildung: [Ausbildung](#education)"
       : "Here's Thomas's education: [Education](#education)";
-  }
-
-  if (
+  } else if (
     msg.includes("kontakt") ||
     msg.includes("contact") ||
     msg.includes("email") ||
     msg.includes("reach")
   ) {
-    return isDe
+    text = isDe
       ? "Kontaktiere Thomas per E-Mail: [thomas@mannhart.ai](mailto:thomas@mannhart.ai)"
       : "Contact Thomas by email: [thomas@mannhart.ai](mailto:thomas@mannhart.ai)";
-  }
-
-  if (msg.includes("wer") || msg.includes("who") || msg.includes("about")) {
-    return isDe
+  } else if (msg.includes("wer") || msg.includes("who") || msg.includes("about")) {
+    text = isDe
       ? "Thomas Mannhart ist ein Professional AI Engineer aus Zürich. Er entwickelt Enterprise-KI-Lösungen und leitet Kundenprojekte. Mehr unter [Über mich](#about)."
       : "Thomas Mannhart is a Professional AI Engineer based in Zürich. He builds enterprise AI solutions and leads customer projects. More at [About](#about).";
+  } else {
+    text = isDe
+      ? "Ich bin Thomas' KI-Assistent! Frag mich etwas über ihn, oder ich kann den Dark Mode umschalten, die Sprache wechseln oder dir seinen CV zeigen."
+      : "I'm Thomas's AI assistant! Ask me about him, or I can toggle dark mode, switch language, or show you his CV.";
   }
 
-  return isDe
-    ? "Ich bin Thomas' KI-Assistent! Frag mich etwas über ihn, oder ich kann den Dark Mode umschalten, die Sprache wechseln oder dir seinen CV zeigen."
-    : "I'm Thomas's AI assistant! Ask me about him, or I can toggle dark mode, switch language, or show you his CV.";
+  return { text, actions };
 }
 
 // --- SSE streaming ---
 
-function streamResponse(res, text) {
+function streamResponse(res, { text, actions }) {
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
@@ -169,6 +170,9 @@ function streamResponse(res, text) {
   const interval = setInterval(() => {
     if (i >= parts.length) {
       clearInterval(interval);
+      if (actions && actions.length > 0) {
+        res.write(`event: actions\ndata: ${JSON.stringify({ actions })}\n\n`);
+      }
       res.write("data: [DONE]\n\n");
       res.end();
       return;
