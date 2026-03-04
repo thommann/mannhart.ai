@@ -20,11 +20,11 @@
 import http from "http";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { dirname, join, extname, resolve, normalize } from "path";
+import { dirname, join, extname, resolve } from "path";
 import translations from "../src/_data/translations.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SITE_DIR = join(__dirname, "..", "_site");
+const SITE_DIR = resolve(join(__dirname, "..", "_site"));
 const PORT = process.env.PORT || 8080;
 
 const MIME_TYPES = {
@@ -164,6 +164,7 @@ function streamResponse(res, { text, actions }) {
     res.write(`data: ${JSON.stringify(chunk)}\n\n`);
     i++;
   }, 100);
+  res.on("close", () => clearInterval(interval));
 }
 
 // --- Static file serving ---

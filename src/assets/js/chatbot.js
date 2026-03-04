@@ -90,14 +90,24 @@
 
   var ACTION_HANDLERS = {
     toggle_theme: function (action) {
-      if (action.theme && action.theme === getCurrentTheme()) {
+      if (action.theme !== "dark" && action.theme !== "light") return;
+      if (action.theme === getCurrentTheme()) {
         var themeName = action.theme;
         if (locale === "de") themeName = action.theme === "dark" ? "Dark" : "Light";
         showBotMessage(strings.alreadyOnTheme.replace("{theme}", themeName));
         return;
       }
+      localStorage.setItem("theme", action.theme);
+      if (action.theme === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
       var themeBtn = document.getElementById("theme-toggle");
-      if (themeBtn) themeBtn.click();
+      if (themeBtn) {
+        themeBtn.setAttribute("aria-label",
+          action.theme === "light" ? themeBtn.dataset.labelLight : themeBtn.dataset.labelDark);
+      }
     },
     switch_language: function (action) {
       if (action.language !== "en" && action.language !== "de") return;
@@ -152,10 +162,12 @@
 
   var MAX_INPUT_LENGTH = 500;
   var MAX_HISTORY = 10;
+  var sending = false;
   input.setAttribute("maxlength", MAX_INPUT_LENGTH);
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    if (sending) return;
     var text = input.value.trim();
     if (!text) return;
     if (text.length > MAX_INPUT_LENGTH) {
@@ -168,6 +180,7 @@
     input.value = "";
 
     var typingEl = appendTyping();
+    sending = true;
     sendMessage(history, typingEl);
   });
 
@@ -290,8 +303,9 @@
 
       if (!botText && hadActions) {
         if (typingEl.parentNode) typingEl.remove();
-      } else {
-        history.push({ role: "assistant", content: botText });
+      }
+      if (botText || hadActions) {
+        history.push({ role: "assistant", content: botText || "(action executed)" });
       }
     } catch (err) {
       typingEl.innerHTML = "";
@@ -300,12 +314,15 @@
         errSpan.textContent = strings.rateLimited;
       } else if (err.message === "quota_exceeded") {
         errSpan.textContent = strings.quotaExceeded;
+      } else if (err.name === "AbortError") {
+        errSpan.textContent = strings.timeout;
       } else {
         errSpan.textContent = strings.connection;
       }
       typingEl.appendChild(errSpan);
     } finally {
       clearTimeout(timeout);
+      sending = false;
     }
   }
 })();
