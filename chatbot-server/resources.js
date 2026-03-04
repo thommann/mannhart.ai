@@ -130,7 +130,7 @@ const RESOURCES = {
     url: "#featured",
     title: { en: "Talks & Projects section", de: "Vorträge-Bereich" },
   },
-  section_beyond_work: {
+  "section_beyond-work": {
     type: "section",
     url: "#beyond-work",
     title: { en: "Beyond Work section", de: "Persönliches-Bereich" },
