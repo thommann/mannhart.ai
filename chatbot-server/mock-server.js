@@ -162,7 +162,7 @@ function streamResponse(res, { text, actions }) {
   if (tail) {
     const words = tail.split(" ").filter((w) => w);
     for (let i = 0; i < words.length; i += 3) {
-      parts.push(words.slice(i, i + 3).join(" "));
+      parts.push(words.slice(i, i + 3).join(" ") + " ");
     }
   }
 
@@ -200,6 +200,7 @@ function serveStatic(req, res) {
     tryPaths.push(join(filePath, "index.html"));
   }
 
+  // Sync fs calls are fine here — this is a dev-only server
   for (const p of tryPaths) {
     if (fs.existsSync(p) && fs.statSync(p).isFile()) {
       const ext = extname(p);

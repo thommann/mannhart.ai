@@ -92,7 +92,7 @@ const TOOLS = [
       name: "toggle_theme",
       description:
         "Toggle the website between dark and light mode. Use when the user asks to switch theme, enable/disable dark mode, or change the appearance.",
-      parameters: { type: "object", properties: {}, required: [] },
+      parameters: { type: "object", properties: {} },
     },
   },
   {
@@ -115,6 +115,8 @@ const TOOLS = [
     },
   },
 ];
+
+const VALID_LANGUAGES = new Set(["en", "de"]);
 
 // --- Tool execution ---
 
@@ -297,7 +299,7 @@ Use them proactively — don't wait for the user to explicitly ask for a link:
 
 Format resource links as markdown: [text](url). For sections, use the anchor from the result (e.g., [Experience](#experience)). Never paste raw URLs. If a tool returns an error, answer without the link.
 
-For toggle_theme and switch_language, the action executes automatically on the user's page. Simply describe what happened in natural language (e.g., "Done — I've switched to dark mode" or "Switching to English now"). Do not include action links or clickable URLs for these actions.
+For toggle_theme and switch_language, the action executes automatically on the user's page. Simply describe what happened in natural language (e.g., "Done — I've switched to dark mode" or "Switching to English now"). Do not include action links or clickable URLs for these actions. Note: switching language reloads the page and resets the chat — mention this briefly so the user isn't surprised.
 
 Check the <state> block for the current theme and language. Use this to give context-aware responses (e.g., "You're currently in dark mode" or "The site is already in English").
 </tools>`,
@@ -336,7 +338,7 @@ Nutze sie proaktiv — warte nicht, bis der Nutzer explizit nach einem Link frag
 
 Formatiere Ressourcen-Links als Markdown: [Text](url). Für Bereiche nutze den Anker aus dem Ergebnis (z.B. [Erfahrung](#experience)). Niemals nackte URLs. Falls ein Tool einen Fehler zurückgibt, antworte ohne Link.
 
-Bei toggle_theme und switch_language wird die Aktion automatisch auf der Seite des Nutzers ausgeführt. Beschreibe einfach in natürlicher Sprache, was passiert ist (z.B. "Erledigt — ich habe zum Dark Mode gewechselt" oder "Wechsle jetzt zu Englisch"). Füge keine Action-Links oder klickbare URLs für diese Aktionen ein.
+Bei toggle_theme und switch_language wird die Aktion automatisch auf der Seite des Nutzers ausgeführt. Beschreibe einfach in natürlicher Sprache, was passiert ist (z.B. "Erledigt — ich habe zum Dark Mode gewechselt" oder "Wechsle jetzt zu Englisch"). Füge keine Action-Links oder klickbare URLs für diese Aktionen ein. Hinweis: Ein Sprachwechsel lädt die Seite neu und setzt den Chat zurück — erwähne das kurz, damit der Nutzer nicht überrascht wird.
 
 Prüfe den <state>-Block für das aktuelle Farbschema und die Sprache. Nutze dies für kontextbezogene Antworten (z.B. "Du bist aktuell im Dark Mode" oder "Die Seite ist bereits auf Deutsch").
 </tools>`,
@@ -566,8 +568,6 @@ app.post("/api/chat", async (req, res) => {
       currentMessages.push(assistantMsg);
 
       // Execute each tool, append results, and collect structured actions
-      const VALID_SECTIONS = new Set(["about", "experience", "education", "skills", "featured", "contact"]);
-      const VALID_LANGUAGES = new Set(["en", "de"]);
       const collectedActions = [];
 
       for (const tc of result.toolCalls) {
@@ -584,13 +584,12 @@ app.post("/api/chat", async (req, res) => {
           content: JSON.stringify(toolResult),
         });
 
-        // Collect validated structured actions
+        // Collect validated structured actions (navigate_to_section is handled
+        // via anchor links in the LLM's text response, so no SSE action needed)
         if (tc.name === "toggle_theme") {
           collectedActions.push({ type: "toggle_theme" });
         } else if (tc.name === "switch_language" && VALID_LANGUAGES.has(args.language)) {
           collectedActions.push({ type: "switch_language", language: args.language });
-        } else if (tc.name === "navigate_to_section" && VALID_SECTIONS.has(args.section)) {
-          collectedActions.push({ type: "scroll_to_section", section: args.section });
         }
       }
 
