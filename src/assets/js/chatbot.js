@@ -30,7 +30,7 @@
       function (_, linkText, url) {
         if (url.startsWith("#action:")) {
           return (
-            '<a href="' + url + '" class="chatbot-link chatbot-action-link">' +
+            '<a href="' + url + '" class="chatbot-action-link">' +
             linkText + "</a>"
           );
         }
@@ -73,32 +73,28 @@
 
   // --- Action link handler (theme toggle, language switch) ---
 
+  function executeAction(href) {
+    if (href === "#action:toggle-theme") {
+      var themeBtn = document.getElementById("theme-toggle");
+      if (themeBtn) themeBtn.click();
+    } else if (href.startsWith("#action:switch-lang-")) {
+      var targetLang = href.replace("#action:switch-lang-", "");
+      window.location.href = "/" + targetLang + "/";
+    } else if (href.startsWith("#") && !href.startsWith("#action:")) {
+      var target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (href.startsWith("mailto:") || href.startsWith("tel:")) {
+      window.open(href);
+    } else if (href.startsWith("http") || href.startsWith("/")) {
+      window.open(href, "_blank", "noopener");
+    }
+  }
+
   messages.addEventListener("click", function (e) {
     var link = e.target.closest(".chatbot-action-link");
     if (!link) return;
     e.preventDefault();
-    var href = link.getAttribute("href");
-
-    if (href === "#action:toggle-theme") {
-      var stored = localStorage.getItem("theme");
-      var current = stored ||
-        (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-      var next = current === "light" ? "dark" : "light";
-      localStorage.setItem("theme", next);
-      if (next === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-      } else {
-        document.documentElement.removeAttribute("data-theme");
-      }
-      var themeBtn = document.getElementById("theme-toggle");
-      if (themeBtn) {
-        themeBtn.setAttribute("aria-label",
-          next === "light" ? themeBtn.dataset.labelLight : themeBtn.dataset.labelDark);
-      }
-    } else if (href.startsWith("#action:switch-lang-")) {
-      var targetLang = href.replace("#action:switch-lang-", "");
-      window.location.href = "/" + targetLang + "/";
-    }
+    executeAction(link.getAttribute("href"));
   });
 
   // --- Chat UI ---
@@ -234,6 +230,12 @@
       }
 
       history.push({ role: "assistant", content: botText });
+
+      // Auto-execute all links in bot response
+      var allLinks = typingEl.querySelectorAll("a[href]");
+      for (var j = 0; j < allLinks.length; j++) {
+        executeAction(allLinks[j].getAttribute("href"));
+      }
     } catch (err) {
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");

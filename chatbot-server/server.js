@@ -164,14 +164,10 @@ function executeGetContactInfo(args, lang) {
 
 function executeToggleTheme(args, lang, currentTheme) {
   const next = currentTheme === "light" ? "dark" : "light";
-  const labels = {
-    en: { dark: "Switch to dark mode", light: "Switch to light mode" },
-    de: { dark: "Zum Dark Mode wechseln", light: "Zum Light Mode wechseln" },
-  };
   return {
     type: "action",
     url: "#action:toggle-theme",
-    label: labels[lang][next],
+    label: lang === "de" ? "Dark Mode umschalten" : "Toggle dark mode",
     currentTheme: currentTheme,
     newTheme: next,
   };
