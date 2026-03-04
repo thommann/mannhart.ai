@@ -21,6 +21,7 @@ import http from "http";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join, extname } from "path";
+import translations from "../src/_data/translations.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_DIR = join(__dirname, "..", "_site");
@@ -49,7 +50,7 @@ const MIME_TYPES = {
 
 function getResponse(userMsg, locale, currentTheme) {
   const msg = userMsg.toLowerCase();
-  const isDe = locale === "de";
+  const t = translations[locale].chatbot;
   const actions = [];
 
   let text = "";
@@ -63,9 +64,7 @@ function getResponse(userMsg, locale, currentTheme) {
   ) {
     const newTheme = currentTheme === "light" ? "dark" : "light";
     actions.push({ type: "toggle_theme", theme: newTheme });
-    text = isDe
-      ? "Klar, ich schalte das für dich um!"
-      : "Sure, toggling for you!";
+    text = t.toggleThemeResponse;
   } else if (
     msg.includes("english") ||
     msg.includes("deutsch") ||
@@ -73,18 +72,18 @@ function getResponse(userMsg, locale, currentTheme) {
     msg.includes("language")
   ) {
     if (msg.includes("english") || msg.includes("en")) {
-      if (isDe) {
+      if (locale === "de") {
         actions.push({ type: "switch_language", language: "en" });
         text = "";
       } else {
-        text = "You're already on the English version!";
+        text = t.alreadyOnLanguage;
       }
     } else {
-      if (!isDe) {
+      if (locale !== "de") {
         actions.push({ type: "switch_language", language: "de" });
         text = "";
       } else {
-        text = "Du bist bereits auf Deutsch!";
+        text = t.alreadyOnLanguage;
       }
     }
   } else if (
@@ -92,39 +91,25 @@ function getResponse(userMsg, locale, currentTheme) {
     msg.includes("lebenslauf") ||
     msg.includes("resume")
   ) {
-    const cvUrl = isDe ? "/assets/pdf/cv-de.pdf" : "/assets/pdf/cv-en.pdf";
-    text = isDe
-      ? `Hier ist Thomas' CV: [CV herunterladen](${cvUrl})`
-      : `Here's Thomas's CV: [Download CV](${cvUrl})`;
+    const cvUrl = locale === "de" ? "/assets/pdf/cv-de.pdf" : "/assets/pdf/cv-en.pdf";
+    text = t.cvResponse.replace("{url}", cvUrl);
   } else if (msg.includes("erfahrung") || msg.includes("experience")) {
-    text = isDe
-      ? "Schau dir Thomas' Berufserfahrung an: [Erfahrung](#experience)"
-      : "Check out Thomas's work experience: [Experience](#experience)";
+    text = t.experienceResponse;
   } else if (msg.includes("skill")) {
-    text = isDe
-      ? "Hier sind Thomas' Skills: [Skills](#skills)"
-      : "Here are Thomas's skills: [Skills](#skills)";
+    text = t.skillsResponse;
   } else if (msg.includes("ausbildung") || msg.includes("education")) {
-    text = isDe
-      ? "Hier ist Thomas' Ausbildung: [Ausbildung](#education)"
-      : "Here's Thomas's education: [Education](#education)";
+    text = t.educationResponse;
   } else if (
     msg.includes("kontakt") ||
     msg.includes("contact") ||
     msg.includes("email") ||
     msg.includes("reach")
   ) {
-    text = isDe
-      ? "Kontaktiere Thomas per E-Mail: [thomas@mannhart.ai](mailto:thomas@mannhart.ai)"
-      : "Contact Thomas by email: [thomas@mannhart.ai](mailto:thomas@mannhart.ai)";
+    text = t.contactResponse;
   } else if (msg.includes("wer") || msg.includes("who") || msg.includes("about")) {
-    text = isDe
-      ? "Thomas Mannhart ist ein Professional AI Engineer aus Zürich. Er entwickelt Enterprise-KI-Lösungen und leitet Kundenprojekte. Mehr unter [Über mich](#about)."
-      : "Thomas Mannhart is a Professional AI Engineer based in Zürich. He builds enterprise AI solutions and leads customer projects. More at [About](#about).";
+    text = t.aboutResponse;
   } else {
-    text = isDe
-      ? "Ich bin Thomas' KI-Assistent! Frag mich etwas über ihn, oder ich kann den Dark Mode umschalten, die Sprache wechseln oder dir seinen CV zeigen."
-      : "I'm Thomas's AI assistant! Ask me about him, or I can toggle dark mode, switch language, or show you his CV.";
+    text = t.fallbackGreeting;
   }
 
   return { text, actions };

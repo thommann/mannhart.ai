@@ -175,7 +175,7 @@ function executeToggleTheme(args, lang, currentTheme) {
 }
 
 function executeSwitchLanguage(args, lang) {
-  const target = args.language;
+  const target = VALID_LANGUAGES.has(args.language) ? args.language : (lang === "de" ? "en" : "de");
   return {
     type: "action",
     label: target === "de" ? "Zu Deutsch wechseln" : "Switch to English",
@@ -355,9 +355,11 @@ Assistant: "Ich bin hier, um Fragen über Thomas zu beantworten — bei Programm
   },
 };
 
+const CONTEXT_CACHE = { en: buildContext("en"), de: buildContext("de") };
+
 function buildSystemPrompt(locale, theme) {
   const s = STATIC_PROMPTS[locale];
-  const context = buildContext(locale);
+  const context = CONTEXT_CACHE[locale];
   const state = `<state>
 Current language: ${locale === "de" ? "German (de)" : "English (en)"}
 Current theme: ${theme === "light" ? "light" : "dark"}

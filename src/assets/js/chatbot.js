@@ -200,8 +200,7 @@
         body: JSON.stringify({
           messages: msgs,
           locale: locale,
-          theme: localStorage.getItem("theme") ||
-            (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"),
+          theme: getCurrentTheme(),
         }),
         signal: controller.signal,
       });
