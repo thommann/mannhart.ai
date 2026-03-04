@@ -80,11 +80,16 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     dots[current].classList.add('active');
   }
 
+  function prev() {
+    goTo((current - 1 + slides.length) % slides.length);
+  }
+
   function next() {
     goTo((current + 1) % slides.length);
   }
 
   function startTimer() {
+    clearInterval(timer);
     timer = setInterval(next, 5000);
   }
 
@@ -95,6 +100,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       startTimer();
     });
   });
+
+  var prevBtn = slideshow.querySelector('.fhnw-arrow--prev');
+  var nextBtn = slideshow.querySelector('.fhnw-arrow--next');
+  if (prevBtn) prevBtn.addEventListener('click', function() { clearInterval(timer); prev(); startTimer(); });
+  if (nextBtn) nextBtn.addEventListener('click', function() { clearInterval(timer); next(); startTimer(); });
 
   slideshow.addEventListener('mouseenter', function() { clearInterval(timer); });
   slideshow.addEventListener('mouseleave', startTimer);
