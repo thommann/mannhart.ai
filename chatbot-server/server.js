@@ -59,6 +59,7 @@ const TOOLS = [
               "education",
               "skills",
               "featured",
+              "beyond-work",
               "contact",
             ],
           },

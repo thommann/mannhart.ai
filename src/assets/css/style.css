@@ -1278,7 +1278,6 @@ footer p {
 }
 
 #chatbot-panel.open {
-  display: flex;
   opacity: 1;
   transform: translateY(0) scale(1);
 }

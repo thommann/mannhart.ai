@@ -157,6 +157,11 @@ export default {
         prevSlide: "Previous slide",
         nextSlide: "Next slide",
         slide: "Slide",
+        altTitleSlide: "AI Augmented Software Engineering — title slide",
+        altAudienceOverview: "FHNW talk — audience overview",
+        altPresenting: "FHNW talk — presenting",
+        altJuniorDevSlide: "FHNW talk — Junior Developer 2.0 slide",
+        altEngagedAudience: "FHNW talk — engaged audience",
       },
       aiHub: {
         title: "About the Swiss AI Hub",
@@ -392,6 +397,11 @@ export default {
         prevSlide: "Vorheriges Bild",
         nextSlide: "Nächstes Bild",
         slide: "Bild",
+        altTitleSlide: "AI Augmented Software Engineering — Titelfolie",
+        altAudienceOverview: "FHNW-Vortrag — Publikumsübersicht",
+        altPresenting: "FHNW-Vortrag — Präsentation",
+        altJuniorDevSlide: "FHNW-Vortrag — Junior Developer 2.0 Folie",
+        altEngagedAudience: "FHNW-Vortrag — engagiertes Publikum",
       },
       aiHub: {
         title: "Über den Swiss AI Hub",
