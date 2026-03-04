@@ -20,7 +20,7 @@
 import http from "http";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { dirname, join, extname } from "path";
+import { dirname, join, extname, resolve, normalize } from "path";
 import translations from "../src/_data/translations.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -71,7 +71,7 @@ function getResponse(userMsg, locale, currentTheme) {
     msg.includes("sprache") ||
     msg.includes("language")
   ) {
-    if (msg.includes("english") || msg.includes("en")) {
+    if (msg.includes("english") || /\ben\b/.test(msg)) {
       if (locale === "de") {
         actions.push({ type: "switch_language", language: "en" });
         text = "";
@@ -169,7 +169,15 @@ function streamResponse(res, { text, actions }) {
 // --- Static file serving ---
 
 function serveStatic(req, res) {
-  let filePath = join(SITE_DIR, req.url);
+  const pathname = new URL(req.url, "http://localhost").pathname;
+  let filePath = resolve(join(SITE_DIR, pathname));
+
+  // Prevent directory traversal
+  if (!filePath.startsWith(SITE_DIR)) {
+    res.writeHead(403, { "Content-Type": "text/plain" });
+    res.end("Forbidden");
+    return;
+  }
 
   // Directory → index.html
   if (filePath.endsWith("/")) {
@@ -213,10 +221,23 @@ const server = http.createServer((req, res) => {
   }
 
   // API routes
-  if (req.method === "POST" && req.url === "/api/chat") {
+  const parsedUrl = new URL(req.url, "http://localhost").pathname;
+
+  if (req.method === "POST" && parsedUrl === "/api/chat") {
     let body = "";
-    req.on("data", (chunk) => (body += chunk));
+    let aborted = false;
+    const MAX_BODY = 8 * 1024; // 8 KB
+    req.on("data", (chunk) => {
+      body += chunk;
+      if (body.length > MAX_BODY && !aborted) {
+        aborted = true;
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Request too large" }));
+        req.destroy();
+      }
+    });
     req.on("end", () => {
+      if (aborted) return;
       try {
         const { messages, locale, theme } = JSON.parse(body);
         if (!Array.isArray(messages) || messages.length === 0) {
@@ -236,7 +257,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.method === "GET" && req.url === "/api/health") {
+  if (req.method === "GET" && parsedUrl === "/api/health") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ status: "ok", mock: true }));
     return;

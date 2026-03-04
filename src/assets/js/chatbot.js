@@ -91,7 +91,9 @@
   var ACTION_HANDLERS = {
     toggle_theme: function (action) {
       if (action.theme && action.theme === getCurrentTheme()) {
-        showBotMessage(strings.alreadyOnTheme.replace("{theme}", action.theme));
+        var themeName = action.theme;
+        if (locale === "de") themeName = action.theme === "dark" ? "Dark" : "Light";
+        showBotMessage(strings.alreadyOnTheme.replace("{theme}", themeName));
         return;
       }
       var themeBtn = document.getElementById("theme-toggle");
@@ -224,12 +226,15 @@
 
       var pendingEventType = null;
       var hadActions = false;
+      var buffer = "";
 
-      while (true) {
+      var streamDone = false;
+      while (!streamDone) {
         var result = await reader.read();
         if (result.done) break;
-        var chunk = decoder.decode(result.value, { stream: true });
-        var lines = chunk.split("\n");
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split("\n");
+        buffer = lines.pop(); // keep incomplete trailing segment
         for (var i = 0; i < lines.length; i++) {
           var line = lines[i].trim();
 
@@ -241,7 +246,7 @@
 
           if (!line.startsWith("data: ")) continue;
           var data = line.slice(6);
-          if (data === "[DONE]") break;
+          if (data === "[DONE]") { streamDone = true; break; }
 
           // Handle structured actions event
           if (pendingEventType === "actions") {

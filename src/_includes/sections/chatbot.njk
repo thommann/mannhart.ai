@@ -9,13 +9,13 @@
     <div id="chatbot-header">
       <span id="chatbot-header-title">{{ t.chatbot.title }}</span>
       <span id="chatbot-header-dot"></span>
-      <button id="chatbot-close" type="button" aria-label="{{ t.chatbot.toggleAriaLabel }}">
+      <button id="chatbot-close" type="button" aria-label="{{ t.chatbot.closeAriaLabel }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
-    <div id="chatbot-messages">
+    <div id="chatbot-messages" aria-live="polite">
       <div class="chatbot-msg chatbot-msg-bot">
         <div>{{ t.chatbot.greeting }}
           <ul class="chatbot-greeting-list">

@@ -89,10 +89,20 @@ const TOOLS = [
   {
     type: "function",
     function: {
-      name: "toggle_theme",
+      name: "set_theme",
       description:
-        "Toggle the website between dark and light mode. Use when the user asks to switch theme, enable/disable dark mode, or change the appearance.",
-      parameters: { type: "object", properties: {} },
+        "Set the website to dark or light mode. Use when the user asks to switch theme, enable/disable dark mode, or change the appearance. Check the <state> block for the current theme before calling.",
+      parameters: {
+        type: "object",
+        properties: {
+          theme: {
+            type: "string",
+            enum: ["dark", "light"],
+            description: "The target theme to set",
+          },
+        },
+        required: ["theme"],
+      },
     },
   },
   {
@@ -164,18 +174,25 @@ function executeGetContactInfo(args, lang) {
   return { url: resolveUrl(resource, lang), title: resource.title[lang] };
 }
 
-function executeToggleTheme(args, lang, currentTheme) {
-  const next = currentTheme === "light" ? "dark" : "light";
+const VALID_THEMES = new Set(["dark", "light"]);
+
+function executeSetTheme(args, lang, currentTheme) {
+  const target = VALID_THEMES.has(args.theme) ? args.theme : (currentTheme === "light" ? "dark" : "light");
+  if (target === currentTheme) {
+    return { type: "info", message: lang === "de" ? `Die Seite ist bereits im ${target === "dark" ? "Dark" : "Light"} Mode.` : `The site is already in ${target} mode.` };
+  }
   return {
     type: "action",
-    label: lang === "de" ? "Dark Mode umschalten" : "Toggle dark mode",
-    currentTheme: currentTheme,
-    newTheme: next,
+    label: lang === "de" ? `Zu ${target === "dark" ? "Dark" : "Light"} Mode wechseln` : `Switch to ${target} mode`,
+    newTheme: target,
   };
 }
 
 function executeSwitchLanguage(args, lang) {
   const target = VALID_LANGUAGES.has(args.language) ? args.language : (lang === "de" ? "en" : "de");
+  if (target === lang) {
+    return { type: "info", message: lang === "de" ? "Die Seite ist bereits auf Deutsch." : "The site is already in English." };
+  }
   return {
     type: "action",
     label: target === "de" ? "Zu Deutsch wechseln" : "Switch to English",
@@ -191,8 +208,8 @@ function executeTool(name, args, lang, currentTheme) {
       return executeNavigateToSection(args, lang);
     case "get_contact_info":
       return executeGetContactInfo(args, lang);
-    case "toggle_theme":
-      return executeToggleTheme(args, lang, currentTheme);
+    case "set_theme":
+      return executeSetTheme(args, lang, currentTheme);
     case "switch_language":
       return executeSwitchLanguage(args, lang);
     default:
@@ -288,18 +305,18 @@ You are the AI assistant on Thomas Mannhart's personal website (t.mannhart.ai). 
 - Do not compare Thomas to other people or rank him against others.
 </rules>`,
     tools: `<tools>
-You have five tools: get_resource, navigate_to_section, get_contact_info, toggle_theme, and switch_language.
+You have five tools: get_resource, navigate_to_section, get_contact_info, set_theme, and switch_language.
 
 Use them proactively — don't wait for the user to explicitly ask for a link:
 - When discussing a topic with a relevant resource (CV, talk video, slides, GitHub, thesis), include it.
 - When mentioning a website section, use navigate_to_section for an anchor link.
 - When the user asks how to reach Thomas, use get_contact_info.
-- When the user asks to switch theme or toggle dark/light mode, use toggle_theme.
+- When the user asks to switch theme or toggle dark/light mode, use set_theme with the target theme. Check the <state> block first — if the user is already on the requested theme, tell them instead of calling the tool.
 - When the user asks to switch language, use switch_language with the target language.
 
 Format resource links as markdown: [text](url). For sections, use the anchor from the result (e.g., [Experience](#experience)). Never paste raw URLs. If a tool returns an error, answer without the link.
 
-For toggle_theme, the action executes automatically. Describe what happened (e.g., "Done — I've switched to dark mode"). For switch_language, the user will see a confirmation prompt — do not add any text, just call the tool.
+For set_theme, the action executes automatically. Describe what happened (e.g., "Done — I've switched to dark mode"). For switch_language, the user will see a confirmation prompt — do not add any text, just call the tool.
 
 Check the <state> block for the current theme and language. Use this to give context-aware responses (e.g., "You're currently in dark mode" or "The site is already in English").
 </tools>`,
@@ -327,18 +344,18 @@ Du bist der KI-Assistent auf der persönlichen Website von Thomas Mannhart (t.ma
 - Vergleiche Thomas nicht mit anderen Personen und erstelle keine Rankings.
 </rules>`,
     tools: `<tools>
-Du hast fünf Tools: get_resource, navigate_to_section, get_contact_info, toggle_theme und switch_language.
+Du hast fünf Tools: get_resource, navigate_to_section, get_contact_info, set_theme und switch_language.
 
 Nutze sie proaktiv — warte nicht, bis der Nutzer explizit nach einem Link fragt:
 - Wenn du über ein Thema sprichst, zu dem es eine relevante Ressource gibt (CV, Video, Slides, GitHub, Abschlussarbeit), binde sie ein.
 - Wenn du einen Website-Bereich erwähnst, nutze navigate_to_section für einen Anker-Link.
 - Wenn der Nutzer fragt, wie er Thomas erreichen kann, nutze get_contact_info.
-- Wenn der Nutzer das Farbschema wechseln oder den Dark/Light Mode umschalten möchte, nutze toggle_theme.
+- Wenn der Nutzer das Farbschema wechseln oder den Dark/Light Mode umschalten möchte, nutze set_theme mit dem Ziel-Theme. Prüfe zuerst den <state>-Block — wenn der Nutzer bereits auf dem gewünschten Theme ist, sage es ihm, statt das Tool aufzurufen.
 - Wenn der Nutzer die Sprache wechseln möchte, nutze switch_language mit der Zielsprache.
 
 Formatiere Ressourcen-Links als Markdown: [Text](url). Für Bereiche nutze den Anker aus dem Ergebnis (z.B. [Erfahrung](#experience)). Niemals nackte URLs. Falls ein Tool einen Fehler zurückgibt, antworte ohne Link.
 
-Bei toggle_theme wird die Aktion automatisch ausgeführt. Beschreibe, was passiert ist (z.B. "Erledigt — ich habe zum Dark Mode gewechselt"). Bei switch_language sieht der Nutzer eine Bestätigungsaufforderung — füge keinen Text hinzu, rufe einfach das Tool auf.
+Bei set_theme wird die Aktion automatisch ausgeführt. Beschreibe, was passiert ist (z.B. "Erledigt — ich habe zum Dark Mode gewechselt"). Bei switch_language sieht der Nutzer eine Bestätigungsaufforderung — füge keinen Text hinzu, rufe einfach das Tool auf.
 
 Prüfe den <state>-Block für das aktuelle Farbschema und die Sprache. Nutze dies für kontextbezogene Antworten (z.B. "Du bist aktuell im Dark Mode" oder "Die Seite ist bereits auf Deutsch").
 </tools>`,
@@ -364,7 +381,7 @@ function buildSystemPrompt(locale, theme) {
 Current language: ${locale === "de" ? "German (de)" : "English (en)"}
 Current theme: ${theme === "light" ? "light" : "dark"}
 </state>`;
-  return `${s.identity}\n\n${s.rules}\n\n${context}\n\n${s.tools}\n\n${state}\n\n${s.examples}`;
+  return `${s.identity}\n\n${s.rules}\n\n${context}\n\n${s.tools}\n\n${s.examples}\n\n${state}`;
 }
 
 // --- Abuse prevention ---
@@ -406,11 +423,13 @@ function isRateLimited(ip) {
     entry.burstCount = 0;
   }
 
+  if (now - entry.burstStart <= BURST_WINDOW_MS && entry.burstCount >= BURST_LIMIT) return true;
+
   entry.burstCount++;
   entry.dailyCount++;
   globalDailyCount++;
 
-  return entry.burstCount > BURST_LIMIT;
+  return false;
 }
 
 setInterval(() => {
@@ -588,9 +607,9 @@ app.post("/api/chat", async (req, res) => {
 
         // Collect validated structured actions (navigate_to_section is handled
         // via anchor links in the LLM's text response, so no SSE action needed)
-        if (tc.name === "toggle_theme") {
+        if (tc.name === "set_theme" && toolResult.type === "action") {
           collectedActions.push({ type: "toggle_theme", theme: toolResult.newTheme });
-        } else if (tc.name === "switch_language" && VALID_LANGUAGES.has(args.language)) {
+        } else if (tc.name === "switch_language" && toolResult.type === "action" && VALID_LANGUAGES.has(args.language)) {
           collectedActions.push({ type: "switch_language", language: args.language });
         }
       }
