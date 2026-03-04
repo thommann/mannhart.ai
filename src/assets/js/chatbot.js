@@ -339,6 +339,10 @@
         history.push({ role: "assistant", content: botText });
       }
     } catch (err) {
+      // Remove the dangling user message so the LLM doesn't see an unanswered turn
+      if (history.length && history[history.length - 1].role === "user") {
+        history.pop();
+      }
       messages.removeAttribute("aria-busy");
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
