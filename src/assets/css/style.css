@@ -1426,12 +1426,20 @@ footer p {
 }
 .chatbot-msg-bot strong { color: var(--text); font-weight: 600; }
 .chatbot-msg-bot em { font-style: italic; }
+.chatbot-greeting-list {
+  margin: 4px 0 0;
+  padding-left: 1.2em;
+  list-style: disc;
+}
+.chatbot-greeting-list li {
+  margin: 1px 0;
+}
 
 @media (max-width: 500px) {
   #chatbot-panel {
     width: calc(100vw - 1.5rem);
     right: 0.75rem;
-    bottom: 4.5rem;
+    bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
     height: 60vh;
   }
 }

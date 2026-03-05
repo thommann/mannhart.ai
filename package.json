@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "npx @11ty/eleventy --serve",
+    "dev:mock": "npx @11ty/eleventy && node chatbot-server/mock-server.js",
     "build": "npx @11ty/eleventy"
   },
   "devDependencies": {

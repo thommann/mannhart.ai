@@ -86,7 +86,47 @@ const TOOLS = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "set_theme",
+      description:
+        "Set the website to dark or light mode. Use when the user asks to switch theme, enable/disable dark mode, or change the appearance. Check the <state> block for the current theme before calling.",
+      parameters: {
+        type: "object",
+        properties: {
+          theme: {
+            type: "string",
+            enum: ["dark", "light"],
+            description: "The target theme to set",
+          },
+        },
+        required: ["theme"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "switch_language",
+      description:
+        "Switch the website language between German and English. Use when the user asks to change language or view the site in a different language.",
+      parameters: {
+        type: "object",
+        properties: {
+          language: {
+            type: "string",
+            enum: ["en", "de"],
+            description: "The target language to switch to",
+          },
+        },
+        required: ["language"],
+      },
+    },
+  },
 ];
+
+const VALID_LANGUAGES = new Set(["en", "de"]);
 
 // --- Tool execution ---
 
@@ -134,7 +174,33 @@ function executeGetContactInfo(args, lang) {
   return { url: resolveUrl(resource, lang), title: resource.title[lang] };
 }
 
-function executeTool(name, args, lang) {
+const VALID_THEMES = new Set(["dark", "light"]);
+
+function executeSetTheme(args, lang, currentTheme) {
+  const target = VALID_THEMES.has(args.theme) ? args.theme : (currentTheme === "light" ? "dark" : "light");
+  if (target === currentTheme) {
+    return { type: "info", message: lang === "de" ? `Die Seite ist bereits im ${target === "dark" ? "Dark" : "Light"} Mode.` : `The site is already in ${target} mode.` };
+  }
+  return {
+    type: "action",
+    label: lang === "de" ? `Zu ${target === "dark" ? "Dark" : "Light"} Mode wechseln` : `Switch to ${target} mode`,
+    newTheme: target,
+  };
+}
+
+function executeSwitchLanguage(args, lang) {
+  const target = VALID_LANGUAGES.has(args.language) ? args.language : (lang === "de" ? "en" : "de");
+  if (target === lang) {
+    return { type: "info", message: lang === "de" ? "Die Seite ist bereits auf Deutsch." : "The site is already in English." };
+  }
+  return {
+    type: "action",
+    label: target === "de" ? "Zu Deutsch wechseln" : "Switch to English",
+    targetLanguage: target,
+  };
+}
+
+function executeTool(name, args, lang, currentTheme) {
   switch (name) {
     case "get_resource":
       return executeGetResource(args, lang);
@@ -142,6 +208,10 @@ function executeTool(name, args, lang) {
       return executeNavigateToSection(args, lang);
     case "get_contact_info":
       return executeGetContactInfo(args, lang);
+    case "set_theme":
+      return executeSetTheme(args, lang, currentTheme);
+    case "switch_language":
+      return executeSwitchLanguage(args, lang);
     default:
       return { error: "Unknown tool" };
   }
@@ -235,14 +305,20 @@ You are the AI assistant on Thomas Mannhart's personal website (t.mannhart.ai). 
 - Do not compare Thomas to other people or rank him against others.
 </rules>`,
     tools: `<tools>
-You have three tools: get_resource, navigate_to_section, and get_contact_info.
+You have five tools: get_resource, navigate_to_section, get_contact_info, set_theme, and switch_language.
 
 Use them proactively — don't wait for the user to explicitly ask for a link:
 - When discussing a topic with a relevant resource (CV, talk video, slides, GitHub, thesis), include it.
 - When mentioning a website section, use navigate_to_section for an anchor link.
 - When the user asks how to reach Thomas, use get_contact_info.
+- When the user asks to switch theme or toggle dark/light mode, use set_theme with the target theme. Check the <state> block first — if the user is already on the requested theme, tell them instead of calling the tool.
+- When the user asks to switch language, use switch_language with the target language.
 
-Format links as markdown: [text](url). For sections, use the anchor from the result (e.g., [Experience](#experience)). Never paste raw URLs. If a tool returns an error, answer without the link.
+Format resource links as markdown: [text](url). For sections, use the anchor from the result (e.g., [Experience](#experience)). Never paste raw URLs. If a tool returns an error, answer without the link.
+
+For set_theme, the action executes automatically. Describe what happened (e.g., "Done — I've switched to dark mode"). For switch_language, the user will see a confirmation prompt — do not add any text, just call the tool.
+
+Check the <state> block for the current theme and language. Use this to give context-aware responses (e.g., "You're currently in dark mode" or "The site is already in English").
 </tools>`,
     examples: `<examples>
 User: "Hey, who is Thomas?"
@@ -268,14 +344,20 @@ Du bist der KI-Assistent auf der persönlichen Website von Thomas Mannhart (t.ma
 - Vergleiche Thomas nicht mit anderen Personen und erstelle keine Rankings.
 </rules>`,
     tools: `<tools>
-Du hast drei Tools: get_resource, navigate_to_section und get_contact_info.
+Du hast fünf Tools: get_resource, navigate_to_section, get_contact_info, set_theme und switch_language.
 
 Nutze sie proaktiv — warte nicht, bis der Nutzer explizit nach einem Link fragt:
 - Wenn du über ein Thema sprichst, zu dem es eine relevante Ressource gibt (CV, Video, Slides, GitHub, Abschlussarbeit), binde sie ein.
 - Wenn du einen Website-Bereich erwähnst, nutze navigate_to_section für einen Anker-Link.
 - Wenn der Nutzer fragt, wie er Thomas erreichen kann, nutze get_contact_info.
+- Wenn der Nutzer das Farbschema wechseln oder den Dark/Light Mode umschalten möchte, nutze set_theme mit dem Ziel-Theme. Prüfe zuerst den <state>-Block — wenn der Nutzer bereits auf dem gewünschten Theme ist, sage es ihm, statt das Tool aufzurufen.
+- Wenn der Nutzer die Sprache wechseln möchte, nutze switch_language mit der Zielsprache.
 
-Formatiere Links als Markdown: [Text](url). Für Bereiche nutze den Anker aus dem Ergebnis (z.B. [Erfahrung](#experience)). Niemals nackte URLs. Falls ein Tool einen Fehler zurückgibt, antworte ohne Link.
+Formatiere Ressourcen-Links als Markdown: [Text](url). Für Bereiche nutze den Anker aus dem Ergebnis (z.B. [Erfahrung](#experience)). Niemals nackte URLs. Falls ein Tool einen Fehler zurückgibt, antworte ohne Link.
+
+Bei set_theme wird die Aktion automatisch ausgeführt. Beschreibe, was passiert ist (z.B. "Erledigt — ich habe zum Dark Mode gewechselt"). Bei switch_language sieht der Nutzer eine Bestätigungsaufforderung — füge keinen Text hinzu, rufe einfach das Tool auf.
+
+Prüfe den <state>-Block für das aktuelle Farbschema und die Sprache. Nutze dies für kontextbezogene Antworten (z.B. "Du bist aktuell im Dark Mode" oder "Die Seite ist bereits auf Deutsch").
 </tools>`,
     examples: `<examples>
 User: "Hey, wer ist Thomas?"
@@ -290,16 +372,17 @@ Assistant: "Ich bin hier, um Fragen über Thomas zu beantworten — bei Programm
   },
 };
 
-function buildSystemPrompt(locale) {
-  const s = STATIC_PROMPTS[locale];
-  const context = buildContext(locale);
-  return `${s.identity}\n\n${s.rules}\n\n${context}\n\n${s.tools}\n\n${s.examples}`;
-}
+const CONTEXT_CACHE = { en: buildContext("en"), de: buildContext("de") };
 
-const SYSTEM_PROMPT = {
-  en: buildSystemPrompt("en"),
-  de: buildSystemPrompt("de"),
-};
+function buildSystemPrompt(locale, theme) {
+  const s = STATIC_PROMPTS[locale];
+  const context = CONTEXT_CACHE[locale];
+  const state = `<state>
+Current language: ${locale === "de" ? "German (de)" : "English (en)"}
+Current theme: ${theme === "light" ? "light" : "dark"}
+</state>`;
+  return `${s.identity}\n\n${s.rules}\n\n${context}\n\n${s.tools}\n\n${s.examples}\n\n${state}`;
+}
 
 // --- Abuse prevention ---
 
@@ -340,11 +423,13 @@ function isRateLimited(ip) {
     entry.burstCount = 0;
   }
 
+  if (now - entry.burstStart <= BURST_WINDOW_MS && entry.burstCount >= BURST_LIMIT) return true;
+
   entry.burstCount++;
   entry.dailyCount++;
   globalDailyCount++;
 
-  return entry.burstCount > BURST_LIMIT;
+  return false;
 }
 
 setInterval(() => {
@@ -420,7 +505,10 @@ app.post("/api/chat", async (req, res) => {
     return res.status(429).json({ error: "Too many requests" });
   }
 
-  const { messages, locale } = req.body;
+  if (!req.body) {
+    return res.status(400).json({ error: "Request body is required" });
+  }
+  const { messages, locale, theme } = req.body;
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: "messages array is required" });
   }
@@ -445,9 +533,12 @@ app.post("/api/chat", async (req, res) => {
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
+    const abortController = new AbortController();
+    res.on("close", () => abortController.abort());
     const write = (chunk) => res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+    const currentTheme = theme === "light" ? "light" : "dark";
     let currentMessages = [
-      { role: "system", content: SYSTEM_PROMPT[lang] },
+      { role: "system", content: buildSystemPrompt(lang, currentTheme) },
       ...trimmed,
     ];
 
@@ -462,6 +553,7 @@ app.post("/api/chat", async (req, res) => {
         tools: TOOLS,
         tool_choice: "auto",
         stream: true,
+        signal: abortController.signal,
       });
     } catch (toolErr) {
       // Provider might not support tools — fall back to plain request
@@ -473,6 +565,7 @@ app.post("/api/chat", async (req, res) => {
           temperature: 0.7,
           messages: currentMessages,
           stream: true,
+          signal: abortController.signal,
         });
         for await (const chunk of fallbackStream) {
           write(chunk);
@@ -502,7 +595,9 @@ app.post("/api/chat", async (req, res) => {
       };
       currentMessages.push(assistantMsg);
 
-      // Execute each tool and append results
+      // Execute each tool, append results, and collect structured actions
+      const collectedActions = [];
+
       for (const tc of result.toolCalls) {
         let args;
         try {
@@ -510,12 +605,20 @@ app.post("/api/chat", async (req, res) => {
         } catch {
           args = {};
         }
-        const toolResult = executeTool(tc.name, args, lang);
+        const toolResult = executeTool(tc.name, args, lang, currentTheme);
         currentMessages.push({
           role: "tool",
           tool_call_id: tc.id,
           content: JSON.stringify(toolResult),
         });
+
+        // Collect validated structured actions (navigate_to_section is handled
+        // via anchor links in the LLM's text response, so no SSE action needed)
+        if (tc.name === "set_theme" && toolResult.type === "action") {
+          collectedActions.push({ type: "toggle_theme", theme: toolResult.newTheme });
+        } else if (tc.name === "switch_language" && toolResult.type === "action" && VALID_LANGUAGES.has(args.language)) {
+          collectedActions.push({ type: "switch_language", language: args.language });
+        }
       }
 
       // Round 2: stream final response (no tools) directly to client
@@ -525,8 +628,14 @@ app.post("/api/chat", async (req, res) => {
         temperature: 0.7,
         messages: currentMessages,
         stream: true,
+        signal: abortController.signal,
       });
       await consumeStream(finalStream, write);
+
+      // Emit structured actions as a named SSE event
+      if (collectedActions.length > 0) {
+        res.write(`event: actions\ndata: ${JSON.stringify({ actions: collectedActions })}\n\n`);
+      }
     } else {
       // No tool calls — flush buffered content to client
       for (const chunk of result.contentChunks) {
@@ -538,12 +647,13 @@ app.post("/api/chat", async (req, res) => {
     res.end();
   } catch (err) {
     console.error("LLM error:", err.message);
-    if (!res.headersSent) {
-      if (err.status === 429) {
-        res.status(503).json({ error: "quota_exceeded" });
-      } else {
-        res.status(502).json({ error: "LLM request failed" });
-      }
+    if (res.headersSent) {
+      res.write("data: [DONE]\n\n");
+      res.end();
+    } else if (err.status === 429) {
+      res.status(503).json({ error: "quota_exceeded" });
+    } else {
+      res.status(502).json({ error: "LLM request failed" });
     }
   }
 });

@@ -5,19 +5,25 @@
     </svg>
   </button>
 
-  <div id="chatbot-panel">
+  <div id="chatbot-panel" role="dialog" aria-labelledby="chatbot-header-title">
     <div id="chatbot-header">
       <span id="chatbot-header-title">{{ t.chatbot.title }}</span>
       <span id="chatbot-header-dot"></span>
-      <button id="chatbot-close" type="button" aria-label="{{ t.chatbot.toggleAriaLabel }}">
+      <button id="chatbot-close" type="button" aria-label="{{ t.chatbot.closeAriaLabel }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
-    <div id="chatbot-messages">
+    <div id="chatbot-messages" aria-live="polite">
       <div class="chatbot-msg chatbot-msg-bot">
-        <span>{{ t.chatbot.greeting }}</span>
+        <div>{{ t.chatbot.greeting }}
+          <ul class="chatbot-greeting-list">
+            {% for feature in t.chatbot.greetingFeatures %}
+            <li>{{ feature }}</li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </div>
     <form id="chatbot-form">
@@ -25,6 +31,7 @@
         id="chatbot-input"
         type="text"
         placeholder="{{ t.chatbot.placeholder }}"
+        aria-label="{{ t.chatbot.placeholder }}"
         autocomplete="off"
       />
       <button type="submit" id="chatbot-send" aria-label="{{ t.chatbot.sendAriaLabel }}">
@@ -39,5 +46,6 @@
 <script>
 window.__chatbotLocale = "{{ locale }}";
 window.__chatbotStrings = {{ t.chatbot.errors | dump | safe }};
+Object.assign(window.__chatbotStrings, {{ { confirmLangSwitchNote: t.chatbot.confirmLangSwitchNote, confirmLangSwitchLink: t.chatbot.confirmLangSwitchLink, alreadyOnLanguage: t.chatbot.alreadyOnLanguage, alreadyOnTheme: t.chatbot.alreadyOnTheme } | dump | safe }});
 </script>
 <script src="/assets/js/chatbot.js"></script>

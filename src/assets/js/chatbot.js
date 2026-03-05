@@ -28,6 +28,11 @@
     s = s.replace(
       /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:|\/#?|#)[^\s)]*)\)/g,
       function (_, linkText, url) {
+        // Safety net: strip #action: URLs in case the LLM hallucinates them.
+        // Real actions are delivered via structured SSE events, not inline links.
+        if (url.startsWith("#action:")) {
+          return linkText;
+        }
         if (url.startsWith("#")) {
           return (
             '<a href="' + url + '" class="chatbot-link chatbot-section-link">' +
@@ -65,14 +70,77 @@
     }
   });
 
+  // --- Structured action executor (allowlist-validated) ---
+
+  function showBotMessage(text) {
+    var div = document.createElement("div");
+    div.className = "chatbot-msg chatbot-msg-bot";
+    var span = document.createElement("span");
+    span.textContent = text;
+    div.appendChild(span);
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function getCurrentTheme() {
+    var stored = localStorage.getItem("theme");
+    if (stored) return stored;
+    return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+
+  var ACTION_HANDLERS = {
+    toggle_theme: function (action) {
+      if (action.theme !== "dark" && action.theme !== "light") return;
+      if (action.theme === getCurrentTheme()) {
+        var themeName = action.theme;
+        if (locale === "de") themeName = action.theme === "dark" ? "Dark Mode" : "Light Mode";
+        showBotMessage(strings.alreadyOnTheme.replace("{theme}", themeName));
+        return;
+      }
+      // Delegate to main.js theme toggle to avoid duplicating theme application logic
+      var themeBtn = document.getElementById("theme-toggle");
+      if (themeBtn) themeBtn.click();
+    },
+    switch_language: function (action) {
+      if (action.language !== "en" && action.language !== "de") return;
+      if (action.language === locale) {
+        showBotMessage(strings.alreadyOnLanguage);
+        return;
+      }
+      var div = document.createElement("div");
+      div.className = "chatbot-msg chatbot-msg-bot";
+      var span = document.createElement("span");
+      span.textContent = strings.confirmLangSwitchNote + " ";
+      var link = document.createElement("a");
+      link.href = "/" + action.language + "/";
+      link.className = "chatbot-link";
+      link.textContent = strings.confirmLangSwitchLink;
+      span.appendChild(link);
+      div.appendChild(span);
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    },
+  };
+
+  function executeStructuredAction(action) {
+    if (!action || !action.type) return;
+    var handler = ACTION_HANDLERS[action.type];
+    if (handler) handler(action);
+  }
+
   // --- Chat UI ---
 
+  var closeTimeout = null;
+
   function openChat() {
+    if (closeTimeout) { clearTimeout(closeTimeout); closeTimeout = null; }
     isOpen = true;
     toggle.style.display = "none";
     panel.style.display = "flex";
     requestAnimationFrame(function () {
-      panel.classList.add("open");
+      requestAnimationFrame(function () {
+        panel.classList.add("open");
+      });
     });
     input.focus();
   }
@@ -80,7 +148,8 @@
   function closeChat() {
     isOpen = false;
     panel.classList.remove("open");
-    setTimeout(function () {
+    closeTimeout = setTimeout(function () {
+      closeTimeout = null;
       panel.style.display = "none";
       toggle.style.display = "flex";
     }, 250);
@@ -88,13 +157,18 @@
 
   toggle.addEventListener("click", openChat);
   closeBtn.addEventListener("click", closeChat);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && isOpen) closeChat();
+  });
 
   var MAX_INPUT_LENGTH = 500;
   var MAX_HISTORY = 10;
+  var sending = false;
   input.setAttribute("maxlength", MAX_INPUT_LENGTH);
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    if (sending) return;
     var text = input.value.trim();
     if (!text) return;
     if (text.length > MAX_INPUT_LENGTH) {
@@ -107,6 +181,7 @@
     input.value = "";
 
     var typingEl = appendTyping();
+    sending = true;
     sendMessage(history, typingEl);
   });
 
@@ -138,7 +213,11 @@
       var res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: msgs, locale: locale }),
+        body: JSON.stringify({
+          messages: msgs,
+          locale: locale,
+          theme: getCurrentTheme(),
+        }),
         signal: controller.signal,
       });
 
@@ -157,18 +236,54 @@
       var botText = "";
       var span = document.createElement("span");
       typingEl.innerHTML = "";
+      messages.setAttribute("aria-busy", "true");
       typingEl.appendChild(span);
 
-      while (true) {
+      var pendingEventType = null;
+      var hadActions = false;
+      var buffer = "";
+
+      var streamDone = false;
+      while (!streamDone) {
         var result = await reader.read();
         if (result.done) break;
-        var chunk = decoder.decode(result.value, { stream: true });
-        var lines = chunk.split("\n");
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split("\n");
+        buffer = lines.pop(); // keep incomplete trailing segment
         for (var i = 0; i < lines.length; i++) {
           var line = lines[i].trim();
+
+          // Detect SSE named events (e.g. "event: actions")
+          if (line.startsWith("event: ")) {
+            pendingEventType = line.slice(7);
+            continue;
+          }
+
+          // Reset pending event type on blank lines (SSE event boundary)
+          if (line === "") {
+            pendingEventType = null;
+            continue;
+          }
+
           if (!line.startsWith("data: ")) continue;
           var data = line.slice(6);
-          if (data === "[DONE]") break;
+          if (data === "[DONE]") { streamDone = true; break; }
+
+          // Handle structured actions event
+          if (pendingEventType === "actions") {
+            try {
+              var actionsPayload = JSON.parse(data);
+              if (actionsPayload.actions && Array.isArray(actionsPayload.actions)) {
+                hadActions = true;
+                for (var k = 0; k < actionsPayload.actions.length; k++) {
+                  executeStructuredAction(actionsPayload.actions[k]);
+                }
+              }
+            } catch (_) {}
+            pendingEventType = null;
+            continue;
+          }
+
           try {
             var parsed = JSON.parse(data);
             var delta =
@@ -187,25 +302,36 @@
         }
       }
 
-      if (!botText) {
+      messages.removeAttribute("aria-busy");
+
+      if (!botText && !hadActions) {
         botText = strings.emptyResponse;
         span.innerHTML = renderMarkdown(botText);
       }
 
-      history.push({ role: "assistant", content: botText });
+      if (!botText && hadActions) {
+        if (typingEl.parentNode) typingEl.remove();
+      }
+      if (botText) {
+        history.push({ role: "assistant", content: botText });
+      }
     } catch (err) {
+      messages.removeAttribute("aria-busy");
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
       if (err.message === "rate_limited") {
         errSpan.textContent = strings.rateLimited;
       } else if (err.message === "quota_exceeded") {
         errSpan.textContent = strings.quotaExceeded;
+      } else if (err.name === "AbortError") {
+        errSpan.textContent = strings.timeout;
       } else {
         errSpan.textContent = strings.connection;
       }
       typingEl.appendChild(errSpan);
     } finally {
       clearTimeout(timeout);
+      sending = false;
     }
   }
 })();
