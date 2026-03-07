@@ -554,8 +554,7 @@ app.post("/api/chat", async (req, res) => {
         tools: TOOLS,
         tool_choice: "auto",
         stream: true,
-        signal: abortController.signal,
-      });
+      }, { signal: abortController.signal });
     } catch (toolErr) {
       // Provider might not support tools — fall back to plain request
       if (toolErr.status === 400 || toolErr.message?.includes("tool")) {
@@ -566,8 +565,7 @@ app.post("/api/chat", async (req, res) => {
           temperature: 0.7,
           messages: currentMessages,
           stream: true,
-          signal: abortController.signal,
-        });
+        }, { signal: abortController.signal });
         for await (const chunk of fallbackStream) {
           write(chunk);
         }
@@ -629,8 +627,7 @@ app.post("/api/chat", async (req, res) => {
         temperature: 0.7,
         messages: currentMessages,
         stream: true,
-        signal: abortController.signal,
-      });
+      }, { signal: abortController.signal });
       await consumeStream(finalStream, write);
 
       // Emit structured actions as a named SSE event
