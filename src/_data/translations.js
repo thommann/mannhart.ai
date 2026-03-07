@@ -225,6 +225,8 @@ export default {
       errors: {
         rateLimited: "Too many requests. Please wait a moment.",
         quotaExceeded: "The daily quota has been reached. Please try again tomorrow.",
+        messageTooLong: "Your message is too long. Please shorten it and try again.",
+        llmError: "The AI service is temporarily unavailable. Please try again later.",
         connection: "Connection error. Please try again.",
         timeout: "The response took too long. Please try again.",
         emptyResponse: "Sorry, I couldn't generate a response.",
@@ -465,6 +467,8 @@ export default {
       errors: {
         rateLimited: "Zu viele Anfragen. Bitte warte einen Moment.",
         quotaExceeded: "Das Tageslimit wurde erreicht. Bitte versuche es morgen erneut.",
+        messageTooLong: "Deine Nachricht ist zu lang. Bitte kürze sie und versuche es erneut.",
+        llmError: "Der KI-Service ist vorübergehend nicht erreichbar. Bitte versuche es später erneut.",
         connection: "Verbindungsfehler. Bitte versuche es erneut.",
         timeout: "Die Antwort hat zu lange gedauert. Bitte versuche es erneut.",
         emptyResponse: "Entschuldigung, ich konnte keine Antwort generieren.",

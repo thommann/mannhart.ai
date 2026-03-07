@@ -8,6 +8,7 @@ const {
   LLM_API_KEY,
   LLM_BASE_URL = "https://api.openai.com/v1",
   LLM_MODEL = "gpt-4o-mini",
+  LLM_FALLBACK_MODELS = "",
   ALLOWED_ORIGIN = "https://t.mannhart.ai",
   PORT = "3001",
 } = process.env;
@@ -16,6 +17,8 @@ if (!LLM_API_KEY) {
   console.error("LLM_API_KEY is required");
   process.exit(1);
 }
+
+const MODEL_CHAIN = [LLM_MODEL, ...LLM_FALLBACK_MODELS.split(",").map(m => m.trim()).filter(Boolean)];
 
 const openai = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL });
 
@@ -446,12 +449,12 @@ setInterval(() => {
 
 // --- Input validation ---
 
-const MAX_MESSAGE_LENGTH = 500;
+const MAX_MESSAGE_LENGTH = 50_000;
 const MAX_MESSAGES = 10;
 const ALLOWED_ROLES = new Set(["user", "assistant"]);
 
 const app = express();
-app.use(express.json({ limit: "4kb" }));
+app.use(express.json({ limit: "512kb" }));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -460,6 +463,50 @@ app.use((req, res, next) => {
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
+
+// --- Fallback link instructions (when tool calling is unavailable) ---
+
+const LINK_INSTRUCTIONS = {
+  en: `You CANNOT execute actions directly. You can only provide clickable links for the user. NEVER say you have already done something — always tell the user to click the link. Use these markdown links:
+- Toggle theme: [Switch to dark mode](#action:toggle-theme) or [Switch to light mode](#action:toggle-theme) — use the one OPPOSITE to the current theme in <state>
+- Switch language: [Zu Deutsch wechseln](#action:switch-to-de)
+- Navigate to sections: [About](#about), [Experience](#experience), [Education](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Contact](#contact)
+- Resources: use the direct URLs from your context (CV, GitHub, thesis, etc.)
+Example: if the user says "switch to dark mode", respond with "Click here to switch: [Switch to dark mode](#action:toggle-theme)"`,
+  de: `Du KANNST KEINE Aktionen direkt ausführen. Du kannst nur klickbare Links bereitstellen. Sage NIEMALS, dass du etwas bereits getan hast — sage dem Nutzer immer, er soll den Link klicken. Verwende diese Markdown-Links:
+- Theme wechseln: [Zum Dark Mode wechseln](#action:toggle-theme) oder [Zum Light Mode wechseln](#action:toggle-theme) — verwende das GEGENTEIL des aktuellen Themes im <state>-Block
+- Sprache wechseln: [Switch to English](#action:switch-to-en)
+- Zu Bereichen navigieren: [Über mich](#about), [Erfahrung](#experience), [Ausbildung](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Kontakt](#contact)
+- Ressourcen: verwende die direkten URLs aus deinem Kontext (CV, GitHub, Thesis, etc.)
+Beispiel: Wenn der Nutzer "wechsle zum Dark Mode" sagt, antworte mit "Klicke hier: [Zum Dark Mode wechseln](#action:toggle-theme)"`,
+};
+
+// --- LLM request with model fallback on quota errors ---
+
+function isRetryableError(err) {
+  return err.status === 429 || err.status === 400 || err.status === 404 ||
+    err.code === "rate_limit_exceeded" ||
+    err.message?.toLowerCase().includes("quota") ||
+    err.message?.toLowerCase().includes("rate limit");
+}
+
+async function createWithFallback(params, options) {
+  let lastErr;
+  for (const model of MODEL_CHAIN) {
+    try {
+      return await openai.chat.completions.create({ ...params, model }, options);
+    } catch (err) {
+      lastErr = err;
+      if (isRetryableError(err) && MODEL_CHAIN.indexOf(model) < MODEL_CHAIN.length - 1) {
+        const next = MODEL_CHAIN[MODEL_CHAIN.indexOf(model) + 1];
+        console.warn(`${model} failed (${err.status}), falling back to ${next}`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
 
 // --- Streaming helper: consume a stream, buffer chunks and collect tool calls ---
 
@@ -503,27 +550,27 @@ async function consumeStream(stream, writer) {
 app.post("/api/chat", async (req, res) => {
   const ip = getClientIp(req);
   if (isRateLimited(ip)) {
-    return res.status(429).json({ error: "Too many requests" });
+    return res.status(429).json({ error: "rate_limited" });
   }
 
   if (!req.body) {
-    return res.status(400).json({ error: "Request body is required" });
+    return res.status(400).json({ error: "invalid_request" });
   }
   const { messages, locale, theme } = req.body;
   if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: "messages array is required" });
+    return res.status(400).json({ error: "invalid_request" });
   }
 
   const trimmed = messages.slice(-MAX_MESSAGES);
   for (const msg of trimmed) {
     if (!ALLOWED_ROLES.has(msg.role)) {
-      return res.status(400).json({ error: "Invalid message role" });
+      return res.status(400).json({ error: "invalid_request" });
     }
     if (
       typeof msg.content !== "string" ||
       msg.content.length > MAX_MESSAGE_LENGTH
     ) {
-      return res.status(400).json({ error: "Message too long" });
+      return res.status(400).json({ error: "message_too_long" });
     }
   }
 
@@ -546,8 +593,7 @@ app.post("/api/chat", async (req, res) => {
     // Round 1: request with tools (buffered — don't stream to client yet)
     let stream;
     try {
-      stream = await openai.chat.completions.create({
-        model: LLM_MODEL,
+      stream = await createWithFallback({
         max_tokens: 500,
         temperature: 0.7,
         messages: currentMessages,
@@ -557,10 +603,12 @@ app.post("/api/chat", async (req, res) => {
       }, { signal: abortController.signal });
     } catch (toolErr) {
       // Provider might not support tools — fall back to plain request
-      if (toolErr.status === 400 || toolErr.message?.includes("tool")) {
-        console.warn("Provider does not support tools, falling back");
-        const fallbackStream = await openai.chat.completions.create({
-          model: LLM_MODEL,
+      const isToolError = toolErr.message?.toLowerCase().includes("tool") ||
+        toolErr.error?.message?.toLowerCase().includes("tool");
+      if (toolErr.status === 400 && isToolError) {
+        console.warn("Provider does not support tools, falling back with links");
+        currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
+        const fallbackStream = await createWithFallback({
           max_tokens: 500,
           temperature: 0.7,
           messages: currentMessages,
@@ -621,22 +669,53 @@ app.post("/api/chat", async (req, res) => {
       }
 
       // Round 2: stream final response (no tools) directly to client
-      const finalStream = await openai.chat.completions.create({
-        model: LLM_MODEL,
-        max_tokens: 500,
-        temperature: 0.7,
-        messages: currentMessages,
-        stream: true,
-      }, { signal: abortController.signal });
-      await consumeStream(finalStream, write);
+      let round2Result;
+      try {
+        const finalStream = await createWithFallback({
+          max_tokens: 500,
+          temperature: 0.7,
+          messages: currentMessages,
+          stream: true,
+        }, { signal: abortController.signal });
+        round2Result = await consumeStream(finalStream, write);
+      } catch (round2Err) {
+        console.warn("Round 2 failed, retrying without tool messages:", round2Err.status, round2Err.message);
+        round2Result = null;
+      }
+
+      // If Round 2 failed or returned empty, retry with link-based fallback
+      if (!round2Result || round2Result.contentChunks.length === 0) {
+        const plainMessages = currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls);
+        plainMessages[0] = { role: "system", content: plainMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
+        const retryStream = await createWithFallback({
+          max_tokens: 500,
+          temperature: 0.7,
+          messages: plainMessages,
+          stream: true,
+        }, { signal: abortController.signal });
+        await consumeStream(retryStream, write);
+      }
 
       // Emit structured actions as a named SSE event
       if (collectedActions.length > 0) {
         res.write(`event: actions\ndata: ${JSON.stringify({ actions: collectedActions })}\n\n`);
       }
-    } else {
+    } else if (result.contentChunks.length > 0) {
       // No tool calls — flush buffered content to client
       for (const chunk of result.contentChunks) {
+        write(chunk);
+      }
+    } else {
+      // Model returned nothing (tools ignored) — retry without tools, with link instructions
+      console.warn("Round 1 empty, retrying without tools");
+      currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
+      const retryStream = await createWithFallback({
+        max_tokens: 500,
+        temperature: 0.7,
+        messages: currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls),
+        stream: true,
+      }, { signal: abortController.signal });
+      for await (const chunk of retryStream) {
         write(chunk);
       }
     }
@@ -644,14 +723,14 @@ app.post("/api/chat", async (req, res) => {
     res.write("data: [DONE]\n\n");
     res.end();
   } catch (err) {
-    console.error("LLM error:", err.message);
+    console.error("LLM error:", err.status, err.message, err.error || "");
     if (res.headersSent) {
       res.write("data: [DONE]\n\n");
       res.end();
     } else if (err.status === 429) {
       res.status(503).json({ error: "quota_exceeded" });
     } else {
-      res.status(502).json({ error: "LLM request failed" });
+      res.status(502).json({ error: "llm_error" });
     }
   }
 });
@@ -662,5 +741,5 @@ app.get("/api/health", (req, res) => {
 
 app.listen(Number(PORT), () => {
   console.log(`Chatbot server running on port ${PORT}`);
-  console.log(`Model: ${LLM_MODEL} via ${LLM_BASE_URL}`);
+  console.log(`Models: ${MODEL_CHAIN.join(" → ")} via ${LLM_BASE_URL}`);
 });
