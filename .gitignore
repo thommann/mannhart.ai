@@ -18,10 +18,12 @@ _site/
 dist/
 chatbot-server/translations.js
 chatbot-server/utils.js
+src/assets/pdf/Thomas_Mannhart_CV_*.pdf
 
 # IDE
 .vscode/
-.idea/
+.idea/*
+!.idea/runConfigurations/
 *.swp
 *.swo
 *~

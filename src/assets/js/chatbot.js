@@ -26,12 +26,13 @@
     // Step 2: markdown links [text](url)
     // Only allow safe URL schemes: https, http, mailto, tel, relative paths, anchors
     s = s.replace(
-      /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:|\/#?|#)[^\s)]*)\)/g,
+      /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:\/\/|\/|#)[^\s)]*)\)/g,
       function (_, linkText, url) {
-        // Safety net: strip #action: URLs in case the LLM hallucinates them.
-        // Real actions are delivered via structured SSE events, not inline links.
         if (url.startsWith("#action:")) {
-          return linkText;
+          return (
+            '<a href="' + url + '" class="chatbot-link chatbot-action-link">' +
+            linkText + "</a>"
+          );
         }
         if (url.startsWith("#")) {
           return (
@@ -60,6 +61,19 @@
   // --- Section navigation (event delegation) ---
 
   messages.addEventListener("click", function (e) {
+    var actionLink = e.target.closest(".chatbot-action-link");
+    if (actionLink) {
+      e.preventDefault();
+      var action = actionLink.getAttribute("href").slice(8); // strip "#action:"
+      if (action === "toggle-theme") {
+        var themeBtn = document.getElementById("theme-toggle");
+        if (themeBtn) themeBtn.click();
+      } else if (action === "switch-to-en" || action === "switch-to-de") {
+        var targetLang = action.slice(-2);
+        if (targetLang !== locale) window.location.href = "/" + targetLang + "/";
+      }
+      return;
+    }
     var link = e.target.closest(".chatbot-section-link");
     if (link) {
       e.preventDefault();
@@ -161,7 +175,7 @@
     if (e.key === "Escape" && isOpen) closeChat();
   });
 
-  var MAX_INPUT_LENGTH = 500;
+  var MAX_INPUT_LENGTH = 50000;
   var MAX_HISTORY = 10;
   var sending = false;
   input.setAttribute("maxlength", MAX_INPUT_LENGTH);
@@ -221,14 +235,13 @@
         signal: controller.signal,
       });
 
-      if (res.status === 429) {
-        throw new Error("rate_limited");
-      }
-      if (res.status === 503) {
-        throw new Error("quota_exceeded");
-      }
       if (!res.ok) {
-        throw new Error("HTTP " + res.status);
+        var errorCode = "connection";
+        try {
+          var errBody = await res.json();
+          if (errBody.error) errorCode = errBody.error;
+        } catch (_) {}
+        throw new Error(errorCode);
       }
 
       var reader = res.body.getReader();
@@ -302,6 +315,29 @@
         }
       }
 
+      // Process any remaining buffer content after stream ends
+      if (buffer.trim()) {
+        var remaining = buffer.trim();
+        if (remaining.startsWith("data: ")) {
+          var data = remaining.slice(6);
+          if (data !== "[DONE]") {
+            try {
+              var parsed = JSON.parse(data);
+              var delta =
+                parsed.choices &&
+                parsed.choices[0] &&
+                parsed.choices[0].delta &&
+                parsed.choices[0].delta.content;
+              if (delta) {
+                botText += delta;
+                span.innerHTML = renderMarkdown(botText);
+                messages.scrollTop = messages.scrollHeight;
+              }
+            } catch (_) {}
+          }
+        }
+      }
+
       messages.removeAttribute("aria-busy");
 
       if (!botText && !hadActions) {
@@ -316,17 +352,18 @@
         history.push({ role: "assistant", content: botText });
       }
     } catch (err) {
+      // Remove the dangling user message so the LLM doesn't see an unanswered turn
+      if (history.length && history[history.length - 1].role === "user") {
+        history.pop();
+      }
       messages.removeAttribute("aria-busy");
       typingEl.innerHTML = "";
       var errSpan = document.createElement("span");
-      if (err.message === "rate_limited") {
-        errSpan.textContent = strings.rateLimited;
-      } else if (err.message === "quota_exceeded") {
-        errSpan.textContent = strings.quotaExceeded;
-      } else if (err.name === "AbortError") {
+      if (err.name === "AbortError") {
         errSpan.textContent = strings.timeout;
       } else {
-        errSpan.textContent = strings.connection;
+        var key = err.message.replace(/_([a-z])/g, function (_, c) { return c.toUpperCase(); });
+        errSpan.textContent = strings[key] || strings.connection;
       }
       typingEl.appendChild(errSpan);
     } finally {

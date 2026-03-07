@@ -26,6 +26,8 @@ jobs:
 
       - run: npm ci
 
+      - run: node scripts/generate-cv.js
+
       - run: npm run build
 
       - uses: burnett01/rsync-deployments@v8
