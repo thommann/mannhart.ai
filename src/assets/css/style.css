@@ -376,6 +376,7 @@ nav ul a:hover::after { width: 100%; }
   position: relative;
   width: 340px;
   height: 420px;
+  background: var(--bg-card);
 }
 
 .hero-photo-wrap::before {
@@ -388,10 +389,6 @@ nav ul a:hover::after { width: 100%; }
 }
 
 .hero-photo-wrap:hover::before { transform: rotate(0deg); }
-
-.hero-photo-wrap {
-  background: var(--bg-card);
-}
 
 .hero-photo-wrap img {
   width: 100%;
@@ -1281,7 +1278,6 @@ footer p {
 }
 
 #chatbot-panel.open {
-  display: flex;
   opacity: 1;
   transform: translateY(0) scale(1);
 }
@@ -1536,13 +1532,6 @@ footer p {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 0 12px 48px rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="light"] .floating-btn {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1), 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .floating-btn:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 8px 28px rgba(0, 0, 0, 0.08);
-}
 
 [data-theme="light"] .hero-photo-wrap img {
   filter: saturate(1.15) brightness(1.03);

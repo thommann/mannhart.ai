@@ -25,10 +25,13 @@ var navList = document.querySelector('nav ul');
 if (navToggle && navList) {
   navToggle.addEventListener('click', function() {
     navList.classList.toggle('active');
+    var expanded = navList.classList.contains('active');
+    navToggle.setAttribute('aria-expanded', expanded);
   });
   navList.querySelectorAll('a').forEach(function(link) {
     link.addEventListener('click', function() {
       navList.classList.remove('active');
+      navToggle.setAttribute('aria-expanded', false);
     });
   });
 }
