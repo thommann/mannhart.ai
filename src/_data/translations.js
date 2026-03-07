@@ -20,7 +20,7 @@ export default {
     hero: {
       label: "Professional AI Engineer · Zürich, CH",
       name: 'Thomas<br>Rolf<br><em>Mannhart</em>',
-      desc: "Building enterprise AI in Zürich. I architect custom AI solutions, lead customer projects, and write about how AI is changing the way we build software.",
+      desc: "Building enterprise AI in Zürich. Together with my team at bbv, I'm developing the Swiss AI Hub, design custom AI solutions, lead customer projects, and write about how AI is changing the way we build software.",
       getInTouch: "Get in touch",
       github: "GitHub",
       downloadCV: "Download CV",
@@ -28,7 +28,7 @@ export default {
     about: {
       number: "01",
       title: "About",
-      abstract: `<p>I'm a <strong>Professional AI Engineer</strong> at <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, building enterprise AI on the <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">bbv AI Hub</a>. I studied Informatics at the <strong>University of Zürich</strong> (BSc + MSc, AI specialization) and have been shipping software professionally since 2019 — from biomedical Java apps to full-stack web platforms to LLM-powered agentic systems.</p>`,
+      abstract: `<p>I'm a <strong>Professional AI Engineer</strong> at <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, building enterprise AI on the <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a>. I studied Informatics at the <strong>University of Zürich</strong> (BSc + MSc, AI specialization) and have been shipping software professionally since 2019 — from biomedical Java apps to full-stack web platforms to LLM-powered agentic systems.</p>`,
       viewMore: "View more",
       viewLess: "View less",
       personal: "Enjoys hot tea, cold beer, good food, thick books, old music, and long board game nights.",
@@ -39,7 +39,7 @@ export default {
 
 <p>After finishing my Master's, I joined <strong>Ergon Informatik</strong>, one of Zürich's most respected software houses, and worked on a time-tracking and workforce planning system for the retail sector. There I sharpened my craft in enterprise Java and Kotlin, handled the full delivery cycle from requirements to support, and found that I really enjoyed mentoring — whether that was onboarding new team members or organizing IT workshops for local students. I loved working at Ergon but left after about a year when bbv offered the chance to move into my preferred specialization: AI.</p>
 
-<p>These days I'm a <strong>Professional AI Engineer</strong> at <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, where I develop the <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">bbv AI Hub</a> — a comprehensive, Swiss-made enterprise AI platform — and design its architecture together with the software architect. Beyond the platform, I architect and implement customized AI solutions — especially <a href="#skills">RAG systems</a> — for customer projects in industry and market research, and serve as technical lead (Dev Lead) on these AI projects. I also operate and maintain the platform at customer sites, and consult customers on developing and implementing their IT and AI strategy. It sits at the exact intersection of my interests: real engineering problems, cutting-edge AI, and the challenge of making complex technology usable and trustworthy for organisations that can't afford to get it wrong.</p>
+<p>These days I'm a <strong>Professional AI Engineer</strong> at <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, where I'm developing the <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a> together with my team — a comprehensive, Swiss-made enterprise AI platform — and design its architecture together with the software architect. Beyond the platform, I design and implement customized AI solutions — especially <a href="#skills">RAG systems</a> — for customer projects in industry and market research, and serve as technical lead (Dev Lead) on these AI projects. I also operate and maintain the platform at customer sites, and consult customers on developing and implementing their IT and AI strategy. It sits at the exact intersection of my interests: real engineering problems, cutting-edge AI, and the challenge of making complex technology usable and trustworthy for organisations that can't afford to get it wrong.</p>
 
 <p>I also <a href="#featured">speak and write</a> about AI-augmented software engineering — how AI is changing the way we build software, not just the software itself. I've given talks at the FHNW Alumni Event and bbv webinars on practical methods for integrating AI into the development lifecycle, from requirements analysis through to testing.</p>
 
@@ -54,7 +54,7 @@ export default {
           role: "Professional AI Engineer",
           company: "bbv Software Services AG",
           location: "Zürich, Switzerland",
-          desc: "Development of a comprehensive enterprise AI platform, including architecture design in collaboration with the software architect. Architecture and implementation of customized AI solutions — especially RAG systems — for customer projects in industry and market research. Technical leadership (Dev Lead) of customer AI projects. Operation and maintenance of the AI platform and customer-specific solutions. Consulting customers on their IT and AI strategy.",
+          desc: "Development of a comprehensive enterprise AI platform, including architecture design in collaboration with the software architect. Design and implementation of customized AI solutions — especially RAG systems — for customer projects in industry and market research. Technical leadership (Dev Lead) of customer AI projects. Operation and maintenance of the AI platform and customer-specific solutions. Consulting customers on their IT and AI strategy.",
           tech: ["Python", "LLMs / RAG", "Agentic AI", "Dev Lead", "AI Strategy", "Azure", "TypeScript", "Platform Engineering"],
         },
         {
@@ -150,15 +150,17 @@ export default {
       fhnw: {
         label: "Alumni Event · FHNW · 2025",
         title: "AI-Augmented<br>Software Engineering",
-        desc: 'Talk at the FHNW Data Science &amp; Data Engineering Alumni Event on integrating AI into the software development lifecycle — from enterprise AI strategy and the bbv AI Hub, to working with coding agents and the "Development Funnel" for context-driven AI workflows.',
+        desc: 'Talk at the FHNW Data Science &amp; Data Engineering Alumni Event on integrating AI into the software development lifecycle — from enterprise AI strategy and the Swiss AI Hub, to working with coding agents and the "Development Funnel" for context-driven AI workflows.',
         bbvPost: "bbv Post",
         fhnwPost: "FHNW Post",
         slides: "Slides",
       },
       aiHub: {
-        title: "About the bbv AI Hub",
-        desc: "Swiss-made, model-agnostic enterprise AI platform — soon to be open-sourced. Listed on Siemens Xcelerator, certified Swiss Made Software.",
-        bbvAiHub: "bbv AI Hub",
+        title: "About the Swiss AI Hub",
+        desc: "Swiss-made, model-agnostic enterprise AI platform. Listed on Siemens Xcelerator, certified Swiss Made Software.",
+        bbvAiHub: "Swiss AI Hub",
+        swissAiHubDocs: "Swiss AI Hub Docs",
+        aiHubCoreDocs: "AI Hub Core Docs",
         swissMadeSoftware: "Swiss Made Software",
         siemensXcelerator: "Siemens Xcelerator",
         bbvSoftwareServices: "bbv Software Services",
@@ -250,7 +252,7 @@ export default {
     hero: {
       label: "Professional AI Engineer · Zürich, CH",
       name: 'Thomas<br>Rolf<br><em>Mannhart</em>',
-      desc: "Ich entwickle Enterprise-KI in Zürich. Ich entwerfe kundenspezifische KI-Lösungen, leite Kundenprojekte und schreibe darüber, wie KI die Softwareentwicklung verändert.",
+      desc: "Ich entwickle Enterprise-KI in Zürich. Zusammen mit meinem Team bei bbv entwickle ich den Swiss AI Hub, designe kundenspezifische KI-Lösungen, leite Kundenprojekte und schreibe darüber, wie KI die Softwareentwicklung verändert.",
       getInTouch: "Kontakt aufnehmen",
       github: "GitHub",
       downloadCV: "CV herunterladen",
@@ -258,7 +260,7 @@ export default {
     about: {
       number: "01",
       title: "Über mich",
-      abstract: `<p>Ich bin <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich und entwickle Enterprise-KI auf dem <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">bbv AI Hub</a>. Ich habe Informatik an der <strong>Universität Zürich</strong> studiert (BSc + MSc, Spezialisierung KI) und liefere seit 2019 professionell Software — von biomedizinischen Java-Anwendungen über Full-Stack-Webplattformen bis hin zu LLM-gestützten agentischen Systemen.</p>`,
+      abstract: `<p>Ich bin <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich und entwickle Enterprise-KI auf dem <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a>. Ich habe Informatik an der <strong>Universität Zürich</strong> studiert (BSc + MSc, Spezialisierung KI) und liefere seit 2019 professionell Software — von biomedizinischen Java-Anwendungen über Full-Stack-Webplattformen bis hin zu LLM-gestützten agentischen Systemen.</p>`,
       viewMore: "Mehr anzeigen",
       viewLess: "Weniger anzeigen",
       personal: "Hobbys: heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende.",
@@ -269,7 +271,7 @@ export default {
 
 <p>Nach dem Master trat ich bei <strong>Ergon Informatik</strong> ein, einem der renommiertesten Softwarehäuser Zürichs, und arbeitete an einem Zeiterfassungs- und Personalplanungssystem für den Detailhandel. Dort verfeinerte ich mein Können in Enterprise Java und Kotlin, übernahm den gesamten Delivery-Zyklus von der Anforderungsanalyse bis zum Support und entdeckte, dass mir Mentoring besonders liegt — ob beim Onboarding neuer Teammitglieder oder beim Organisieren von IT-Workshops für Schüler. Ich habe die Arbeit bei Ergon sehr geschätzt, bin aber nach rund einem Jahr zu bbv gewechselt, als sich die Möglichkeit bot, in meine bevorzugte Spezialisierung einzusteigen: KI.</p>
 
-<p>Heute bin ich <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, wo ich den <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">bbv AI Hub</a> — eine umfassende, Schweizer Enterprise-KI-Plattform — entwickle und deren Architektur gemeinsam mit dem Software-Architekten gestalte. Neben der Plattform entwerfe und implementiere ich kundenspezifische KI-Lösungen — insbesondere <a href="#skills">RAG-Systeme</a> — für Kundenprojekte im industriellen Umfeld und in der Marktforschung und übernehme die technische Leitung (Dev Lead) dieser KI-Projekte. Zudem betreibe und warte ich die Plattform beim Kunden und berate Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie. Das liegt genau an der Schnittstelle meiner Interessen: echte Engineering-Probleme, modernste KI und die Herausforderung, komplexe Technologie nutzbar und vertrauenswürdig zu machen für Organisationen, die sich keine Fehler leisten können.</p>
+<p>Heute bin ich <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, wo ich zusammen mit meinem Team den <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a> — eine umfassende, Schweizer Enterprise-KI-Plattform — entwickle und deren Architektur gemeinsam mit dem Software-Architekten gestalte. Neben der Plattform designe und implementiere ich kundenspezifische KI-Lösungen — insbesondere <a href="#skills">RAG-Systeme</a> — für Kundenprojekte im industriellen Umfeld und in der Marktforschung und übernehme die technische Leitung (Dev Lead) dieser KI-Projekte. Zudem betreibe und warte ich die Plattform beim Kunden und berate Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie. Das liegt genau an der Schnittstelle meiner Interessen: echte Engineering-Probleme, modernste KI und die Herausforderung, komplexe Technologie nutzbar und vertrauenswürdig zu machen für Organisationen, die sich keine Fehler leisten können.</p>
 
 <p>Ich <a href="#featured">spreche und schreibe</a> auch über KI-gestützte Softwareentwicklung — wie KI die Art verändert, wie wir Software bauen, nicht nur die Software selbst. Ich habe Vorträge am FHNW Alumni Event und in bbv-Webinaren gehalten, über praktische Methoden zur Integration von KI in den Entwicklungszyklus, von der Anforderungsanalyse bis zum Testing.</p>
 
@@ -284,7 +286,7 @@ export default {
           role: "Professional AI Engineer",
           company: "bbv Software Services AG",
           location: "Zürich, Schweiz",
-          desc: "Entwicklung einer umfassenden Enterprise-KI-Plattform, einschliesslich Architektur-Design in Zusammenarbeit mit dem Software-Architekten. Architektur und Implementierung kundenspezifischer KI-Lösungen — insbesondere RAG-Systeme — für Kundenprojekte im industriellen Umfeld und in der Marktforschung. Technische Leitung (Dev Lead) von KI-Kundenprojekten. Betrieb und Wartung der KI-Plattform und kundenspezifischer Lösungen. Beratung von Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie.",
+          desc: "Entwicklung einer umfassenden Enterprise-KI-Plattform, einschliesslich Architektur-Design in Zusammenarbeit mit dem Software-Architekten. Design und Implementierung kundenspezifischer KI-Lösungen — insbesondere RAG-Systeme — für Kundenprojekte im industriellen Umfeld und in der Marktforschung. Technische Leitung (Dev Lead) von KI-Kundenprojekten. Betrieb und Wartung der KI-Plattform und kundenspezifischer Lösungen. Beratung von Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie.",
           tech: ["Python", "LLMs / RAG", "Agentic AI", "Dev Lead", "AI Strategy", "Azure", "TypeScript", "Platform Engineering"],
         },
         {
@@ -380,15 +382,17 @@ export default {
       fhnw: {
         label: "Alumni Event · FHNW · 2025",
         title: "AI-Augmented<br>Software Engineering",
-        desc: 'Vortrag am FHNW Data Science &amp; Data Engineering Alumni Event über die Integration von KI in den Software-Entwicklungszyklus — von der Enterprise-KI-Strategie und dem bbv AI Hub bis hin zur Arbeit mit Coding Agents und dem «Development Funnel» für kontextgesteuerte KI-Workflows.',
+        desc: 'Vortrag am FHNW Data Science &amp; Data Engineering Alumni Event über die Integration von KI in den Software-Entwicklungszyklus — von der Enterprise-KI-Strategie und dem Swiss AI Hub bis hin zur Arbeit mit Coding Agents und dem «Development Funnel» für kontextgesteuerte KI-Workflows.',
         bbvPost: "bbv Post",
         fhnwPost: "FHNW Post",
         slides: "Slides",
       },
       aiHub: {
-        title: "Über den bbv AI Hub",
-        desc: "Schweizer, modell-agnostische Enterprise-KI-Plattform — bald Open Source. Gelistet auf Siemens Xcelerator, zertifiziert als Swiss Made Software.",
-        bbvAiHub: "bbv AI Hub",
+        title: "Über den Swiss AI Hub",
+        desc: "Schweizer, modell-agnostische Enterprise-KI-Plattform. Gelistet auf Siemens Xcelerator, zertifiziert als Swiss Made Software.",
+        bbvAiHub: "Swiss AI Hub",
+        swissAiHubDocs: "Swiss AI Hub Docs",
+        aiHubCoreDocs: "AI Hub Core Docs",
         swissMadeSoftware: "Swiss Made Software",
         siemensXcelerator: "Siemens Xcelerator",
         bbvSoftwareServices: "bbv Software Services",
