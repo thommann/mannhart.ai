@@ -1,7 +1,7 @@
 export default {
   en: {
     meta: {
-      description: "Thomas Mannhart — Professional AI Engineer at bbv Software Services in Zürich. Building enterprise AI solutions, RAG systems, and agentic workflows.",
+      description: "Thomas Mannhart, Professional AI Engineer and Consultant at bbv Software Services AG in Zürich. My team and I are designing and building an AI platform for organizations of every size.",
     },
     nav: {
       about: "About",
@@ -243,7 +243,7 @@ export default {
 
   de: {
     meta: {
-      description: "Thomas Mannhart, Professional AI Engineer bei bbv Software Services in Zürich. Enterprise-KI-Lösungen, RAG-Systeme und agentische Workflows.",
+      description: "Thomas Mannhart, Professional AI Engineer und Consultant bei bbv Software Services AG in Zürich. Mein Team und ich designen und bauen eine KI-Plattform für Organisationen jeder Grösse.",
     },
     nav: {
       about: "Über mich",
