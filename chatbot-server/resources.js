@@ -63,20 +63,38 @@ const RESOURCES = {
     url: { en: "https://en.bbv.ch/", de: "https://www.bbv.ch/" },
     title: { en: "bbv Software Services", de: "bbv Software Services" },
   },
+  aihub_core: {
+    type: "link",
+    url: "https://bbvch-ai.github.io/aihub-core/",
+    title: { en: "AI Hub Core (Documentation)", de: "AI Hub Core (Dokumentation)" },
+    description: {
+      en: "The open-source foundation of the Swiss AI Hub — the containerized, self-hosted core infrastructure including LLM gateway, vector search, authentication, and orchestration engine",
+      de: "Das Open-Source-Fundament des Swiss AI Hub — die containerisierte, selbst gehostete Kerninfrastruktur mit LLM-Gateway, Vektorsuche, Authentifizierung und Orchestrierungs-Engine",
+    },
+  },
+  swiss_ai_hub: {
+    type: "link",
+    url: "https://bbvch-ai.github.io/swiss-ai-hub.ch/",
+    title: { en: "Swiss AI Hub (Demo Page)", de: "Swiss AI Hub (Demo-Seite)" },
+    description: {
+      en: "Demo page for the Swiss AI Hub — an open-source AI infrastructure platform for Swiss enterprises with full on-premises deployment and data sovereignty",
+      de: "Demo-Seite des Swiss AI Hub — eine Open-Source-KI-Infrastrukturplattform für Schweizer Unternehmen mit vollständigem On-Premises-Betrieb und Datensouveränität",
+    },
+  },
   bbv_ai_hub: {
     type: "link",
     url: "https://ai-hub.bbv.ch/",
-    title: { en: "bbv AI Hub", de: "bbv AI Hub" },
+    title: { en: "bbv AI Hub (Landing Page)", de: "bbv AI Hub (Landing Page)" },
   },
   siemens_xcelerator: {
     type: "link",
     url: "https://www.siemens.com/en-us/products/bbv-software-services-bbv-ai-hub-agentic-ai-platform/",
-    title: { en: "Siemens Xcelerator Listing", de: "Siemens Xcelerator Listing" },
+    title: { en: "bbv AI Hub on Siemens Xcelerator", de: "bbv AI Hub auf Siemens Xcelerator" },
   },
   swiss_made_software: {
     type: "link",
     url: "https://www.swissmadesoftware.org/en/companies/bbv-software-services-ag/home.html",
-    title: { en: "Swiss Made Software", de: "Swiss Made Software" },
+    title: { en: "bbv on Swiss Made Software", de: "bbv auf Swiss Made Software" },
   },
   uzh_award: {
     type: "link",
