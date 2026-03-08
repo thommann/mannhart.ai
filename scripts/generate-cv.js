@@ -59,13 +59,17 @@ const LABELS = {
 
 /* ── data builders ─────────────────────────────────── */
 
+function truncate(text, maxSentences = 2) {
+  const sentences = text.match(/[^.!]+[.!]+/g) || [text];
+  return sentences.slice(0, maxSentences).join("").trim();
+}
+
 function buildJobs(t) {
   return t.experience.jobs.map((j) => ({
     date: j.date.replace("now", "present"),
     role: j.role,
     company: `${j.company}, ${j.location.replace(/, (Switzerland|Schweiz)/g, "")}`,
-    desc: j.desc,
-    tech: j.tech.join(", "),
+    desc: truncate(j.desc, 2),
   }));
 }
 
@@ -79,14 +83,14 @@ function buildEducation(t) {
         /(Thesis|Bachelorarbeit|Masterarbeit):\s*(.+)/
       );
       let line = thesisMatch
-        ? `${thesisMatch[1]}: ${thesisMatch[2]}`
-        : detail;
-      if (e.award) line += ` ${e.award.label}.`;
+        ? truncate(`${thesisMatch[1]}: ${thesisMatch[2]}`, 2)
+        : truncate(detail, 2);
       return {
         year: e.year,
         degree: `${e.degree} (${e.specialization})`,
         school: e.school,
         detail: line,
+        award: e.award || null,
       };
     });
 }
@@ -215,7 +219,7 @@ function rule(doc, y, color = RULE_LIGHT, width = 0.4) {
 }
 
 function heading(doc, label) {
-  doc.moveDown(0.45);
+  doc.moveDown(0.5);
   doc
     .fontSize(9)
     .font("Helvetica-Bold")
@@ -286,19 +290,22 @@ function generateCV(lang) {
     });
 
   drawIcon(doc, "email", col2X, contactY1, iconS, GRAY);
-  doc.text("thomas@mannhart.ai", col2X + iconS + iconGap, contactY1 + 1, {
-    lineBreak: false,
-  });
+  const emailX = col2X + iconS + iconGap;
+  const emailY = contactY1 + 1;
+  doc.text("thomas@mannhart.ai", emailX, emailY, { lineBreak: false });
+  doc.link(emailX, emailY - 1, doc.widthOfString("thomas@mannhart.ai"), 10, "mailto:thomas@mannhart.ai");
 
   drawIcon(doc, "code", L, contactY2, iconS, GRAY);
-  doc.text("github.com/thommann", L + iconS + iconGap, contactY2 + 1, {
-    lineBreak: false,
-  });
+  const ghX = L + iconS + iconGap;
+  const ghY = contactY2 + 1;
+  doc.text("github.com/thommann", ghX, ghY, { lineBreak: false });
+  doc.link(ghX, ghY - 1, doc.widthOfString("github.com/thommann"), 10, "https://github.com/thommann");
 
   drawIcon(doc, "globe", col2X, contactY2, iconS, GRAY);
-  doc.text("t.mannhart.ai", col2X + iconS + iconGap, contactY2 + 1, {
-    lineBreak: false,
-  });
+  const webX = col2X + iconS + iconGap;
+  const webY = contactY2 + 1;
+  doc.text("t.mannhart.ai", webX, webY, { lineBreak: false });
+  doc.link(webX, webY - 1, doc.widthOfString("t.mannhart.ai"), 10, "https://t.mannhart.ai");
 
   doc.y = contactY2 + 18;
   rule(doc, doc.y, RULE_DARK, 0.8);
@@ -310,7 +317,7 @@ function generateCV(lang) {
     .fontSize(9)
     .font("Helvetica")
     .fillColor(BLACK)
-    .text(stripHtml(t.about.abstract), L, doc.y, { width: W, lineGap: 2.2 });
+    .text(stripHtml(t.about.abstract), L, doc.y, { width: W, lineGap: 1.8 });
 
   /* ── experience ── */
   heading(doc, labels.experience);
@@ -329,24 +336,21 @@ function generateCV(lang) {
       .fontSize(9.5)
       .font("Helvetica-Bold")
       .fillColor(BLACK)
-      .text(job.role, CX, y0, { width: CW, continued: true })
+      .text(job.role, CX, y0, { width: CW });
+
+    doc
+      .fontSize(8.5)
       .font("Helvetica")
       .fillColor(GRAY)
-      .text(`  —  ${job.company}`);
+      .text(job.company, CX, doc.y, { width: CW });
 
     doc
       .fontSize(8.5)
       .font("Helvetica")
       .fillColor(BLACK)
-      .text(job.desc, CX, doc.y, { width: CW, lineGap: 1.5 });
+      .text(job.desc, CX, doc.y + 2, { width: CW, lineGap: 1.5 });
 
-    doc
-      .fontSize(7.5)
-      .font("Helvetica-Oblique")
-      .fillColor(LIGHT)
-      .text(job.tech, CX, doc.y + 1, { width: CW });
-
-    doc.y = Math.max(doc.y, yDate) + 7;
+    doc.y = Math.max(doc.y, yDate) + 8;
   }
 
   /* ── education ── */
@@ -366,18 +370,31 @@ function generateCV(lang) {
       .fontSize(9.5)
       .font("Helvetica-Bold")
       .fillColor(BLACK)
-      .text(edu.degree, CX, y0, { width: CW, continued: true })
+      .text(edu.degree, CX, y0, { width: CW });
+
+    doc
+      .fontSize(8.5)
       .font("Helvetica")
       .fillColor(GRAY)
-      .text(`  —  ${edu.school}`);
+      .text(edu.school, CX, doc.y, { width: CW });
 
     doc
       .fontSize(8.5)
       .font("Helvetica")
       .fillColor(BLACK)
-      .text(edu.detail, CX, doc.y, { width: CW, lineGap: 1.5 });
+      .text(edu.detail, CX, doc.y + 2, { width: CW, lineGap: 1.5 });
 
-    doc.y = Math.max(doc.y, yDate) + 5;
+    if (edu.award) {
+      const awardY = doc.y + 1;
+      doc
+        .fontSize(8.5)
+        .font("Helvetica-Bold")
+        .fillColor(ACCENT)
+        .text(edu.award.label, CX, awardY, { width: CW });
+      doc.link(CX, awardY - 1, doc.widthOfString(edu.award.label), 10, edu.award.href);
+    }
+
+    doc.y = Math.max(doc.y, yDate) + 6;
   }
 
   /* ── skills ── */
@@ -392,7 +409,7 @@ function generateCV(lang) {
       .font("Helvetica")
       .fillColor(GRAY)
       .text(skill.items);
-    doc.moveDown(0.1);
+    doc.moveDown(0.2);
   }
 
   /* ── talks & projects ── */
@@ -406,7 +423,8 @@ function generateCV(lang) {
       .text(talk.title, L, doc.y, { width: W, continued: true })
       .font("Helvetica")
       .fillColor(GRAY)
-      .text(`  —  ${talk.desc}`);
+      .fontSize(8.5)
+      .text(`  ${truncate(talk.desc, 1)}`);
     doc.moveDown(0.15);
   }
 
