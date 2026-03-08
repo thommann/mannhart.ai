@@ -21,7 +21,8 @@ chatbot-server/utils.js
 
 # IDE
 .vscode/
-.idea/
+.idea/*
+!.idea/runConfigurations/
 *.swp
 *.swo
 *~
