@@ -262,11 +262,20 @@ function buildContext(locale) {
     .map((s) => `${s.location} (${s.context}): ${stripHtml(s.text)}`)
     .join("\n");
 
+  const resources = Object.entries(RESOURCES)
+    .filter(([ , r]) => r.type !== "section")
+    .map(([key, r]) => `${key}: ${r.title[locale] || r.title.en} — ${resolveUrl(r, locale)}`)
+    .join("\n");
+
   return `<context>
 <bio>
 ${bio}
-${t.about.languages}. ${locale === "de" ? "Kontakt" : "Contact"}: ${RESOURCES.email.title[locale]}. GitHub: ${RESOURCES.github.url}.
+${t.about.languages}.
 </bio>
+
+<about>
+${stripHtml(t.about.prose)}
+</about>
 
 <career>
 ${career}
@@ -292,6 +301,10 @@ ${t.about.personal}
 ${stripHtml(t.beyondWork.intro)}
 ${beyondWork}
 </beyond-work>
+
+<resources>
+${resources}
+</resources>
 </context>`;
 }
 
@@ -471,13 +484,13 @@ const LINK_INSTRUCTIONS = {
 - Toggle theme: [Switch to dark mode](#action:toggle-theme) or [Switch to light mode](#action:toggle-theme) — use the one OPPOSITE to the current theme in <state>
 - Switch language: [Zu Deutsch wechseln](#action:switch-to-de)
 - Navigate to sections: [About](#about), [Experience](#experience), [Education](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Contact](#contact)
-- Resources: use the direct URLs from your context (CV, GitHub, thesis, etc.)
+- Resources: use the URLs from the <resources> block in your context (CV, GitHub, thesis, etc.)
 Example: if the user says "switch to dark mode", respond with "Click here to switch: [Switch to dark mode](#action:toggle-theme)"`,
   de: `Du KANNST KEINE Aktionen direkt ausführen. Du kannst nur klickbare Links bereitstellen. Sage NIEMALS, dass du etwas bereits getan hast — sage dem Nutzer immer, er soll den Link klicken. Verwende diese Markdown-Links:
 - Theme wechseln: [Zum Dark Mode wechseln](#action:toggle-theme) oder [Zum Light Mode wechseln](#action:toggle-theme) — verwende das GEGENTEIL des aktuellen Themes im <state>-Block
 - Sprache wechseln: [Switch to English](#action:switch-to-en)
 - Zu Bereichen navigieren: [Über mich](#about), [Erfahrung](#experience), [Ausbildung](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Kontakt](#contact)
-- Ressourcen: verwende die direkten URLs aus deinem Kontext (CV, GitHub, Thesis, etc.)
+- Ressourcen: verwende die URLs aus dem <resources>-Block in deinem Kontext (CV, GitHub, Thesis, etc.)
 Beispiel: Wenn der Nutzer "wechsle zum Dark Mode" sagt, antworte mit "Klicke hier: [Zum Dark Mode wechseln](#action:toggle-theme)"`,
 };
 

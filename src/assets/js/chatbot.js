@@ -26,7 +26,7 @@
     // Step 2: markdown links [text](url)
     // Only allow safe URL schemes: https, http, mailto, tel, relative paths, anchors
     s = s.replace(
-      /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:|\/#?|#)[^\s)]*)\)/g,
+      /\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:\/\/|\/|#)[^\s)]*)\)/g,
       function (_, linkText, url) {
         if (url.startsWith("#action:")) {
           return (
