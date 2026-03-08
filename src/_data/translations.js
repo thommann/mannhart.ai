@@ -50,7 +50,7 @@ export default {
       title: "Experience",
       jobs: [
         {
-          date: "2025 — now",
+          date: "2025–now",
           role: "Professional AI Engineer",
           company: "bbv Software Services AG",
           location: "Zürich, Switzerland",
@@ -58,7 +58,7 @@ export default {
           tech: ["Python", "LLMs / RAG", "Agentic AI", "Dev Lead", "AI Strategy", "Azure", "TypeScript", "Platform Engineering"],
         },
         {
-          date: "2023 — 2024",
+          date: "2023–2024",
           role: "Professional Software Engineer",
           company: "Ergon Informatik AG",
           location: "Zürich, Switzerland",
@@ -66,7 +66,7 @@ export default {
           tech: ["Java", "Kotlin", "Angular", "TypeScript", "SQL", "Selenium", "Jenkins", "Git"],
         },
         {
-          date: "2020 — 2023",
+          date: "2020–2023",
           role: "Senior Software Developer",
           company: "PolygonSoftware",
           location: "Opfikon, Switzerland",
@@ -74,7 +74,7 @@ export default {
           tech: ["Full Stack", "Computer Vision", "Machine Learning", "Web Apps", "DevOps"],
         },
         {
-          date: "2019 — 2020",
+          date: "2019–2020",
           role: "Junior Software Developer",
           company: "swissbiomechanics ag",
           location: "Zürich, Switzerland",
@@ -91,7 +91,7 @@ export default {
           degree: "BSc in Informatics",
           specialization: "Software Systems",
           school: "University of Zürich",
-          year: "2017 — 2020",
+          year: "2017–2020",
           detail: 'Specialization in Software Systems. Thesis: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" class="thesis-link">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Written at the Free University of Bozen-Bolzano under the guidance of Anton Dignös. Awarded the Semesterpreis HS20 by the Faculty of Business, Economics and Informatics — one of four students recognized across the entire faculty that semester.',
           award: {
             label: "Semesterpreis HS20",
@@ -102,7 +102,7 @@ export default {
           degree: "MSc in Informatics",
           specialization: "Artificial Intelligence",
           school: "University of Zürich",
-          year: "2020 — 2023",
+          year: "2020–2023",
           detail: 'Specialization in Artificial Intelligence. Exchange semester at the National Taiwan University (NTU) in Taipei. Thesis: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Supervised by Johannes Marti and Dan Olteanu at the Data Systems and Theory group.',
           award: null,
         },
@@ -243,7 +243,7 @@ export default {
 
   de: {
     meta: {
-      description: "Thomas Mannhart — Professional AI Engineer bei bbv Software Services in Zürich. Enterprise-KI-Lösungen, RAG-Systeme und agentische Workflows.",
+      description: "Thomas Mannhart, Professional AI Engineer bei bbv Software Services in Zürich. Enterprise-KI-Lösungen, RAG-Systeme und agentische Workflows.",
     },
     nav: {
       about: "Über mich",
@@ -262,7 +262,7 @@ export default {
     hero: {
       label: "Professional AI Engineer · Zürich, CH",
       name: 'Thomas<br>Rolf<br><em>Mannhart</em>',
-      desc: "Ich entwickle Enterprise-KI in Zürich. Zusammen mit meinem Team bei bbv entwickle ich den Swiss AI Hub, designe kundenspezifische KI-Lösungen, leite Kundenprojekte und schreibe darüber, wie KI die Softwareentwicklung verändert.",
+      desc: "In Zürich entwickle ich Enterprise-KI. Zusammen mit meinem Team bei bbv baue ich den Swiss AI Hub, designe kundenspezifische KI-Lösungen, leite Kundenprojekte und schreibe darüber, wie KI die Softwareentwicklung verändert.",
       getInTouch: "Kontakt aufnehmen",
       github: "GitHub",
       downloadCV: "CV herunterladen",
@@ -270,37 +270,37 @@ export default {
     about: {
       number: "01",
       title: "Über mich",
-      abstract: `<p>Ich bin <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich und entwickle Enterprise-KI auf dem <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a>. Ich habe Informatik an der <strong>Universität Zürich</strong> studiert (BSc + MSc, Spezialisierung KI) und liefere seit 2019 professionell Software — von biomedizinischen Java-Anwendungen über Full-Stack-Webplattformen bis hin zu LLM-gestützten agentischen Systemen.</p>`,
+      abstract: `<p>Als <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich entwickle ich Enterprise-KI auf dem <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a>. Informatik habe ich an der <strong>Universität Zürich</strong> studiert (BSc + MSc, Spezialisierung KI) und liefere seit 2019 professionell Software, von biomedizinischen Java-Anwendungen über Full-Stack-Webplattformen bis hin zu LLM-gestützten agentischen Systemen.</p>`,
       viewMore: "Mehr anzeigen",
       viewLess: "Weniger anzeigen",
       personal: "Hobbys: heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende.",
       languages: "Deutsch (Muttersprache), Englisch (fliessend), Französisch (Grundkenntnisse)",
-      prose: `<p>Ich bin in Galgenen im Kanton Schwyz aufgewachsen und habe nach einem Jahr Militärdienst Informatik an der <strong>Universität Zürich</strong> studiert, wo ich über sechs Jahre verbrachte — zuerst einen <a href="#education">Bachelor in Software Systems</a>, dann einen <a href="#education">Master mit Spezialisierung in Artificial Intelligence</a>. In meiner Bachelorarbeit entwickelte ich einen universellen Range-Join-Algorithmus für PostgreSQL, der mit dem <a href="https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html" target="_blank" rel="noopener">Semesterpreis HS20</a> der Wirtschaftswissenschaftlichen Fakultät ausgezeichnet wurde — einer von nur vier Studierenden, die in diesem Semester fakultätsweit gewürdigt wurden. Für die Arbeit ging ich an die Freie Universität Bozen in Südtirol. Im Master tauchte ich in Zeitreihen-Datenbanken und die Kronecker-Zerlegung ein — eine ungewöhnliche Schnittstelle aus linearer Algebra und Datenkompression, die mich wirklich fasziniert hat. Das Programm beinhaltete ein Austauschsemester an der National Taiwan University in Taipei, wo ich vier Monate lebte, einen Semesterkurs Mandarin belegte und Ostasien erkundete.</p>
+      prose: `<p>Aufgewachsen in Galgenen im Kanton Schwyz, habe ich nach einem Jahr Militärdienst Informatik an der <strong>Universität Zürich</strong> studiert, wo ich über sechs Jahre verbrachte, zuerst einen <a href="#education">Bachelor in Software Systems</a>, dann einen <a href="#education">Master mit Spezialisierung in Artificial Intelligence</a>. In meiner Bachelorarbeit entwickelte ich einen universellen Range-Join-Algorithmus für PostgreSQL, der mit dem <a href="https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html" target="_blank" rel="noopener">Semesterpreis HS20</a> der Wirtschaftswissenschaftlichen Fakultät ausgezeichnet wurde, einer von nur vier Studierenden, die in diesem Semester fakultätsweit gewürdigt wurden. Für die Arbeit ging ich an die Freie Universität Bozen in Südtirol. Im Master tauchte ich in Zeitreihen-Datenbanken und die Kronecker-Zerlegung ein, eine ungewöhnliche Schnittstelle aus linearer Algebra und Datenkompression, die mich wirklich fasziniert hat. Das Programm beinhaltete ein Austauschsemester an der National Taiwan University in Taipei, wo ich vier Monate lebte, einen Semesterkurs Mandarin belegte und Ostasien erkundete.</p>
 
-<p>Neben dem Studium habe ich immer gearbeitet. Mein <a href="#experience">erster richtiger Softwarejob</a> war bei swissbiomechanics, einem ETH-Spin-off, wo ich eigenständig eine Java-Anwendung zur Nachverfolgung biomedizinischer Analysen und zur automatischen Erstellung klinischer Berichte entwickelte. Das warf mich mit 22 direkt ins kalte Wasser — Stakeholder-Kommunikation und eigenverantwortliche Projektleitung. Danach wechselte ich zu PolygonSoftware, einem Startup von UZH-Absolventen, wo ich drei Jahre lang Full-Stack-Entwicklung leitete und in Computer Vision und Machine Learning eintauchte. Ich entwarf Architekturen, betreute Dev-Teams und kommunizierte direkt mit Kunden — typische Startup-Arbeit, bei der man von allem etwas macht und schnell lernt.</p>
+<p>Neben dem Studium habe ich immer gearbeitet. Mein <a href="#experience">erster richtiger Softwarejob</a> war bei swissbiomechanics, einem ETH-Spin-off, wo ich eigenständig eine Java-Anwendung zur Nachverfolgung biomedizinischer Analysen und zur automatischen Erstellung klinischer Berichte entwickelte. Das warf mich mit 22 direkt ins kalte Wasser, Stakeholder-Kommunikation und eigenverantwortliche Projektleitung. Danach wechselte ich zu PolygonSoftware, einem Startup von UZH-Absolventen, wo ich drei Jahre lang Full-Stack-Entwicklung leitete und in Computer Vision und Machine Learning eintauchte. Ich entwarf Architekturen, betreute Dev-Teams und kommunizierte direkt mit Kunden, typische Startup-Arbeit, bei der man von allem etwas macht und schnell lernt.</p>
 
-<p>Nach dem Master trat ich bei <strong>Ergon Informatik</strong> ein, einem der renommiertesten Softwarehäuser Zürichs, und arbeitete an einem Zeiterfassungs- und Personalplanungssystem für den Detailhandel. Dort verfeinerte ich mein Können in Enterprise Java und Kotlin, übernahm den gesamten Delivery-Zyklus von der Anforderungsanalyse bis zum Support und entdeckte, dass mir Mentoring besonders liegt — ob beim Onboarding neuer Teammitglieder oder beim Organisieren von IT-Workshops für Schüler. Ich habe die Arbeit bei Ergon sehr geschätzt, bin aber nach rund einem Jahr zu bbv gewechselt, als sich die Möglichkeit bot, in meine bevorzugte Spezialisierung einzusteigen: KI.</p>
+<p>Nach dem Master trat ich bei <strong>Ergon Informatik</strong> ein, einem der renommiertesten Softwarehäuser Zürichs, und arbeitete an einem Zeiterfassungs- und Personalplanungssystem für den Detailhandel. Dort verfeinerte ich mein Können in Enterprise Java und Kotlin, übernahm den gesamten Delivery-Zyklus von der Anforderungsanalyse bis zum Support und entdeckte, dass mir Mentoring besonders liegt, ob beim Onboarding neuer Teammitglieder oder beim Organisieren von IT-Workshops für Schüler. Ich habe die Arbeit bei Ergon sehr geschätzt, bin aber nach rund einem Jahr zu bbv gewechselt, als sich die Möglichkeit bot, in meine bevorzugte Spezialisierung einzusteigen: KI.</p>
 
-<p>Heute bin ich <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, wo ich zusammen mit meinem Team den <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a> — eine umfassende, Schweizer Enterprise-KI-Plattform — entwickle und deren Architektur gemeinsam mit dem Software-Architekten gestalte. Neben der Plattform designe und implementiere ich kundenspezifische KI-Lösungen — insbesondere <a href="#skills">RAG-Systeme</a> — für Kundenprojekte im industriellen Umfeld und in der Marktforschung und übernehme die technische Leitung (Dev Lead) dieser KI-Projekte. Zudem betreibe und warte ich die Plattform beim Kunden und berate Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie. Das liegt genau an der Schnittstelle meiner Interessen: echte Engineering-Probleme, modernste KI und die Herausforderung, komplexe Technologie nutzbar und vertrauenswürdig zu machen für Organisationen, die sich keine Fehler leisten können.</p>
+<p>Heute bin ich <strong>Professional AI Engineer</strong> bei <a href="https://en.bbv.ch/" target="_blank" rel="noopener">bbv Software Services</a> in Zürich, wo ich zusammen mit meinem Team den <a href="https://ai-hub.bbv.ch/" target="_blank" rel="noopener">Swiss AI Hub</a>, eine umfassende, Schweizer Enterprise-KI-Plattform, entwickle und deren Architektur gemeinsam mit dem Software-Architekten gestalte. Neben der Plattform designe und implementiere ich kundenspezifische KI-Lösungen, insbesondere <a href="#skills">RAG-Systeme</a>, für Kundenprojekte im industriellen Umfeld und in der Marktforschung und übernehme die technische Leitung (Dev Lead) dieser KI-Projekte. Zudem betreibe und warte ich die Plattform beim Kunden und berate Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie. Das liegt genau an der Schnittstelle meiner Interessen: echte Engineering-Probleme, modernste KI und die Herausforderung, komplexe Technologie nutzbar und vertrauenswürdig zu machen für Organisationen, die sich keine Fehler leisten können.</p>
 
-<p>Ich <a href="#featured">spreche und schreibe</a> auch über KI-gestützte Softwareentwicklung — wie KI die Art verändert, wie wir Software bauen, nicht nur die Software selbst. Ich habe Vorträge am FHNW Alumni Event und in bbv-Webinaren gehalten, über praktische Methoden zur Integration von KI in den Entwicklungszyklus, von der Anforderungsanalyse bis zum Testing.</p>
+<p>Darüber hinaus <a href="#featured">spreche und schreibe</a> ich über KI-gestützte Softwareentwicklung, darüber, wie KI die Art verändert, wie wir Software bauen, nicht nur die Software selbst. Am FHNW Alumni Event und in bbv-Webinaren habe ich Vorträge gehalten über praktische Methoden zur Integration von KI in den Entwicklungszyklus, von der Anforderungsanalyse bis zum Testing.</p>
 
-<p>Mein <a href="#skills">technisches Toolkit</a> umfasst Python, TypeScript und Java/Kotlin, mit viel Erfahrung in Agent Orchestration, RAG und dem Model Context Protocol. Ich spreche fliessend Deutsch und Englisch und etwas Französisch. Und wenn ich nicht code — heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende.</p>`,
+<p>Mein <a href="#skills">technisches Toolkit</a> umfasst Python, TypeScript und Java/Kotlin, mit viel Erfahrung in Agent Orchestration, RAG und dem Model Context Protocol. Ich spreche fliessend Deutsch und Englisch und etwas Französisch. Und wenn ich nicht code: heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende.</p>`,
     },
     experience: {
       number: "02",
       title: "Erfahrung",
       jobs: [
         {
-          date: "2025 — heute",
+          date: "2025–heute",
           role: "Professional AI Engineer",
           company: "bbv Software Services AG",
           location: "Zürich, Schweiz",
-          desc: "Entwicklung einer umfassenden Enterprise-KI-Plattform, einschliesslich Architektur-Design in Zusammenarbeit mit dem Software-Architekten. Design und Implementierung kundenspezifischer KI-Lösungen — insbesondere RAG-Systeme — für Kundenprojekte im industriellen Umfeld und in der Marktforschung. Technische Leitung (Dev Lead) von KI-Kundenprojekten. Betrieb und Wartung der KI-Plattform und kundenspezifischer Lösungen. Beratung von Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie.",
+          desc: "Entwicklung einer umfassenden Enterprise-KI-Plattform, einschliesslich Architektur-Design in Zusammenarbeit mit dem Software-Architekten. Design und Implementierung kundenspezifischer KI-Lösungen, insbesondere RAG-Systeme, für Kundenprojekte im industriellen Umfeld und in der Marktforschung. Technische Leitung (Dev Lead) von KI-Kundenprojekten. Betrieb und Wartung der KI-Plattform und kundenspezifischer Lösungen. Beratung von Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie.",
           tech: ["Python", "LLMs / RAG", "Agentic AI", "Dev Lead", "AI Strategy", "Azure", "TypeScript", "Platform Engineering"],
         },
         {
-          date: "2023 — 2024",
+          date: "2023–2024",
           role: "Professional Software Engineer",
           company: "Ergon Informatik AG",
           location: "Zürich, Schweiz",
@@ -308,7 +308,7 @@ export default {
           tech: ["Java", "Kotlin", "Angular", "TypeScript", "SQL", "Selenium", "Jenkins", "Git"],
         },
         {
-          date: "2020 — 2023",
+          date: "2020–2023",
           role: "Senior Software Developer",
           company: "PolygonSoftware",
           location: "Opfikon, Schweiz",
@@ -316,7 +316,7 @@ export default {
           tech: ["Full Stack", "Computer Vision", "Machine Learning", "Web Apps", "DevOps"],
         },
         {
-          date: "2019 — 2020",
+          date: "2019–2020",
           role: "Junior Software Developer",
           company: "swissbiomechanics ag",
           location: "Zürich, Schweiz",
@@ -333,8 +333,8 @@ export default {
           degree: "BSc in Informatik",
           specialization: "Software Systems",
           school: "Universität Zürich",
-          year: "2017 — 2020",
-          detail: 'Spezialisierung in Software Systems. Bachelorarbeit: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" class="thesis-link">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Geschrieben an der Freien Universität Bozen unter der Betreuung von Anton Dignös. Ausgezeichnet mit dem Semesterpreis HS20 der Wirtschaftswissenschaftlichen Fakultät — einer von vier Studierenden, die in diesem Semester fakultätsweit ausgezeichnet wurden.',
+          year: "2017–2020",
+          detail: 'Spezialisierung in Software Systems. Bachelorarbeit: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" class="thesis-link">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Geschrieben an der Freien Universität Bozen unter der Betreuung von Anton Dignös. Ausgezeichnet mit dem Semesterpreis HS20 der Wirtschaftswissenschaftlichen Fakultät, einer von vier Studierenden, die in diesem Semester fakultätsweit ausgezeichnet wurden.',
           award: {
             label: "Semesterpreis HS20",
             href: "https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html",
@@ -344,7 +344,7 @@ export default {
           degree: "MSc in Informatik",
           specialization: "Artificial Intelligence",
           school: "Universität Zürich",
-          year: "2020 — 2023",
+          year: "2020–2023",
           detail: 'Spezialisierung in Artificial Intelligence. Austauschsemester an der National Taiwan University (NTU) in Taipei. Masterarbeit: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Betreut von Johannes Marti und Dan Olteanu in der Gruppe Data Systems and Theory.',
           award: null,
         },
@@ -386,24 +386,24 @@ export default {
       title: "Vorträge",
       webinar: {
         title: "KI als Entwicklungspartner",
-        desc: "bbv-Webinar über praktische Methoden, Tools und bewährte Strategien zur Integration von KI in den Software-Entwicklungszyklus — von der Anforderungsanalyse über die Code-Entwicklung bis zum Testing.",
+        desc: "bbv-Webinar über praktische Methoden, Tools und bewährte Strategien zur Integration von KI in den Software-Entwicklungszyklus, von der Anforderungsanalyse über die Code-Entwicklung bis zum Testing.",
         watchOnYoutube: "Auf YouTube ansehen",
       },
       fhnw: {
         label: "Alumni Event · FHNW · 2025",
         title: "AI-Augmented<br>Software Engineering",
-        desc: 'Vortrag am FHNW Data Science &amp; Data Engineering Alumni Event über die Integration von KI in den Software-Entwicklungszyklus — von der Enterprise-KI-Strategie und dem Swiss AI Hub bis hin zur Arbeit mit Coding Agents und dem «Development Funnel» für kontextgesteuerte KI-Workflows.',
+        desc: 'Vortrag am FHNW Data Science &amp; Data Engineering Alumni Event über die Integration von KI in den Software-Entwicklungszyklus, von der Enterprise-KI-Strategie und dem Swiss AI Hub bis hin zur Arbeit mit Coding Agents und dem «Development Funnel» für kontextgesteuerte KI-Workflows.',
         bbvPost: "bbv Post",
         fhnwPost: "FHNW Post",
         slides: "Slides",
         prevSlide: "Vorheriges Bild",
         nextSlide: "Nächstes Bild",
         slide: "Bild",
-        altTitleSlide: "AI Augmented Software Engineering — Titelfolie",
-        altAudienceOverview: "FHNW-Vortrag — Publikumsübersicht",
-        altPresenting: "FHNW-Vortrag — Präsentation",
-        altJuniorDevSlide: "FHNW-Vortrag — Junior Developer 2.0 Folie",
-        altEngagedAudience: "FHNW-Vortrag — engagiertes Publikum",
+        altTitleSlide: "AI Augmented Software Engineering, Titelfolie",
+        altAudienceOverview: "FHNW-Vortrag, Publikumsübersicht",
+        altPresenting: "FHNW-Vortrag, Präsentation",
+        altJuniorDevSlide: "FHNW-Vortrag, Junior Developer 2.0 Folie",
+        altEngagedAudience: "FHNW-Vortrag, engagiertes Publikum",
       },
       aiHub: {
         title: "Über den Swiss AI Hub",
@@ -419,17 +419,17 @@ export default {
     beyondWork: {
       number: "06",
       title: "Persönliches",
-      intro: `<p>Einige meiner prägendsten Erfahrungen fanden fernab vom Schreibtisch statt — eingesperrt in einem Airbnb während einer Pandemie, auf Entdeckungstour in Taiwan während eines Austauschsemesters oder beim Stammeln auf Mandarin mit Kommilitonen aus aller Welt.</p>`,
+      intro: `<p>Einige meiner prägendsten Erfahrungen fanden fernab vom Schreibtisch statt, eingesperrt in einem Airbnb während einer Pandemie, auf Entdeckungstour in Taiwan während eines Austauschsemesters oder beim Stammeln auf Mandarin mit Kommilitonen aus aller Welt.</p>`,
       stories: [
         {
           location: "Bozen, Südtirol",
           context: "Bachelorarbeit · 2020",
-          text: "Ich ging an die Freie Universität Bozen, um meine Bachelorarbeit zu schreiben — und kam genau dann an, als COVID alles lahmlegte. Ich konnte nur zwei Wochen an der Universität teilnehmen, bevor sie schloss. Ich sass dann in einem Airbnb auf dem Land in Südtirol fest und führte den Hund der Gastgeberin zweimal täglich durch Apfelfelder aus, um bei Verstand zu bleiben. Die Isolation erwies sich als erstaunlich effektiv für die Arbeit.",
+          text: "Für meine Bachelorarbeit ging es an die Freie Universität Bozen, doch die Ankunft fiel genau mit dem COVID-Lockdown zusammen. Nur zwei Wochen konnte ich an der Universität teilnehmen, bevor sie schloss. Danach sass ich in einem Airbnb auf dem Land in Südtirol fest und führte den Hund der Gastgeberin zweimal täglich durch Apfelfelder aus, um bei Verstand zu bleiben. Die Isolation erwies sich als erstaunlich effektiv für die Arbeit.",
         },
         {
           location: "Taipei, Taiwan",
           context: "Austauschsemester · NTU · 2022–2023",
-          text: "Während meines Masters lebte ich etwa vier Monate in Taipei und studierte an der National Taiwan University. Ich belegte einen Semesterkurs Mandarin — ich erinnere mich noch an einiges, aber bei weitem nicht genug für ein richtiges Gespräch. Wann immer ich konnte, reiste ich über die Insel.",
+          text: "Während meines Masters lebte ich etwa vier Monate in Taipei und studierte an der National Taiwan University. Ich belegte einen Semesterkurs Mandarin, erinnere mich noch an einiges, aber bei weitem nicht genug für ein richtiges Gespräch. Wann immer ich konnte, reiste ich über die Insel.",
         },
         {
           location: "Korea & Japan",
@@ -476,7 +476,7 @@ export default {
     },
     contact: {
       title: '<em>Kontakt</em> aufnehmen',
-      desc: "Melden Sie sich gerne — ich freue mich auf den Austausch.",
+      desc: "Melden Sie sich gerne, ich freue mich auf den Austausch.",
     },
     footer: {
       text: "&copy; 2026 Thomas Mannhart · Zürich, Schweiz",

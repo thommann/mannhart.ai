@@ -52,6 +52,9 @@ node scripts/generate-cv.js   # Generates PDF CVs to src/assets/pdf/
 - **Do not commit `chatbot-server/translations.js` or `chatbot-server/utils.js`** — these are generated at deploy time
 - **Do not modify `_site/`** — this is the build output directory, regenerated on every build
 - **Do not add external analytics, tracking scripts, or third-party CDN dependencies** without explicit approval
+- **Use en dashes without spaces for date/year ranges** in both languages (e.g. `2020–2023`, not `2020 — 2023`)
+- **Do not use em dashes (—) in German text** (they are not part of German typography). Do not use Gedankenstriche (dashes to separate sentence parts) in German; use commas instead
+- **Never start a paragraph with "Ich"** in German and never have multiple consecutive sentences starting with "Ich"
 
 ## Key Entry Points
 
