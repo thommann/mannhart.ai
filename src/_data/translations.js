@@ -20,7 +20,7 @@ export default {
     hero: {
       label: "Professional AI Engineer · Zürich, CH",
       name: 'Thomas<br>Rolf<br><em>Mannhart</em>',
-      desc: "Building enterprise AI in Zürich. Together with my team at bbv, I'm developing the Swiss AI Hub, design custom AI solutions, lead customer projects, and write about how AI is changing the way we build software.",
+      desc: "In Zürich, my team and I are designing and building the Swiss AI Hub, an AI platform for organizations of every size. For our customers, I design custom AI solutions to solve their most pressing problems that were previously impossible or extremely difficult to solve without AI. I'm passionate about sharing my experience in building and implementing an AI-assisted development process.",
       getInTouch: "Get in touch",
       github: "GitHub",
       downloadCV: "Download CV",
@@ -262,7 +262,7 @@ export default {
     hero: {
       label: "Professional AI Engineer · Zürich, CH",
       name: 'Thomas<br>Rolf<br><em>Mannhart</em>',
-      desc: "In Zürich entwickle ich Enterprise-KI. Zusammen mit meinem Team bei bbv baue ich den Swiss AI Hub, designe kundenspezifische KI-Lösungen, leite Kundenprojekte und schreibe darüber, wie KI die Softwareentwicklung verändert.",
+      desc: "In Zürich designen und bauen mein Team und ich den Swiss AI Hub, eine KI-Plattform für Unternehmen jeder Grösse. Für unsere Kunden entwerfe ich massgeschneiderte KI-Lösungen, die ohne KI nicht oder nur sehr schwer lösbar wären. Dabei teile ich mit Leidenschaft meine Erfahrungen im Aufbau und in der Umsetzung eines KI-unterstützten Entwicklungsprozesses.",
       getInTouch: "Kontakt aufnehmen",
       github: "GitHub",
       downloadCV: "CV herunterladen",
