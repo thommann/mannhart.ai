@@ -154,7 +154,12 @@ function generateCV(lang) {
   const education = buildEducation(t);
   const skills = buildSkills(t, lang);
   const talks = buildTalks(t);
-  const profile = escTex(stripHtml(t.about.abstract));
+  const profile = t.about.abstract
+    .split(/<\/?p>/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((s) => escTex(stripHtml(s)))
+    .join("\n\n\\vspace{4pt}\n");
 
   const jobEntries = jobs
     .map(
@@ -225,7 +230,7 @@ function generateCV(lang) {
 
 % ── Section heading ──
 \\newcommand{\\cvsection}[1]{%
-  \\vspace{5pt}%
+  \\vspace{6pt}%
   {\\fontsize{9}{11}\\selectfont\\bfseries\\color{cvdark}\\MakeUppercase{#1}}%
   \\\\[-3pt]%
   {\\color{ruledark}\\rule{\\textwidth}{0.6pt}}%
@@ -252,17 +257,17 @@ function generateCV(lang) {
     {\\fontsize{9.5}{12}\\selectfont\\bfseries\\color{cvblack}#2}\\newline
     {\\fontsize{8.5}{11}\\selectfont\\color{cvgray}#3}\\newline
     {\\fontsize{8.5}{11}\\selectfont\\color{cvblack}#4}
-  \\end{tabularx}\\vspace{2pt}%
+  \\end{tabularx}\\vspace{3pt}%
 }
 
 % ── Skill entry ──
 \\newcommand{\\cvskill}[2]{%
-  {\\fontsize{9}{12}\\selectfont{\\bfseries\\color{cvblack}#1:\\enspace}{\\color{cvgray}#2}}\\\\[2pt]%
+  {\\fontsize{9}{12}\\selectfont{\\bfseries\\color{cvblack}#1:\\enspace}{\\color{cvgray}#2}}\\\\[3pt]%
 }
 
 % ── Talk entry ──
 \\newcommand{\\cvtalk}[2]{%
-  {\\fontsize{9}{12}\\selectfont{\\bfseries\\color{cvblack}#1\\enspace}{\\fontsize{8.5}{11}\\selectfont\\color{cvgray}#2}}\\\\[1.5pt]%
+  {\\fontsize{9}{12}\\selectfont{\\bfseries\\color{cvblack}#1\\enspace}{\\color{cvgray}#2}}\\\\[3pt]%
 }
 
 \\begin{document}
