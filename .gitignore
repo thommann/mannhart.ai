@@ -19,6 +19,7 @@ dist/
 chatbot-server/translations.js
 chatbot-server/utils.js
 src/assets/pdf/Thomas_Mannhart_CV_*.pdf
+src/assets/pdf/cv_*.tex
 
 # IDE
 .vscode/
