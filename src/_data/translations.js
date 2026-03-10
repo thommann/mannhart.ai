@@ -227,7 +227,7 @@ export default {
       },
       mannhart: {
         title: "mannhart.ai",
-        desc: "This website — a bilingual portfolio with an integrated AI chatbot, built with Eleventy and vanilla JS.",
+        desc: "My website — a bilingual portfolio with an integrated AI chatbot, built with Eleventy and vanilla JS.",
         tech: ["Eleventy", "Caddy"],
         source: "Source",
       },
@@ -533,7 +533,7 @@ export default {
       },
       mannhart: {
         title: "mannhart.ai",
-        desc: "Diese Website, ein zweisprachiges Portfolio mit integriertem KI-Chatbot, gebaut mit Eleventy und Vanilla JS.",
+        desc: "Meine Website, ein zweisprachiges Portfolio mit integriertem KI-Chatbot, gebaut mit Eleventy und Vanilla JS.",
         tech: ["Eleventy", "Caddy"],
         source: "Quellcode",
       },
