@@ -3,7 +3,7 @@ import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import translations from "../src/_data/translations.js";
-import { stripHtml, SKILL_LEVELS } from "../src/_data/utils.js";
+import { stripHtml } from "../src/_data/utils.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = join(__dirname, "..", "src", "assets", "pdf");
@@ -77,8 +77,10 @@ function buildJobs(t) {
         `${j.company}, ${j.location.replace(/, (Switzerland|Schweiz)/g, "")}`
       );
       const desc = escTex(j.desc);
-      const tech = j.tech.map((t) => escTex(t)).join(", ");
-      return `\\cventry{${date}}{${role}}{${company}}{${desc}}{${tech}}`;
+      const assessment = j.assessment
+        ? `\\newline\\cvlink{file-alt}{https://t.mannhart.ai${j.assessment.href}}{${escTex(j.assessment.label)}}`
+        : "";
+      return `\\cventry{${date}}{${role}}{${company}}{${assessment}}{${desc}}`;
     })
     .join("\n");
 }
@@ -90,7 +92,7 @@ function buildEducation(t) {
     .map((e) => {
       const detail = escTex(stripHtml(e.detail));
       const award = e.award
-        ? `\\newline{\\bfseries\\color{accent}\\href{${e.award.href}}{${escTex(e.award.label)}}}`
+        ? `\\newline\\cvlink{award}{${e.award.href}}{${escTex(e.award.label)}}`
         : "";
       const year = escTex(e.year);
       const degree = escTex(`${e.degree} (${e.specialization})`);
@@ -101,17 +103,11 @@ function buildEducation(t) {
 }
 
 function buildSkills(t, lang) {
-  const levels = SKILL_LEVELS[lang];
   const labels = LABELS[lang];
   const progNames = ["Languages", "Sprachen"];
 
   const groups = t.skills.groups.map((g) => {
-    const items = g.items
-      .map((s) => {
-        const level = levels[s.level];
-        return level ? `${escTex(s.name)} (${escTex(level)})` : escTex(s.name);
-      })
-      .join(", ");
+    const items = g.items.map((s) => escTex(s.name)).join(", ");
     const category = progNames.includes(g.name)
       ? labels.programming
       : escTex(g.name);
@@ -123,7 +119,11 @@ function buildSkills(t, lang) {
   return groups.join("\n");
 }
 
-function buildTalks(t) {
+function buildTalks(t, lang) {
+  const docsUrl = lang === "de"
+    ? "https://bbvch-ai.github.io/aihub-core/de/"
+    : "https://bbvch-ai.github.io/aihub-core/";
+  const docsLabel = lang === "de" ? "Dokumentation" : "Documentation";
   return [
     {
       title: escTex(stripHtml(t.featured.webinar.title)),
@@ -135,7 +135,7 @@ function buildTalks(t) {
     },
     {
       title: escTex(stripHtml(t.featured.aiHub.title)),
-      desc: `${escTex(stripHtml(t.featured.aiHub.desc))} {\\color{accent}\\href{https://bbvch-ai.github.io/aihub-core/}{bbvch-ai.github.io/aihub-core}}`,
+      desc: `${escTex(stripHtml(t.featured.aiHub.desc))} \\cvlink{globe}{${docsUrl}}{${docsLabel}}`,
     },
   ]
     .map((t) => `\\cvtalk{${t.title}}{${t.desc}}`)
@@ -163,7 +163,7 @@ function generateCV(lang) {
     .replace("{{LABEL_SKILLS}}", labels.skills)
     .replace("{{SKILL_ENTRIES}}", buildSkills(t, lang))
     .replace("{{LABEL_TALKS}}", labels.talks)
-    .replace("{{TALK_ENTRIES}}", buildTalks(t));
+    .replace("{{TALK_ENTRIES}}", buildTalks(t, lang));
 
   writeFileSync(outputTex, tex);
   console.log(`LaTeX source written → ${outputTex}`);

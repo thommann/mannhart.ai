@@ -658,6 +658,22 @@ section {
   max-width: 560px;
 }
 
+.timeline-assessment {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.timeline-assessment:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .timeline-tech {
   display: flex;
   flex-wrap: wrap;

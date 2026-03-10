@@ -13,6 +13,9 @@
         <div class="timeline-company">{{ job.company }}</div>
         <div class="timeline-location">{{ job.location }}</div>
         <p class="timeline-desc">{{ job.desc }}</p>
+        {% if job.assessment %}
+        <a href="{{ job.assessment.href }}" target="_blank" rel="noopener" class="timeline-assessment">{{ job.assessment.label }}</a>
+        {% endif %}
         <div class="timeline-tech">
           {% for tag in job.tech %}
           <span class="tech-tag">{{ tag }}</span>
