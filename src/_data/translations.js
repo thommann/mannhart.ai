@@ -33,7 +33,7 @@ export default {
       viewMore: "View more",
       viewLess: "View less",
       personal: "Enjoys hot tea, cold beer, good food, thick books, old music, and long board game nights.",
-      languages: "German (native), English (fluent), French (basic)",
+      languages: "German (native), English (fluent), French (basic), Mandarin (beginner)",
       prose: `<p>I grew up in Galgenen in the canton of Schwyz and, after a year of military service, studied Informatics at the <strong>University of Zürich</strong>, where I spent over six years — first a <a href="#education">Bachelor's in Software Systems</a>, then a <a href="#education">Master's specializing in Artificial Intelligence</a>. For my bachelor thesis I built a general-purpose range join algorithm for PostgreSQL, which won the <a href="https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html" target="_blank" rel="noopener">Semesterpreis HS20</a> — a faculty-level award from the Faculty of Business, Economics and Informatics, recognizing one of only four students across the entire faculty that semester. The thesis took me to the Free University of Bozen-Bolzano for a research stay in South Tyrol. For my master's I dove into time series databases and the Kronecker decomposition — an unusual intersection of linear algebra and data compression that I found genuinely fascinating. The programme included an exchange semester at the National Taiwan University in Taipei, where I lived for four months, took a semester of Mandarin, and explored East Asia.</p>
 
 <p>Throughout my studies I was always working alongside. My <a href="#experience">first real software job</a> was at swissbiomechanics, an ETH spin-off, where I single-handedly built a Java application for tracking biomedical analyses and generating clinical reports. That threw me into the deep end of stakeholder communication and independent project ownership at twenty-two. From there I moved to PolygonSoftware, a startup founded by fellow UZH graduates, where I spent three years leading full-stack development and diving into computer vision and machine learning. I designed architectures, supervised dev teams, and talked directly with clients — the kind of small-company work where you end up doing a bit of everything and learning fast.</p>
@@ -120,26 +120,66 @@ export default {
           name: "Languages",
           items: [
             { name: "Python" },
-            { name: "TypeScript / JS" },
+            { name: "TypeScript" },
             { name: "Java / Kotlin" },
+            { name: "C++" },
             { name: "SQL" },
-            { name: "HTML / CSS" },
           ],
         },
         {
-          name: "AI",
+          name: "AI Platform",
           items: [
-            { name: "Agent Orchestration" },
             { name: "RAG" },
+            { name: "Agent Orchestration" },
             { name: "MCP" },
-            { name: "Computer Vision" },
+            { name: "LiteLLM" },
+            { name: "vLLM" },
+            { name: "Milvus" },
+            { name: "Dagster" },
+            { name: "MinerU" },
+            { name: "Docling" },
+            { name: "Presidio" },
           ],
         },
         {
-          name: "Frameworks",
+          name: "Web Frameworks",
           items: [
-            { name: "Angular" },
+            { name: "FastAPI" },
+            { name: "NestJS" },
             { name: "Express" },
+            { name: "Angular" },
+            { name: "Vue / Nuxt" },
+            { name: "Eleventy" },
+          ],
+        },
+        {
+          name: "Cloud & Infrastructure",
+          items: [
+            { name: "AWS" },
+            { name: "Azure" },
+            { name: "OpenStack" },
+            { name: "Docker" },
+            { name: "Keycloak" },
+            { name: "Traefik" },
+            { name: "Caddy" },
+            { name: "Nginx" },
+          ],
+        },
+        {
+          name: "Data & Messaging",
+          items: [
+            { name: "PostgreSQL" },
+            { name: "Redis" },
+            { name: "MongoDB" },
+            { name: "NATS / JetStream" },
+          ],
+        },
+        {
+          name: "Observability",
+          items: [
+            { name: "Langfuse" },
+            { name: "OpenTelemetry" },
+            { name: "SigNoz" },
           ],
         },
         {
@@ -147,9 +187,6 @@ export default {
           items: [
             { name: "Claude Code" },
             { name: "Git / GitHub" },
-            { name: "Docker" },
-            { name: "Jenkins" },
-            { name: "Selenium" },
           ],
         },
       ],
@@ -290,7 +327,7 @@ export default {
       viewMore: "Mehr anzeigen",
       viewLess: "Weniger anzeigen",
       personal: "Hobbys: heisser Tee, kaltes Bier, gutes Essen, dicke Bücher, alte Musik und lange Brettspielabende.",
-      languages: "Deutsch (Muttersprache), Englisch (fliessend), Französisch (Grundkenntnisse)",
+      languages: "Deutsch (Muttersprache), Englisch (fliessend), Französisch (Grundkenntnisse), Mandarin (Anfänger)",
       prose: `<p>Aufgewachsen in Galgenen im Kanton Schwyz, habe ich nach einem Jahr Militärdienst Informatik an der <strong>Universität Zürich</strong> studiert, wo ich über sechs Jahre verbrachte, zuerst einen <a href="#education">Bachelor in Software Systems</a>, dann einen <a href="#education">Master mit Spezialisierung in Artificial Intelligence</a>. In meiner Bachelorarbeit entwickelte ich einen universellen Range-Join-Algorithmus für PostgreSQL, der mit dem <a href="https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html" target="_blank" rel="noopener">Semesterpreis HS20</a> der Wirtschaftswissenschaftlichen Fakultät ausgezeichnet wurde, einer von nur vier Studierenden, die in diesem Semester fakultätsweit gewürdigt wurden. Für die Arbeit ging ich an die Freie Universität Bozen in Südtirol. Im Master tauchte ich in Zeitreihen-Datenbanken und die Kronecker-Zerlegung ein, eine ungewöhnliche Schnittstelle aus linearer Algebra und Datenkompression, die mich wirklich fasziniert hat. Das Programm beinhaltete ein Austauschsemester an der National Taiwan University in Taipei, wo ich vier Monate lebte, einen Semesterkurs Mandarin belegte und Ostasien erkundete.</p>
 
 <p>Neben dem Studium habe ich immer gearbeitet. Mein <a href="#experience">erster richtiger Softwarejob</a> war bei swissbiomechanics, einem ETH-Spin-off, wo ich eigenständig eine Java-Anwendung zur Nachverfolgung biomedizinischer Analysen und zur automatischen Erstellung klinischer Berichte entwickelte. Das warf mich mit 22 direkt ins kalte Wasser, Stakeholder-Kommunikation und eigenverantwortliche Projektleitung. Danach wechselte ich zu PolygonSoftware, einem Startup von UZH-Absolventen, wo ich drei Jahre lang Full-Stack-Entwicklung leitete und in Computer Vision und Machine Learning eintauchte. Ich entwarf Architekturen, betreute Dev-Teams und kommunizierte direkt mit Kunden, typische Startup-Arbeit, bei der man von allem etwas macht und schnell lernt.</p>
@@ -377,26 +414,66 @@ export default {
           name: "Sprachen",
           items: [
             { name: "Python" },
-            { name: "TypeScript / JS" },
+            { name: "TypeScript" },
             { name: "Java / Kotlin" },
+            { name: "C++" },
             { name: "SQL" },
-            { name: "HTML / CSS" },
           ],
         },
         {
-          name: "KI",
+          name: "KI-Plattform",
           items: [
-            { name: "Agent Orchestration" },
             { name: "RAG" },
+            { name: "Agent Orchestration" },
             { name: "MCP" },
-            { name: "Computer Vision" },
+            { name: "LiteLLM" },
+            { name: "vLLM" },
+            { name: "Milvus" },
+            { name: "Dagster" },
+            { name: "MinerU" },
+            { name: "Docling" },
+            { name: "Presidio" },
           ],
         },
         {
-          name: "Frameworks",
+          name: "Web-Frameworks",
           items: [
-            { name: "Angular" },
+            { name: "FastAPI" },
+            { name: "NestJS" },
             { name: "Express" },
+            { name: "Angular" },
+            { name: "Vue / Nuxt" },
+            { name: "Eleventy" },
+          ],
+        },
+        {
+          name: "Cloud & Infrastruktur",
+          items: [
+            { name: "AWS" },
+            { name: "Azure" },
+            { name: "OpenStack" },
+            { name: "Docker" },
+            { name: "Keycloak" },
+            { name: "Traefik" },
+            { name: "Caddy" },
+            { name: "Nginx" },
+          ],
+        },
+        {
+          name: "Daten & Messaging",
+          items: [
+            { name: "PostgreSQL" },
+            { name: "Redis" },
+            { name: "MongoDB" },
+            { name: "NATS / JetStream" },
+          ],
+        },
+        {
+          name: "Observability",
+          items: [
+            { name: "Langfuse" },
+            { name: "OpenTelemetry" },
+            { name: "SigNoz" },
           ],
         },
         {
@@ -404,9 +481,6 @@ export default {
           items: [
             { name: "Claude Code" },
             { name: "Git / GitHub" },
-            { name: "Docker" },
-            { name: "Jenkins" },
-            { name: "Selenium" },
           ],
         },
       ],
