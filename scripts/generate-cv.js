@@ -136,7 +136,7 @@ function buildTalks(t) {
     },
     {
       title: escTex(stripHtml(t.featured.aiHub.title)),
-      desc: escTex(stripHtml(t.featured.aiHub.desc)),
+      desc: `${escTex(stripHtml(t.featured.aiHub.desc))} {\\color{accent}\\href{https://bbvch-ai.github.io/aihub-core/}{bbvch-ai.github.io/aihub-core}}`,
     },
   ];
 }
