@@ -900,6 +900,31 @@ section {
   margin-top: 1rem;
 }
 
+.featured-projects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.featured-project h3 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.featured-project p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  margin-bottom: 0.75rem;
+}
+
+.featured-project .timeline-tech {
+  margin-top: 0.75rem;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -1024,6 +1049,7 @@ section {
 
 @media (max-width: 900px) {
   .featured-grid { grid-template-columns: 1fr; }
+  .featured-projects { grid-template-columns: 1fr; }
 }
 
 /* --- Beyond Work --- */

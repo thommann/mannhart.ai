@@ -137,6 +137,14 @@ function buildTalks(t, lang) {
       title: escTex(stripHtml(t.featured.aiHub.title)),
       desc: `${escTex(stripHtml(t.featured.aiHub.desc))} \\cvlink{globe}{${docsUrl}}{${docsLabel}}`,
     },
+    {
+      title: escTex(t.featured.mannhart.title),
+      desc: `${escTex(t.featured.mannhart.desc)} \\cvlink{globe}{https://t.mannhart.ai}{t.mannhart.ai}`,
+    },
+    {
+      title: escTex(t.featured.airspace.title),
+      desc: `${escTex(t.featured.airspace.desc)} \\cvlink{github}{https://github.com/johannschwabe/AirspaceAuctionSimulator}{GitHub}`,
+    },
   ]
     .map((t) => `\\cvtalk{${t.title}}{${t.desc}}`)
     .join("\n");

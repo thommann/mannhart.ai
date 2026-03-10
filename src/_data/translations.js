@@ -56,7 +56,7 @@ export default {
           company: "bbv Software Services AG",
           location: "Zürich, Switzerland",
           desc: "Development of a comprehensive enterprise AI platform, including architecture design in collaboration with the software architect. Design and implementation of customized AI solutions — especially RAG systems — for customer projects in industry and market research. Technical leadership (Dev Lead) of customer AI projects. Operation and maintenance of the AI platform and customer-specific solutions. Consulting customers on their IT and AI strategy.",
-          tech: ["Python", "LLMs / RAG", "Agentic AI", "Dev Lead", "AI Strategy", "Azure", "TypeScript", "Platform Engineering"],
+          tech: ["Python", "TypeScript", "SQL", "RAG", "Agent Orchestration", "MCP", "LiteLLM", "vLLM", "Milvus", "Dagster", "MinerU", "Docling", "Presidio", "FastAPI", "NestJS", "Azure", "OpenStack", "Docker", "Keycloak", "Traefik", "Nginx", "Redis", "MongoDB", "NATS / JetStream", "Langfuse", "OpenTelemetry", "SigNoz", "Git / GitHub", "Claude Code"],
         },
         {
           date: "2023–2024",
@@ -64,7 +64,7 @@ export default {
           company: "Ergon Informatik AG",
           location: "Zürich, Switzerland",
           desc: "Developed a time-tracking and workforce scheduling system for the retail sector. Analysed, designed, and implemented software components across the full delivery lifecycle, from requirements engineering and prototyping through to second/third-level support. Created automated E2E tests and contributed to code reviews. Mentored new team members and contributed to youth outreach by organizing IT workshops for students.",
-          tech: ["Java", "Kotlin", "Angular", "TypeScript", "SQL", "Selenium", "Jenkins", "Git"],
+          tech: ["Java", "Kotlin", "Angular", "TypeScript", "SQL", "PostgreSQL", "HTML / CSS", "Selenium", "Jenkins", "Gradle", "Git / GitHub", "Bitbucket", "JIRA"],
           assessment: { label: "Reference letter", href: "/assets/pdf/Zeugnis.MannhartThomas.20241231.pdf" },
         },
         {
@@ -73,7 +73,7 @@ export default {
           company: "PolygonSoftware",
           location: "Opfikon, Switzerland",
           desc: "Led full-stack development of web applications and computer vision / machine learning projects at a UZH-founded startup. Projects included an OCR pipeline for a logistics company and a data visualization application for vibration measurement devices. Designed software architectures, supervised dev teams, and interfaced directly with product owners and clients.",
-          tech: ["Full Stack", "Computer Vision", "Machine Learning", "Web Apps", "DevOps"],
+          tech: ["Vue", "TypeScript", "Node.js", "Express", "GraphQL", "SQL", "AWS"],
           assessment: { label: "Reference letter", href: "/assets/pdf/Mannhart_Thomas_Arbeitszeugnis_Polygon.pdf" },
         },
         {
@@ -82,7 +82,7 @@ export default {
           company: "swissbiomechanics ag",
           location: "Zürich, Switzerland",
           desc: "Led an independent software project for this ETH spin-off, building a Java application to track biomedical analyses and automatically generate clinical reports. Handled stakeholder communication, requirements analysis, and coordinated with other developers.",
-          tech: ["Java", "Report Generation", "Biomedical"],
+          tech: ["Java", "JavaFX"],
           assessment: { label: "Reference letter", href: "/assets/pdf/Mannhart_Thomas_Arbeitszeugnis_swissbiomechanics.pdf" },
         },
       ],
@@ -121,7 +121,8 @@ export default {
           items: [
             { name: "Python" },
             { name: "TypeScript" },
-            { name: "Java / Kotlin" },
+            { name: "Java" },
+            { name: "Kotlin" },
             { name: "C++" },
             { name: "SQL" },
           ],
@@ -145,10 +146,8 @@ export default {
           name: "Web Frameworks",
           items: [
             { name: "FastAPI" },
-            { name: "NestJS" },
-            { name: "Express" },
             { name: "Angular" },
-            { name: "Vue / Nuxt" },
+            { name: "Vue" },
             { name: "Eleventy" },
           ],
         },
@@ -186,7 +185,8 @@ export default {
           name: "Tools",
           items: [
             { name: "Claude Code" },
-            { name: "Git / GitHub" },
+            { name: "Git" },
+            { name: "GitHub" },
           ],
         },
       ],
@@ -224,6 +224,18 @@ export default {
         swissMadeSoftware: "Swiss Made Software",
         siemensXcelerator: "Siemens Xcelerator",
         bbvSoftwareServices: "bbv Software Services",
+      },
+      mannhart: {
+        title: "mannhart.ai",
+        desc: "This website — a bilingual portfolio with an integrated AI chatbot, built with Eleventy and vanilla JS.",
+        tech: ["Eleventy", "Caddy"],
+        source: "Source",
+      },
+      airspace: {
+        title: "Airspace Auction Simulator",
+        desc: "A simulation framework for auctioning airspace to autonomous drones. Master's team project at UZH with Johann Schwabe and Joel Barmettler.",
+        tech: ["Python", "FastAPI", "Vue", "Babylon.js"],
+        source: "Source",
       },
     },
     beyondWork: {
@@ -350,7 +362,7 @@ export default {
           company: "bbv Software Services AG",
           location: "Zürich, Schweiz",
           desc: "Entwicklung einer umfassenden Enterprise-KI-Plattform, einschliesslich Architektur-Design in Zusammenarbeit mit dem Software-Architekten. Design und Implementierung kundenspezifischer KI-Lösungen, insbesondere RAG-Systeme, für Kundenprojekte im industriellen Umfeld und in der Marktforschung. Technische Leitung (Dev Lead) von KI-Kundenprojekten. Betrieb und Wartung der KI-Plattform und kundenspezifischer Lösungen. Beratung von Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie.",
-          tech: ["Python", "LLMs / RAG", "Agentic AI", "Dev Lead", "AI Strategy", "Azure", "TypeScript", "Platform Engineering"],
+          tech: ["Python", "TypeScript", "SQL", "RAG", "Agent Orchestration", "MCP", "LiteLLM", "vLLM", "Milvus", "Dagster", "MinerU", "Docling", "Presidio", "FastAPI", "NestJS", "Azure", "OpenStack", "Docker", "Keycloak", "Traefik", "Nginx", "Redis", "MongoDB", "NATS / JetStream", "Langfuse", "OpenTelemetry", "SigNoz", "Git / GitHub", "Claude Code"],
         },
         {
           date: "2023–2024",
@@ -358,7 +370,7 @@ export default {
           company: "Ergon Informatik AG",
           location: "Zürich, Schweiz",
           desc: "Entwicklung eines Zeiterfassungs- und Personaleinsatzplanungssystems für den Detailhandel. Analyse, Design und Implementierung von Softwarekomponenten über den gesamten Lieferzyklus, von der Anforderungsanalyse und Prototyping bis zum Second-/Third-Level-Support. Erstellung automatisierter E2E-Tests und Code-Reviews. Mentoring neuer Teammitglieder und Jugendförderung durch IT-Workshops für Schüler.",
-          tech: ["Java", "Kotlin", "Angular", "TypeScript", "SQL", "Selenium", "Jenkins", "Git"],
+          tech: ["Java", "Kotlin", "Angular", "TypeScript", "SQL", "PostgreSQL", "HTML / CSS", "Selenium", "Jenkins", "Gradle", "Git / GitHub", "Bitbucket", "JIRA"],
           assessment: { label: "Arbeitszeugnis", href: "/assets/pdf/Zeugnis.MannhartThomas.20241231.pdf" },
         },
         {
@@ -367,7 +379,7 @@ export default {
           company: "PolygonSoftware",
           location: "Opfikon, Schweiz",
           desc: "Leitung der Full-Stack-Entwicklung von Webanwendungen sowie Computer-Vision- und Machine-Learning-Projekten bei einem von UZH-Absolventen gegründeten Startup. Projekte umfassten u.\u00a0a. eine OCR-Pipeline für ein Logistikunternehmen und eine Datenvisualisierungs-Anwendung für Erschütterungsmessgeräte. Entwurf von Softwarearchitekturen, Betreuung von Dev-Teams und direkte Schnittstelle zu Product Owners und Kunden.",
-          tech: ["Full Stack", "Computer Vision", "Machine Learning", "Web Apps", "DevOps"],
+          tech: ["Vue", "TypeScript", "Node.js", "Express", "GraphQL", "SQL", "AWS"],
           assessment: { label: "Arbeitszeugnis", href: "/assets/pdf/Mannhart_Thomas_Arbeitszeugnis_Polygon.pdf" },
         },
         {
@@ -376,7 +388,7 @@ export default {
           company: "swissbiomechanics ag",
           location: "Zürich, Schweiz",
           desc: "Leitung eines eigenständigen Softwareprojekts für dieses ETH-Spin-off: Entwicklung einer Java-Anwendung zur Nachverfolgung biomedizinischer Analysen und automatischen Erstellung klinischer Berichte. Stakeholder-Kommunikation, Anforderungsanalyse und Koordination mit anderen Entwicklern.",
-          tech: ["Java", "Report Generation", "Biomedical"],
+          tech: ["Java", "JavaFX"],
           assessment: { label: "Arbeitszeugnis", href: "/assets/pdf/Mannhart_Thomas_Arbeitszeugnis_swissbiomechanics.pdf" },
         },
       ],
@@ -415,7 +427,8 @@ export default {
           items: [
             { name: "Python" },
             { name: "TypeScript" },
-            { name: "Java / Kotlin" },
+            { name: "Java" },
+            { name: "Kotlin" },
             { name: "C++" },
             { name: "SQL" },
           ],
@@ -439,10 +452,8 @@ export default {
           name: "Web-Frameworks",
           items: [
             { name: "FastAPI" },
-            { name: "NestJS" },
-            { name: "Express" },
             { name: "Angular" },
-            { name: "Vue / Nuxt" },
+            { name: "Vue" },
             { name: "Eleventy" },
           ],
         },
@@ -480,7 +491,8 @@ export default {
           name: "Tools",
           items: [
             { name: "Claude Code" },
-            { name: "Git / GitHub" },
+            { name: "Git" },
+            { name: "GitHub" },
           ],
         },
       ],
@@ -518,6 +530,18 @@ export default {
         swissMadeSoftware: "Swiss Made Software",
         siemensXcelerator: "Siemens Xcelerator",
         bbvSoftwareServices: "bbv Software Services",
+      },
+      mannhart: {
+        title: "mannhart.ai",
+        desc: "Diese Website, ein zweisprachiges Portfolio mit integriertem KI-Chatbot, gebaut mit Eleventy und Vanilla JS.",
+        tech: ["Eleventy", "Caddy"],
+        source: "Quellcode",
+      },
+      airspace: {
+        title: "Airspace Auction Simulator",
+        desc: "Ein Simulations-Framework für die Versteigerung von Luftraum an autonome Drohnen. Master-Teamprojekt an der UZH mit Johann Schwabe und Joel Barmettler.",
+        tech: ["Python", "FastAPI", "Vue", "Babylon.js"],
+        source: "Quellcode",
       },
     },
     beyondWork: {
