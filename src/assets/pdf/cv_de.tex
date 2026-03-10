@@ -1,0 +1,145 @@
+% Auto-generated --- do not edit by hand
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=36pt,bottom=34pt,left=50pt,right=50pt]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fontawesome5}
+\usepackage{parskip}
+\usepackage{tabularx}
+\usepackage{calc}
+\usepackage{microtype}
+
+% ── Colors ──
+\definecolor{cvblack}{RGB}{35,35,40}
+\definecolor{cvdark}{RGB}{50,50,58}
+\definecolor{cvgray}{RGB}{110,110,118}
+\definecolor{cvlight}{RGB}{165,165,172}
+\definecolor{accent}{RGB}{160,125,80}
+\definecolor{ruledark}{RGB}{60,60,68}
+\definecolor{rulelight}{RGB}{200,200,206}
+
+\color{cvblack}
+
+% ── Layout ──
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\newlength{\datecol}
+\setlength{\datecol}{88pt}
+\newlength{\colgap}
+\setlength{\colgap}{10pt}
+
+% ── Icons ──
+\newcommand{\iconlabel}[2]{%
+  {\fontsize{7.5}{9}\selectfont\color{cvgray}{\fontsize{8}{9}\selectfont#1}\enspace#2}%
+}
+
+% ── Section heading ──
+\newcommand{\cvsection}[1]{%
+  \vspace{5pt}%
+  {\fontsize{9}{11}\selectfont\bfseries\color{cvdark}\MakeUppercase{#1}}%
+  \\[-3pt]%
+  {\color{ruledark}\rule{\textwidth}{0.6pt}}%
+  \vspace{4pt}%
+}
+
+% ── Experience entry ──
+\newcommand{\cventry}[5]{%
+  \noindent
+  \begin{tabularx}{\textwidth}{@{}p{\datecol}@{\hspace{\colgap}}X@{}}
+    {\fontsize{8}{10}\selectfont\color{cvgray}#1} &
+    {\fontsize{9.5}{12}\selectfont\bfseries\color{cvblack}#2}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvgray}#3}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvblack}#4}\newline
+    {\fontsize{8}{10}\selectfont\color{accent}#5}
+  \end{tabularx}\vspace{3pt}%
+}
+
+% ── Education entry ──
+\newcommand{\cvedu}[4]{%
+  \noindent
+  \begin{tabularx}{\textwidth}{@{}p{\datecol}@{\hspace{\colgap}}X@{}}
+    {\fontsize{8}{10}\selectfont\color{cvgray}#1} &
+    {\fontsize{9.5}{12}\selectfont\bfseries\color{cvblack}#2}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvgray}#3}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvblack}#4}
+  \end{tabularx}\vspace{2pt}%
+}
+
+% ── Skill entry ──
+\newcommand{\cvskill}[2]{%
+  {\fontsize{9}{12}\selectfont{\bfseries\color{cvblack}#1:\enspace}{\color{cvgray}#2}}\\[2pt]%
+}
+
+% ── Talk entry ──
+\newcommand{\cvtalk}[2]{%
+  {\fontsize{9}{12}\selectfont{\bfseries\color{cvblack}#1\enspace}{\fontsize{8.5}{11}\selectfont\color{cvgray}#2}}\\[1.5pt]%
+}
+
+\begin{document}
+
+% ── Header ──
+\noindent
+\begin{minipage}[t]{\textwidth-82pt}
+  {\fontsize{22}{26}\selectfont\bfseries\color{cvblack}Thomas Rolf Mannhart}\\[3pt]
+  {\fontsize{11}{14}\selectfont\color{accent}Professional AI Engineer}\\[5pt]
+  \begin{tabular}{@{}l@{\hspace{18pt}}l@{}}
+    \iconlabel{\faIcon{map-marker-alt}}{Zürich, Schweiz} &
+    \iconlabel{\faEnvelope}{\href{mailto:thomas@mannhart.ai}{thomas@mannhart.ai}} \\[3pt]
+    \iconlabel{\faGithub}{\href{https://github.com/thommann}{github.com/thommann}} &
+    \iconlabel{\faGlobe}{\href{https://t.mannhart.ai}{t.mannhart.ai}}
+  \end{tabular}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{72pt}
+  \vspace{0pt}
+  \begin{tikzpicture}
+    \clip (0,0) circle (36pt);
+    \node at (0,0) {\includegraphics[width=72pt]{/home/thomas/Projects/mannhart.ai/src/assets/img/photo-cv.jpg}};
+  \end{tikzpicture}
+\end{minipage}
+
+\vspace{4pt}
+{\color{ruledark}\rule{\textwidth}{0.8pt}}
+\vspace{2pt}
+
+% ── Profile ──
+\cvsection{Profil}
+{\fontsize{9}{12}\selectfont\color{cvblack}Als Professional AI Engineer bei bbv Software Services in Zürich entwickle ich Enterprise-KI auf dem Swiss AI Hub. Informatik habe ich an der Universität Zürich studiert (BSc + MSc, Spezialisierung KI) und liefere seit 2019 professionell Software, von biomedizinischen Java-Anwendungen über Full-Stack-Webplattformen bis hin zu LLM-gestützten agentischen Systemen.}
+
+% ── Experience ──
+\cvsection{Berufserfahrung}
+\cventry{2025--heute}{Professional AI Engineer}{bbv Software Services AG, Zürich}{Entwicklung einer umfassenden Enterprise-KI-Plattform, einschliesslich Architektur-Design in Zusammenarbeit mit dem Software-Architekten. Design und Implementierung kundenspezifischer KI-Lösungen, insbesondere RAG-Systeme, für Kundenprojekte im industriellen Umfeld und in der Marktforschung. Technische Leitung (Dev Lead) von KI-Kundenprojekten. Betrieb und Wartung der KI-Plattform und kundenspezifischer Lösungen. Beratung von Kunden bei der Entwicklung und Umsetzung ihrer IT- und KI-Strategie.}{Python, LLMs / RAG, Agentic AI, Dev Lead, AI Strategy, Azure, TypeScript, Platform Engineering}
+\cventry{2023--2024}{Professional Software Engineer}{Ergon Informatik AG, Zürich}{Entwicklung eines Zeiterfassungs- und Personalplanungssystems für den Detailhandel. End-to-End-Softwarelieferung von der Anforderungsanalyse und Prototyping bis zum Second-/Third-Level-Support. Mentoring neuer Teammitglieder und Jugendförderung durch IT-Workshops für Schüler.}{Java, Kotlin, Angular, TypeScript, SQL, Selenium, Jenkins, Git}
+\cventry{2020--2023}{Senior Software Developer}{PolygonSoftware, Opfikon}{Leitung der Full-Stack-Entwicklung von Webanwendungen sowie Computer-Vision- und Machine-Learning-Projekten bei einem von UZH-Absolventen gegründeten Startup. Projekte umfassten u.~a. eine OCR-Pipeline für ein Logistikunternehmen und eine Datenvisualisierungs-Anwendung für Erschütterungsmessgeräte. Entwurf von Softwarearchitekturen, Betreuung von Dev-Teams und direkte Schnittstelle zu Product Owners und Kunden.}{Full Stack, Computer Vision, Machine Learning, Web Apps, DevOps}
+\cventry{2019--2020}{Junior Software Developer}{swissbiomechanics ag, Zürich}{Leitung eines eigenständigen Softwareprojekts für dieses ETH-Spin-off: Entwicklung einer Java-Anwendung zur Nachverfolgung biomedizinischer Analysen und automatischen Erstellung klinischer Berichte. Stakeholder-Kommunikation, Anforderungsanalyse und Koordination mit anderen Entwicklern.}{Java, Report Generation, Biomedical}
+
+\newpage
+
+% ── Education ──
+\cvsection{Ausbildung}
+\cvedu{2020--2023}{MSc in Informatik (Artificial Intelligence)}{Universität Zürich}{Spezialisierung in Artificial Intelligence. Austauschsemester an der National Taiwan University (NTU) in Taipei. Teamprojekt (mit Johann Schwabe und Joel Barmettler): Airspace Auction Simulator. Masterarbeit: KroneDB --- Compressing and Querying Time Series Data using the Kronecker Decomposition. Betreut von Johannes Marti und Dan Olteanu in der Gruppe Data Systems and Theory.}
+\cvedu{2017--2020}{BSc in Informatik (Software Systems)}{Universität Zürich}{Spezialisierung in Software Systems. Bachelorarbeit: A General-purpose Range Join Algorithm for PostgreSQL. Geschrieben an der Freien Universität Bozen unter der Betreuung von Anton Dignös. Ausgezeichnet mit dem Semesterpreis HS20 der Wirtschaftswissenschaftlichen Fakultät, einer von vier Studierenden, die in diesem Semester fakultätsweit ausgezeichnet wurden.\newline{\bfseries\color{accent}\href{https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html}{Semesterpreis HS20}}}
+
+% ── Skills ──
+\cvsection{Skills}
+\cvskill{Programmierung}{Python (Experte), TypeScript / JS (fortgeschritten), Java / Kotlin (fortgeschritten), SQL (fortgeschritten)}
+\cvskill{KI}{Agent Orchestration (Experte), RAG (Experte), MCP (fortgeschritten)}
+\cvskill{Tools}{Claude Code (Experte), Git / GitHub (Experte), Docker (fortgeschritten)}
+\cvskill{Sprachen}{Deutsch (Muttersprache), Englisch (fliessend), Französisch (Grundkenntnisse)}
+
+% ── Talks ──
+\cvsection{Vorträge \& Projekte}
+\cvtalk{KI als Entwicklungspartner}{bbv-Webinar über praktische Methoden, Tools und bewährte Strategien zur Integration von KI in den Software-Entwicklungszyklus, von der Anforderungsanalyse über die Code-Entwicklung bis zum Testing.}
+\cvtalk{AI-Augmented Software Engineering}{Vortrag am FHNW Data Science \& Data Engineering Alumni Event über die Integration von KI in den Software-Entwicklungszyklus, von der Enterprise-KI-Strategie und dem Swiss AI Hub bis hin zur Arbeit mit Coding Agents und dem «Development Funnel» für kontextgesteuerte KI-Workflows.}
+\cvtalk{Über den Swiss AI Hub}{Schweizer, modell-agnostische Enterprise-KI-Plattform. Gelistet auf Siemens Xcelerator, zertifiziert als Swiss Made Software.}
+
+\end{document}

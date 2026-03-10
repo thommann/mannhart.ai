@@ -1,0 +1,145 @@
+% Auto-generated --- do not edit by hand
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=36pt,bottom=34pt,left=50pt,right=50pt]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fontawesome5}
+\usepackage{parskip}
+\usepackage{tabularx}
+\usepackage{calc}
+\usepackage{microtype}
+
+% ── Colors ──
+\definecolor{cvblack}{RGB}{35,35,40}
+\definecolor{cvdark}{RGB}{50,50,58}
+\definecolor{cvgray}{RGB}{110,110,118}
+\definecolor{cvlight}{RGB}{165,165,172}
+\definecolor{accent}{RGB}{160,125,80}
+\definecolor{ruledark}{RGB}{60,60,68}
+\definecolor{rulelight}{RGB}{200,200,206}
+
+\color{cvblack}
+
+% ── Layout ──
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\newlength{\datecol}
+\setlength{\datecol}{88pt}
+\newlength{\colgap}
+\setlength{\colgap}{10pt}
+
+% ── Icons ──
+\newcommand{\iconlabel}[2]{%
+  {\fontsize{7.5}{9}\selectfont\color{cvgray}{\fontsize{8}{9}\selectfont#1}\enspace#2}%
+}
+
+% ── Section heading ──
+\newcommand{\cvsection}[1]{%
+  \vspace{5pt}%
+  {\fontsize{9}{11}\selectfont\bfseries\color{cvdark}\MakeUppercase{#1}}%
+  \\[-3pt]%
+  {\color{ruledark}\rule{\textwidth}{0.6pt}}%
+  \vspace{4pt}%
+}
+
+% ── Experience entry ──
+\newcommand{\cventry}[5]{%
+  \noindent
+  \begin{tabularx}{\textwidth}{@{}p{\datecol}@{\hspace{\colgap}}X@{}}
+    {\fontsize{8}{10}\selectfont\color{cvgray}#1} &
+    {\fontsize{9.5}{12}\selectfont\bfseries\color{cvblack}#2}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvgray}#3}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvblack}#4}\newline
+    {\fontsize{8}{10}\selectfont\color{accent}#5}
+  \end{tabularx}\vspace{3pt}%
+}
+
+% ── Education entry ──
+\newcommand{\cvedu}[4]{%
+  \noindent
+  \begin{tabularx}{\textwidth}{@{}p{\datecol}@{\hspace{\colgap}}X@{}}
+    {\fontsize{8}{10}\selectfont\color{cvgray}#1} &
+    {\fontsize{9.5}{12}\selectfont\bfseries\color{cvblack}#2}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvgray}#3}\newline
+    {\fontsize{8.5}{11}\selectfont\color{cvblack}#4}
+  \end{tabularx}\vspace{2pt}%
+}
+
+% ── Skill entry ──
+\newcommand{\cvskill}[2]{%
+  {\fontsize{9}{12}\selectfont{\bfseries\color{cvblack}#1:\enspace}{\color{cvgray}#2}}\\[2pt]%
+}
+
+% ── Talk entry ──
+\newcommand{\cvtalk}[2]{%
+  {\fontsize{9}{12}\selectfont{\bfseries\color{cvblack}#1\enspace}{\fontsize{8.5}{11}\selectfont\color{cvgray}#2}}\\[1.5pt]%
+}
+
+\begin{document}
+
+% ── Header ──
+\noindent
+\begin{minipage}[t]{\textwidth-82pt}
+  {\fontsize{22}{26}\selectfont\bfseries\color{cvblack}Thomas Rolf Mannhart}\\[3pt]
+  {\fontsize{11}{14}\selectfont\color{accent}Professional AI Engineer}\\[5pt]
+  \begin{tabular}{@{}l@{\hspace{18pt}}l@{}}
+    \iconlabel{\faIcon{map-marker-alt}}{Zürich, Switzerland} &
+    \iconlabel{\faEnvelope}{\href{mailto:thomas@mannhart.ai}{thomas@mannhart.ai}} \\[3pt]
+    \iconlabel{\faGithub}{\href{https://github.com/thommann}{github.com/thommann}} &
+    \iconlabel{\faGlobe}{\href{https://t.mannhart.ai}{t.mannhart.ai}}
+  \end{tabular}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{72pt}
+  \vspace{0pt}
+  \begin{tikzpicture}
+    \clip (0,0) circle (36pt);
+    \node at (0,0) {\includegraphics[width=72pt]{/home/thomas/Projects/mannhart.ai/src/assets/img/photo-cv.jpg}};
+  \end{tikzpicture}
+\end{minipage}
+
+\vspace{4pt}
+{\color{ruledark}\rule{\textwidth}{0.8pt}}
+\vspace{2pt}
+
+% ── Profile ──
+\cvsection{Profile}
+{\fontsize{9}{12}\selectfont\color{cvblack}I'm a Professional AI Engineer at bbv Software Services in Zürich, building enterprise AI on the Swiss AI Hub. I studied Informatics at the University of Zürich (BSc + MSc, AI specialization) and have been shipping software professionally since 2019 --- from biomedical Java apps to full-stack web platforms to LLM-powered agentic systems.}
+
+% ── Experience ──
+\cvsection{Experience}
+\cventry{2025--now}{Professional AI Engineer}{bbv Software Services AG, Zürich}{Development of a comprehensive enterprise AI platform, including architecture design in collaboration with the software architect. Design and implementation of customized AI solutions --- especially RAG systems --- for customer projects in industry and market research. Technical leadership (Dev Lead) of customer AI projects. Operation and maintenance of the AI platform and customer-specific solutions. Consulting customers on their IT and AI strategy.}{Python, LLMs / RAG, Agentic AI, Dev Lead, AI Strategy, Azure, TypeScript, Platform Engineering}
+\cventry{2023--2024}{Professional Software Engineer}{Ergon Informatik AG, Zürich}{Developed a time-tracking and workforce planning system for the retail sector. Handled end-to-end software delivery from requirements engineering and prototyping through to second/third-level support. Mentored new team members and contributed to youth outreach by organizing IT workshops for students.}{Java, Kotlin, Angular, TypeScript, SQL, Selenium, Jenkins, Git}
+\cventry{2020--2023}{Senior Software Developer}{PolygonSoftware, Opfikon}{Led full-stack development of web applications and computer vision / machine learning projects at a UZH-founded startup. Projects included an OCR pipeline for a logistics company and a data visualization application for vibration measurement devices. Designed software architectures, supervised dev teams, and interfaced directly with product owners and clients.}{Full Stack, Computer Vision, Machine Learning, Web Apps, DevOps}
+\cventry{2019--2020}{Junior Software Developer}{swissbiomechanics ag, Zürich}{Led an independent software project for this ETH spin-off, building a Java application to track biomedical analyses and automatically generate clinical reports. Handled stakeholder communication, requirements analysis, and coordinated with other developers.}{Java, Report Generation, Biomedical}
+
+\newpage
+
+% ── Education ──
+\cvsection{Education}
+\cvedu{2020--2023}{MSc in Informatics (Artificial Intelligence)}{University of Zürich}{Specialization in Artificial Intelligence. Exchange semester at the National Taiwan University (NTU) in Taipei. Team project (with Johann Schwabe and Joel Barmettler): Airspace Auction Simulator. Thesis: KroneDB --- Compressing and Querying Time Series Data using the Kronecker Decomposition. Supervised by Johannes Marti and Dan Olteanu at the Data Systems and Theory group.}
+\cvedu{2017--2020}{BSc in Informatics (Software Systems)}{University of Zürich}{Specialization in Software Systems. Thesis: A General-purpose Range Join Algorithm for PostgreSQL. Written at the Free University of Bozen-Bolzano under the guidance of Anton Dignös. Awarded the Semesterpreis HS20 by the Faculty of Business, Economics and Informatics --- one of four students recognized across the entire faculty that semester.\newline{\bfseries\color{accent}\href{https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html}{Semesterpreis HS20}}}
+
+% ── Skills ──
+\cvsection{Skills}
+\cvskill{Programming}{Python (expert), TypeScript / JS (advanced), Java / Kotlin (advanced), SQL (advanced)}
+\cvskill{AI}{Agent Orchestration (expert), RAG (expert), MCP (advanced)}
+\cvskill{Tools}{Claude Code (expert), Git / GitHub (expert), Docker (advanced)}
+\cvskill{Languages}{German (native), English (fluent), French (basic)}
+
+% ── Talks ──
+\cvsection{Talks \& Projects}
+\cvtalk{KI als Entwicklungspartner}{bbv webinar on practical methods, tools, and proven strategies for integrating AI into the software development lifecycle --- from requirements analysis through code development to testing.}
+\cvtalk{AI-Augmented Software Engineering}{Talk at the FHNW Data Science \& Data Engineering Alumni Event on integrating AI into the software development lifecycle --- from enterprise AI strategy and the Swiss AI Hub, to working with coding agents and the "Development Funnel" for context-driven AI workflows.}
+\cvtalk{About the Swiss AI Hub}{Swiss-made, model-agnostic enterprise AI platform. Listed on Siemens Xcelerator, certified Swiss Made Software.}
+
+\end{document}

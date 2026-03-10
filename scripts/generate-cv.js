@@ -1,5 +1,5 @@
-import PDFDocument from "pdfkit";
-import { createWriteStream } from "fs";
+import { writeFileSync } from "fs";
+import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import translations from "../src/_data/translations.js";
@@ -9,38 +9,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = join(__dirname, "..", "src", "assets", "pdf");
 const PHOTO = join(__dirname, "..", "src", "assets", "img", "photo-cv.jpg");
 
-// Palette
-const BLACK = [35, 35, 40];
-const DARK = [50, 50, 58];
-const GRAY = [110, 110, 118];
-const LIGHT = [165, 165, 172];
-const ACCENT = [160, 125, 80];
-const RULE_DARK = [60, 60, 68];
-const RULE_LIGHT = [200, 200, 206];
-
-// Layout
-const L = 50;
-const R = 545;
-const W = R - L;
-const DATE_W = 92;
-const COL_GAP = 10;
-const CX = L + DATE_W + COL_GAP;
-const CW = R - CX;
-
-// Photo
-const PHOTO_SIZE = 72;
-const PHOTO_X = R - PHOTO_SIZE;
-const PHOTO_Y = 42;
-const HEADER_W = PHOTO_X - L - 15;
-
-// Section labels per language
+// Section labels per language (already TeX-safe where needed)
 const LABELS = {
   en: {
     profile: "Profile",
     experience: "Experience",
     education: "Education",
     skills: "Skills",
-    talks: "Talks & Projects",
+    talks: "Talks \\& Projects",
     programming: "Programming",
     languages: "Languages",
     location: "Zürich, Switzerland",
@@ -50,7 +26,7 @@ const LABELS = {
     experience: "Berufserfahrung",
     education: "Ausbildung",
     skills: "Skills",
-    talks: "Vorträge & Projekte",
+    talks: "Vorträge \\& Projekte",
     programming: "Programmierung",
     languages: "Sprachen",
     location: "Zürich, Schweiz",
@@ -60,16 +36,49 @@ const LABELS = {
 /* ── data builders ─────────────────────────────────── */
 
 function truncate(text, maxSentences = 2) {
-  const sentences = text.match(/[^.!]+[.!]+/g) || [text];
-  return sentences.slice(0, maxSentences).join("").trim();
+  // Temporarily protect abbreviations from sentence splitting
+  const protected_ = text
+    .replace(/u\.\s*a\./g, "u\x00a\x00")
+    .replace(/z\.\s*B\./g, "z\x00B\x00")
+    .replace(/d\.\s*h\./g, "d\x00h\x00");
+  const sentences = protected_.match(/[^.!]+[.!]+/g) || [protected_];
+  return sentences
+    .slice(0, maxSentences)
+    .join("")
+    .replace(/\x00/g, ".")
+    .trim();
+}
+
+function escTex(str) {
+  return str
+    .replace(/\\/g, "\\textbackslash{}")
+    .replace(/&/g, "\\&")
+    .replace(/%/g, "\\%")
+    .replace(/\$/g, "\\$")
+    .replace(/#/g, "\\#")
+    .replace(/_/g, "\\_")
+    .replace(/\{/g, "\\{")
+    .replace(/\}/g, "\\}")
+    .replace(/~/g, "\\textasciitilde{}")
+    .replace(/\^/g, "\\textasciicircum{}")
+    .replace(/\u00a0/g, "~")
+    .replace(/—/g, "---")
+    .replace(/–/g, "--")
+    .replace(/\u2018/g, "`")
+    .replace(/\u2019/g, "'")
+    .replace(/\u201c/g, "``")
+    .replace(/\u201d/g, "''");
 }
 
 function buildJobs(t) {
   return t.experience.jobs.map((j) => ({
-    date: j.date.replace("now", "present"),
-    role: j.role,
-    company: `${j.company}, ${j.location.replace(/, (Switzerland|Schweiz)/g, "")}`,
-    desc: truncate(j.desc, 2),
+    date: escTex(j.date),
+    role: escTex(j.role),
+    company: escTex(
+      `${j.company}, ${j.location.replace(/, (Switzerland|Schweiz)/g, "")}`
+    ),
+    desc: escTex(j.desc),
+    tech: j.tech.map((t) => escTex(t)).join(", "),
   }));
 }
 
@@ -79,18 +88,14 @@ function buildEducation(t) {
     .reverse()
     .map((e) => {
       const detail = stripHtml(e.detail);
-      const thesisMatch = detail.match(
-        /(Thesis|Bachelorarbeit|Masterarbeit):\s*(.+)/
-      );
-      let line = thesisMatch
-        ? truncate(`${thesisMatch[1]}: ${thesisMatch[2]}`, 2)
-        : truncate(detail, 2);
       return {
-        year: e.year,
-        degree: `${e.degree} (${e.specialization})`,
-        school: e.school,
-        detail: line,
-        award: e.award || null,
+        year: escTex(e.year),
+        degree: escTex(`${e.degree} (${e.specialization})`),
+        school: escTex(e.school),
+        detail: escTex(detail),
+        award: e.award
+          ? { label: escTex(e.award.label), href: e.award.href }
+          : null,
       };
     });
 }
@@ -104,17 +109,17 @@ function buildSkills(t, lang) {
     const items = g.items
       .map((s) => {
         const level = levels[s.level];
-        return level ? `${s.name} (${level})` : s.name;
+        return level ? `${escTex(s.name)} (${escTex(level)})` : escTex(s.name);
       })
       .join(", ");
-    return {
-      category: progNames.includes(g.name) ? labels.programming : g.name,
-      items,
-    };
+    const rawCategory = progNames.includes(g.name)
+      ? labels.programming
+      : escTex(g.name);
+    return { category: rawCategory, items };
   });
   groups.push({
     category: labels.languages,
-    items: t.about.languages,
+    items: escTex(t.about.languages),
   });
   return groups;
 }
@@ -122,314 +127,218 @@ function buildSkills(t, lang) {
 function buildTalks(t) {
   return [
     {
-      title: stripHtml(t.featured.webinar.title),
-      desc: stripHtml(t.featured.webinar.desc),
+      title: escTex(stripHtml(t.featured.webinar.title)),
+      desc: escTex(stripHtml(t.featured.webinar.desc)),
     },
     {
-      title: stripHtml(t.featured.fhnw.title),
-      desc: stripHtml(t.featured.fhnw.desc),
+      title: escTex(stripHtml(t.featured.fhnw.title)),
+      desc: escTex(stripHtml(t.featured.fhnw.desc)),
     },
     {
-      title: stripHtml(t.featured.aiHub.title),
-      desc: stripHtml(t.featured.aiHub.desc),
+      title: escTex(stripHtml(t.featured.aiHub.title)),
+      desc: escTex(stripHtml(t.featured.aiHub.desc)),
     },
   ];
 }
 
-/* ── icon helpers ──────────────────────────────────── */
-
-function drawIcon(doc, type, x, y, size, color) {
-  const s = size;
-  const cx = x + s / 2;
-  const cy = y + s / 2;
-  const lw = Math.max(0.55, s * 0.075);
-
-  doc.save();
-
-  switch (type) {
-    case "location": {
-      doc.fillColor(color);
-      const pr = s * 0.28;
-      const pcy = y + s * 0.34;
-      doc.circle(cx, pcy, pr).fill();
-      doc
-        .path(
-          `M${cx - pr * 0.7} ${pcy + pr * 0.5} L${cx} ${y + s * 0.92} L${cx + pr * 0.7} ${pcy + pr * 0.5}`
-        )
-        .fill();
-      doc.fillColor([255, 255, 255]);
-      doc.circle(cx, pcy, pr * 0.35).fill();
-      break;
-    }
-    case "email": {
-      doc
-        .strokeColor(color)
-        .lineWidth(lw)
-        .lineCap("round")
-        .lineJoin("round");
-      const pad = s * 0.08;
-      const top = y + s * 0.22;
-      const bot = y + s * 0.78;
-      doc.rect(x + pad, top, s - 2 * pad, bot - top).stroke();
-      doc
-        .path(
-          `M${x + pad} ${top} L${cx} ${y + s * 0.53} L${x + s - pad} ${top}`
-        )
-        .stroke();
-      break;
-    }
-    case "code": {
-      doc
-        .strokeColor(color)
-        .lineWidth(lw * 1.1)
-        .lineCap("round")
-        .lineJoin("round");
-      doc
-        .path(
-          `M${x + s * 0.38} ${y + s * 0.18} L${x + s * 0.12} ${cy} L${x + s * 0.38} ${y + s * 0.82}`
-        )
-        .stroke();
-      doc
-        .path(
-          `M${x + s * 0.62} ${y + s * 0.18} L${x + s * 0.88} ${cy} L${x + s * 0.62} ${y + s * 0.82}`
-        )
-        .stroke();
-      break;
-    }
-    case "globe": {
-      doc.strokeColor(color).lineWidth(lw);
-      const r = s * 0.4;
-      doc.circle(cx, cy, r).stroke();
-      doc
-        .moveTo(x + s * 0.1, cy)
-        .lineTo(x + s * 0.9, cy)
-        .stroke();
-      doc.ellipse(cx, cy, r * 0.45, r).stroke();
-      break;
-    }
-  }
-
-  doc.restore();
-}
-
-/* ── layout helpers ────────────────────────────────── */
-
-function rule(doc, y, color = RULE_LIGHT, width = 0.4) {
-  doc.moveTo(L, y).lineTo(R, y).strokeColor(color).lineWidth(width).stroke();
-}
-
-function heading(doc, label) {
-  doc.moveDown(0.5);
-  doc
-    .fontSize(9)
-    .font("Helvetica-Bold")
-    .fillColor(DARK)
-    .text(label.toUpperCase(), L, doc.y, { characterSpacing: 1.5 });
-  rule(doc, doc.y + 3, RULE_DARK, 0.6);
-  doc.y += 10;
-}
-
-/* ── generate one CV ───────────────────────────────── */
+/* ── LaTeX generation ──────────────────────────────── */
 
 function generateCV(lang) {
   const t = translations[lang];
   const labels = LABELS[lang];
-  const output = join(
-    OUTPUT_DIR,
-    `Thomas_Mannhart_CV_${lang.toUpperCase()}.pdf`
-  );
+  const jobName = `Thomas_Mannhart_CV_${lang.toUpperCase()}`;
+  const outputPdf = join(OUTPUT_DIR, `${jobName}.pdf`);
+  const outputTex = join(OUTPUT_DIR, `cv_${lang}.tex`);
 
-  const doc = new PDFDocument({
-    size: "A4",
-    margins: { top: 42, bottom: 38, left: L, right: 50 },
-  });
-  doc.pipe(createWriteStream(output));
+  const jobs = buildJobs(t);
+  const education = buildEducation(t);
+  const skills = buildSkills(t, lang);
+  const talks = buildTalks(t);
+  const profile = escTex(stripHtml(t.about.abstract));
 
-  /* ── photo ── */
-  doc.save();
-  doc
-    .circle(PHOTO_X + PHOTO_SIZE / 2, PHOTO_Y + PHOTO_SIZE / 2, PHOTO_SIZE / 2)
-    .clip();
-  doc.image(PHOTO, PHOTO_X, PHOTO_Y, { width: PHOTO_SIZE });
-  doc.restore();
-  doc
-    .circle(PHOTO_X + PHOTO_SIZE / 2, PHOTO_Y + PHOTO_SIZE / 2, PHOTO_SIZE / 2)
-    .strokeColor(RULE_LIGHT)
-    .lineWidth(0.5)
-    .stroke();
+  const jobEntries = jobs
+    .map(
+      (j) => `\\cventry{${j.date}}{${j.role}}{${j.company}}{${j.desc}}{${j.tech}}`
+    )
+    .join("\n");
 
-  /* ── header ── */
-  doc
-    .fontSize(22)
-    .font("Helvetica-Bold")
-    .fillColor(BLACK)
-    .text("Thomas Rolf Mannhart", L, 42, { width: HEADER_W });
+  const eduEntries = education
+    .map((e) => {
+      const award = e.award
+        ? `\\newline{\\bfseries\\color{accent}\\href{${e.award.href}}{${e.award.label}}}`
+        : "";
+      return `\\cvedu{${e.year}}{${e.degree}}{${e.school}}{${e.detail}${award}}`;
+    })
+    .join("\n");
 
-  doc
-    .fontSize(11)
-    .font("Helvetica")
-    .fillColor(ACCENT)
-    .text("Professional AI Engineer", { width: HEADER_W });
+  const skillEntries = skills
+    .map((s) => `\\cvskill{${s.category}}{${s.items}}`)
+    .join("\n");
 
-  doc.moveDown(0.3);
+  const talkEntries = talks
+    .map((t) => `\\cvtalk{${t.title}}{${t.desc}}`)
+    .join("\n");
 
-  /* ── contact info with icons ── */
-  const iconS = 9;
-  const iconGap = 3;
-  const col2X = L + 155;
-  const contactY1 = doc.y;
-  const contactY2 = contactY1 + 14;
+  const tex = `% Auto-generated --- do not edit by hand
+\\documentclass[a4paper,10pt]{article}
 
-  drawIcon(doc, "location", L, contactY1, iconS, GRAY);
-  doc
-    .fontSize(8)
-    .font("Helvetica")
-    .fillColor(GRAY)
-    .text(labels.location, L + iconS + iconGap, contactY1 + 1, {
-      lineBreak: false,
-    });
+\\usepackage[T1]{fontenc}
+\\usepackage[utf8]{inputenc}
+\\usepackage{tgheros}
+\\renewcommand{\\familydefault}{\\sfdefault}
+\\usepackage[top=36pt,bottom=34pt,left=50pt,right=50pt]{geometry}
+\\usepackage[dvipsnames]{xcolor}
+\\usepackage{graphicx}
+\\usepackage{tikz}
+\\usepackage[hidelinks]{hyperref}
+\\usepackage{fontawesome5}
+\\usepackage{parskip}
+\\usepackage{tabularx}
+\\usepackage{calc}
+\\usepackage{microtype}
 
-  drawIcon(doc, "email", col2X, contactY1, iconS, GRAY);
-  const emailX = col2X + iconS + iconGap;
-  const emailY = contactY1 + 1;
-  doc.text("thomas@mannhart.ai", emailX, emailY, { lineBreak: false });
-  doc.link(emailX, emailY - 1, doc.widthOfString("thomas@mannhart.ai"), 10, "mailto:thomas@mannhart.ai");
+% ── Colors ──
+\\definecolor{cvblack}{RGB}{35,35,40}
+\\definecolor{cvdark}{RGB}{50,50,58}
+\\definecolor{cvgray}{RGB}{110,110,118}
+\\definecolor{cvlight}{RGB}{165,165,172}
+\\definecolor{accent}{RGB}{160,125,80}
+\\definecolor{ruledark}{RGB}{60,60,68}
+\\definecolor{rulelight}{RGB}{200,200,206}
 
-  drawIcon(doc, "code", L, contactY2, iconS, GRAY);
-  const ghX = L + iconS + iconGap;
-  const ghY = contactY2 + 1;
-  doc.text("github.com/thommann", ghX, ghY, { lineBreak: false });
-  doc.link(ghX, ghY - 1, doc.widthOfString("github.com/thommann"), 10, "https://github.com/thommann");
+\\color{cvblack}
 
-  drawIcon(doc, "globe", col2X, contactY2, iconS, GRAY);
-  const webX = col2X + iconS + iconGap;
-  const webY = contactY2 + 1;
-  doc.text("t.mannhart.ai", webX, webY, { lineBreak: false });
-  doc.link(webX, webY - 1, doc.widthOfString("t.mannhart.ai"), 10, "https://t.mannhart.ai");
+% ── Layout ──
+\\pagestyle{empty}
+\\setlength{\\parindent}{0pt}
+\\setlength{\\parskip}{0pt}
 
-  doc.y = contactY2 + 18;
-  rule(doc, doc.y, RULE_DARK, 0.8);
-  doc.y += 6;
+\\newlength{\\datecol}
+\\setlength{\\datecol}{88pt}
+\\newlength{\\colgap}
+\\setlength{\\colgap}{10pt}
 
-  /* ── profile ── */
-  heading(doc, labels.profile);
-  doc
-    .fontSize(9)
-    .font("Helvetica")
-    .fillColor(BLACK)
-    .text(stripHtml(t.about.abstract), L, doc.y, { width: W, lineGap: 1.8 });
+% ── Icons ──
+\\newcommand{\\iconlabel}[2]{%
+  {\\fontsize{7.5}{9}\\selectfont\\color{cvgray}{\\fontsize{8}{9}\\selectfont#1}\\enspace#2}%
+}
 
-  /* ── experience ── */
-  heading(doc, labels.experience);
+% ── Section heading ──
+\\newcommand{\\cvsection}[1]{%
+  \\vspace{5pt}%
+  {\\fontsize{9}{11}\\selectfont\\bfseries\\color{cvdark}\\MakeUppercase{#1}}%
+  \\\\[-3pt]%
+  {\\color{ruledark}\\rule{\\textwidth}{0.6pt}}%
+  \\vspace{4pt}%
+}
 
-  for (const job of buildJobs(t)) {
-    const y0 = doc.y;
+% ── Experience entry ──
+\\newcommand{\\cventry}[5]{%
+  \\noindent
+  \\begin{tabularx}{\\textwidth}{@{}p{\\datecol}@{\\hspace{\\colgap}}X@{}}
+    {\\fontsize{8}{10}\\selectfont\\color{cvgray}#1} &
+    {\\fontsize{9.5}{12}\\selectfont\\bfseries\\color{cvblack}#2}\\newline
+    {\\fontsize{8.5}{11}\\selectfont\\color{cvgray}#3}\\newline
+    {\\fontsize{8.5}{11}\\selectfont\\color{cvblack}#4}\\newline
+    {\\fontsize{8}{10}\\selectfont\\color{accent}#5}
+  \\end{tabularx}\\vspace{3pt}%
+}
 
-    doc
-      .fontSize(8)
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text(job.date, L, y0, { width: DATE_W });
-    const yDate = doc.y;
+% ── Education entry ──
+\\newcommand{\\cvedu}[4]{%
+  \\noindent
+  \\begin{tabularx}{\\textwidth}{@{}p{\\datecol}@{\\hspace{\\colgap}}X@{}}
+    {\\fontsize{8}{10}\\selectfont\\color{cvgray}#1} &
+    {\\fontsize{9.5}{12}\\selectfont\\bfseries\\color{cvblack}#2}\\newline
+    {\\fontsize{8.5}{11}\\selectfont\\color{cvgray}#3}\\newline
+    {\\fontsize{8.5}{11}\\selectfont\\color{cvblack}#4}
+  \\end{tabularx}\\vspace{2pt}%
+}
 
-    doc
-      .fontSize(9.5)
-      .font("Helvetica-Bold")
-      .fillColor(BLACK)
-      .text(job.role, CX, y0, { width: CW });
+% ── Skill entry ──
+\\newcommand{\\cvskill}[2]{%
+  {\\fontsize{9}{12}\\selectfont{\\bfseries\\color{cvblack}#1:\\enspace}{\\color{cvgray}#2}}\\\\[2pt]%
+}
 
-    doc
-      .fontSize(8.5)
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text(job.company, CX, doc.y, { width: CW });
+% ── Talk entry ──
+\\newcommand{\\cvtalk}[2]{%
+  {\\fontsize{9}{12}\\selectfont{\\bfseries\\color{cvblack}#1\\enspace}{\\fontsize{8.5}{11}\\selectfont\\color{cvgray}#2}}\\\\[1.5pt]%
+}
 
-    doc
-      .fontSize(8.5)
-      .font("Helvetica")
-      .fillColor(BLACK)
-      .text(job.desc, CX, doc.y + 2, { width: CW, lineGap: 1.5 });
+\\begin{document}
 
-    doc.y = Math.max(doc.y, yDate) + 8;
+% ── Header ──
+\\noindent
+\\begin{minipage}[t]{\\textwidth-82pt}
+  {\\fontsize{22}{26}\\selectfont\\bfseries\\color{cvblack}Thomas Rolf Mannhart}\\\\[3pt]
+  {\\fontsize{11}{14}\\selectfont\\color{accent}Professional AI Engineer}\\\\[5pt]
+  \\begin{tabular}{@{}l@{\\hspace{18pt}}l@{}}
+    \\iconlabel{\\faIcon{map-marker-alt}}{${labels.location}} &
+    \\iconlabel{\\faEnvelope}{\\href{mailto:thomas@mannhart.ai}{thomas@mannhart.ai}} \\\\[3pt]
+    \\iconlabel{\\faGithub}{\\href{https://github.com/thommann}{github.com/thommann}} &
+    \\iconlabel{\\faGlobe}{\\href{https://t.mannhart.ai}{t.mannhart.ai}}
+  \\end{tabular}
+\\end{minipage}%
+\\hfill
+\\begin{minipage}[t]{72pt}
+  \\vspace{0pt}
+  \\begin{tikzpicture}
+    \\clip (0,0) circle (36pt);
+    \\node at (0,0) {\\includegraphics[width=72pt]{${PHOTO}}};
+  \\end{tikzpicture}
+\\end{minipage}
+
+\\vspace{4pt}
+{\\color{ruledark}\\rule{\\textwidth}{0.8pt}}
+\\vspace{2pt}
+
+% ── Profile ──
+\\cvsection{${labels.profile}}
+{\\fontsize{9}{12}\\selectfont\\color{cvblack}${profile}}
+
+% ── Experience ──
+\\cvsection{${labels.experience}}
+${jobEntries}
+
+\\newpage
+
+% ── Education ──
+\\cvsection{${labels.education}}
+${eduEntries}
+
+% ── Skills ──
+\\cvsection{${labels.skills}}
+${skillEntries}
+
+% ── Talks ──
+\\cvsection{${labels.talks}}
+${talkEntries}
+
+\\end{document}
+`;
+
+  writeFileSync(outputTex, tex);
+  console.log(`LaTeX source written → ${outputTex}`);
+
+  try {
+    execSync(
+      `pdflatex -interaction=nonstopmode -halt-on-error -output-directory="${OUTPUT_DIR}" -jobname="${jobName}" "${outputTex}"`,
+      { cwd: OUTPUT_DIR, stdio: "pipe" }
+    );
+    console.log(`CV (${lang.toUpperCase()}) compiled → ${outputPdf}`);
+  } catch (err) {
+    console.error(
+      `LaTeX compilation failed for ${lang}:\n${err.stdout?.toString()}`
+    );
+    process.exit(1);
   }
 
-  /* ── education ── */
-  heading(doc, labels.education);
-
-  for (const edu of buildEducation(t)) {
-    const y0 = doc.y;
-
-    doc
-      .fontSize(8)
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text(edu.year, L, y0, { width: DATE_W });
-    const yDate = doc.y;
-
-    doc
-      .fontSize(9.5)
-      .font("Helvetica-Bold")
-      .fillColor(BLACK)
-      .text(edu.degree, CX, y0, { width: CW });
-
-    doc
-      .fontSize(8.5)
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text(edu.school, CX, doc.y, { width: CW });
-
-    doc
-      .fontSize(8.5)
-      .font("Helvetica")
-      .fillColor(BLACK)
-      .text(edu.detail, CX, doc.y + 2, { width: CW, lineGap: 1.5 });
-
-    if (edu.award) {
-      const awardY = doc.y + 1;
-      doc
-        .fontSize(8.5)
-        .font("Helvetica-Bold")
-        .fillColor(ACCENT)
-        .text(edu.award.label, CX, awardY, { width: CW });
-      doc.link(CX, awardY - 1, doc.widthOfString(edu.award.label), 10, edu.award.href);
-    }
-
-    doc.y = Math.max(doc.y, yDate) + 6;
+  // Clean up auxiliary files
+  for (const ext of [".aux", ".log", ".out"]) {
+    try {
+      execSync(`rm -f "${join(OUTPUT_DIR, jobName + ext)}"`, { stdio: "pipe" });
+    } catch {}
   }
-
-  /* ── skills ── */
-  heading(doc, labels.skills);
-
-  for (const skill of buildSkills(t, lang)) {
-    doc
-      .fontSize(9)
-      .font("Helvetica-Bold")
-      .fillColor(BLACK)
-      .text(`${skill.category}:  `, L, doc.y, { width: W, continued: true })
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .text(skill.items);
-    doc.moveDown(0.2);
-  }
-
-  /* ── talks & projects ── */
-  heading(doc, labels.talks);
-
-  for (const talk of buildTalks(t)) {
-    doc
-      .fontSize(9)
-      .font("Helvetica-Bold")
-      .fillColor(BLACK)
-      .text(talk.title, L, doc.y, { width: W, continued: true })
-      .font("Helvetica")
-      .fillColor(GRAY)
-      .fontSize(8.5)
-      .text(`  ${truncate(talk.desc, 1)}`);
-    doc.moveDown(0.15);
-  }
-
-  doc.end();
-  console.log(`CV (${lang.toUpperCase()}) generated → ${output}`);
 }
 
 /* ── run ───────────────────────────────────────────── */
