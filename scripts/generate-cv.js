@@ -21,6 +21,9 @@ const LABELS = {
     programming: "Programming",
     languages: "Languages",
     location: "Zürich, Switzerland",
+    thesis: "Thesis",
+    project: "Project",
+    other: "Other",
   },
   de: {
     profile: "Profil",
@@ -31,6 +34,9 @@ const LABELS = {
     programming: "Programmierung",
     languages: "Sprachen",
     location: "Zürich, Schweiz",
+    thesis: "Abschlussarbeit",
+    project: "Projekt",
+    other: "Sonstiges",
   },
 };
 
@@ -60,12 +66,7 @@ function escTex(str) {
 /* ── data builders ───────────────────────────────────── */
 
 function buildProfile(t) {
-  return t.about.abstract
-    .split(/<\/?p>/)
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .map((s) => escTex(stripHtml(s)))
-    .join("\n\n\\vspace{4pt}\n");
+  return escTex(t.hero.desc);
 }
 
 function buildJobs(t) {
@@ -86,19 +87,22 @@ function buildJobs(t) {
     .join("\n");
 }
 
-function buildEducation(t) {
+function buildEducation(t, lang) {
+  const labels = LABELS[lang];
   return t.education.items
     .slice()
     .reverse()
     .map((e) => {
-      const detail = escTex(stripHtml(e.detail));
-      const award = e.award
-        ? `\\newline\\cvlink{award}{${e.award.href}}{${escTex(e.award.label)}}`
-        : "";
       const year = escTex(e.year);
       const degree = escTex(`${e.degree} (${e.specialization})`);
       const school = escTex(e.school);
-      return `\\cvedu{${year}}{${degree}}{${school}}{${detail}${award}}`;
+      const lines = [];
+      if (e.thesis) lines.push(`\\textbf{${labels.thesis}:} ${escTex(e.thesis)}`);
+      if (e.project) lines.push(`\\textbf{${labels.project}:} ${escTex(e.project)}`);
+      if (e.other) lines.push(`\\textbf{${labels.other}:} ${escTex(e.other)}`);
+      if (e.award) lines.push(`\\cvlink{award}{${e.award.href}}{${escTex(e.award.label)}}`);
+      const detail = lines.join("\\newline\n");
+      return `\\cvedu{${year}}{${degree}}{${school}}{${detail}}`;
     })
     .join("\n");
 }
@@ -168,7 +172,7 @@ function generateCV(lang) {
     .replace("{{LABEL_EXPERIENCE}}", labels.experience)
     .replace("{{JOB_ENTRIES}}", buildJobs(t))
     .replace("{{LABEL_EDUCATION}}", labels.education)
-    .replace("{{EDU_ENTRIES}}", buildEducation(t))
+    .replace("{{EDU_ENTRIES}}", buildEducation(t, lang))
     .replace("{{LABEL_SKILLS}}", labels.skills)
     .replace("{{SKILL_ENTRIES}}", buildSkills(t, lang))
     .replace("{{LABEL_TALKS}}", labels.talks)

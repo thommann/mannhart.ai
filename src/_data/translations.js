@@ -120,6 +120,7 @@ export default {
     education: {
       number: "03",
       title: "Education",
+      labels: { thesis: "Thesis", project: "Project", other: "Other" },
       items: [
         {
           degree: "BSc in Informatics",
@@ -127,6 +128,9 @@ export default {
           school: "University of Zürich",
           year: "2017–2020",
           detail: 'Specialization in Software Systems. Thesis: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" class="thesis-link">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Written at the Free University of Bozen-Bolzano under the guidance of Anton Dignös. Awarded the Semesterpreis HS20 by the Faculty of Business, Economics and Informatics — one of four students recognized across the entire faculty that semester.',
+          thesis: "A General-purpose Range Join Algorithm for PostgreSQL. Written at the Free University of Bozen-Bolzano, supervised by Anton Dignös.",
+          project: null,
+          other: "Semesterpreis HS20 — awarded for outstanding bachelor's thesis by the Faculty of Business, Economics and Informatics.",
           award: {
             label: "Semesterpreis HS20",
             href: "https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html",
@@ -138,6 +142,9 @@ export default {
           school: "University of Zürich",
           year: "2020–2023",
           detail: 'Specialization in Artificial Intelligence. Exchange semester at the National Taiwan University (NTU) in Taipei. Team project (with Johann Schwabe and Joel Barmettler): <em><a href="https://github.com/johannschwabe/AirspaceAuctionSimulator" target="_blank" rel="noopener" class="thesis-link">Airspace Auction Simulator</a></em>. Thesis: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Supervised by Johannes Marti and Dan Olteanu at the Data Systems and Theory group.',
+          thesis: "KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition. Supervised by Johannes Marti and Dan Olteanu.",
+          project: "Airspace Auction Simulator — with Johann Schwabe and Joel Barmettler.",
+          other: "Exchange semester at the National Taiwan University (NTU), Taipei.",
           award: null,
         },
       ],
@@ -468,6 +475,7 @@ export default {
     education: {
       number: "03",
       title: "Ausbildung",
+      labels: { thesis: "Abschlussarbeit", project: "Projekt", other: "Sonstiges" },
       items: [
         {
           degree: "BSc in Informatik",
@@ -475,6 +483,9 @@ export default {
           school: "Universität Zürich",
           year: "2017–2020",
           detail: 'Spezialisierung in Software Systems. Bachelorarbeit: <em><a href="http://tpg.inf.unibz.it/project-rmj" target="_blank" rel="noopener" class="thesis-link">A General-purpose Range Join Algorithm for PostgreSQL</a></em>. Geschrieben an der Freien Universität Bozen unter der Betreuung von Anton Dignös. Ausgezeichnet mit dem Semesterpreis HS20 der Wirtschaftswissenschaftlichen Fakultät, einer von vier Studierenden, die in diesem Semester fakultätsweit ausgezeichnet wurden.',
+          thesis: "A General-purpose Range Join Algorithm for PostgreSQL. Geschrieben an der Freien Universität Bozen, betreut von Anton Dignös.",
+          project: null,
+          other: "Semesterpreis HS20 — ausgezeichnete Bachelorarbeit, Wirtschaftswissenschaftliche Fakultät, UZH.",
           award: {
             label: "Semesterpreis HS20",
             href: "https://www.ifi.uzh.ch/en/archive/news-archive/outstanding-scientific-work-thomas-mannhart.html",
@@ -486,6 +497,9 @@ export default {
           school: "Universität Zürich",
           year: "2020–2023",
           detail: 'Spezialisierung in Artificial Intelligence. Austauschsemester an der National Taiwan University (NTU) in Taipei. Teamprojekt (mit Johann Schwabe und Joel Barmettler): <em><a href="https://github.com/johannschwabe/AirspaceAuctionSimulator" target="_blank" rel="noopener" class="thesis-link">Airspace Auction Simulator</a></em>. Masterarbeit: <em>KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition.</em> Betreut von Johannes Marti und Dan Olteanu in der Gruppe Data Systems and Theory.',
+          thesis: "KroneDB — Compressing and Querying Time Series Data using the Kronecker Decomposition. Betreut von Johannes Marti und Dan Olteanu.",
+          project: "Airspace Auction Simulator — mit Johann Schwabe und Joel Barmettler.",
+          other: "Austauschsemester an der National Taiwan University (NTU), Taipei.",
           award: null,
         },
       ],
