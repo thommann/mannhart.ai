@@ -76,7 +76,8 @@ function buildJobs(t) {
       const company = escTex(
         `${j.company}, ${j.location.replace(/, (Switzerland|Schweiz)/g, "")}`
       );
-      const desc = escTex(j.desc);
+      const descItems = j.desc.map((item) => `\\item ${escTex(item)}`).join("\n");
+      const desc = `\\vspace{-8pt}\\begin{itemize}[noitemsep,topsep=0pt,partopsep=0pt,leftmargin=1em]\n${descItems}\n\\end{itemize}`;
       const assessment = j.assessment
         ? `\\newline\\cvlink{file-alt}{https://t.mannhart.ai${j.assessment.href}}{${escTex(j.assessment.label)}}`
         : "";

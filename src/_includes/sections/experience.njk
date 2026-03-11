@@ -12,7 +12,11 @@
         <h3 class="timeline-role">{{ job.role }}</h3>
         <div class="timeline-company">{{ job.company }}</div>
         <div class="timeline-location">{{ job.location }}</div>
-        <p class="timeline-desc">{{ job.desc }}</p>
+        <ul class="timeline-desc">
+          {% for item in job.desc %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
         {% if job.assessment %}
         <a href="{{ job.assessment.href }}" target="_blank" rel="noopener" class="timeline-assessment">{{ job.assessment.label }}</a>
         {% endif %}
