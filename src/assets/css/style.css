@@ -656,6 +656,28 @@ section {
   font-size: 0.92rem;
   line-height: 1.8;
   max-width: 560px;
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.timeline-desc li {
+  margin-bottom: 0.25rem;
+}
+
+.timeline-assessment {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.timeline-assessment:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .timeline-tech {
@@ -739,6 +761,29 @@ section {
   color: var(--text-muted);
   font-size: 0.88rem;
   line-height: 1.7;
+}
+
+.edu-structured {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.edu-row {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.5rem 1.5rem;
+}
+
+.edu-row dt {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.edu-row dd {
+  margin: 0;
 }
 
 .thesis-link {
@@ -884,6 +929,31 @@ section {
   margin-top: 1rem;
 }
 
+.featured-projects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.featured-project h3 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.featured-project p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  margin-bottom: 0.75rem;
+}
+
+.featured-project .timeline-tech {
+  margin-top: 0.75rem;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -1008,6 +1078,7 @@ section {
 
 @media (max-width: 900px) {
   .featured-grid { grid-template-columns: 1fr; }
+  .featured-projects { grid-template-columns: 1fr; }
 }
 
 /* --- Beyond Work --- */

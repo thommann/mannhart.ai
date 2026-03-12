@@ -16,8 +16,7 @@ Live site: https://t.mannhart.ai
 | JavaScript | Vanilla ES modules (no frameworks) |
 | Chatbot backend | Node.js + Express 5 + OpenAI SDK |
 | PDF generation | PDFKit |
-| Deployment | GitHub Actions → rsync → systemd |
-| Hosting | Self-hosted VM |
+| Deployment | GitHub Actions |
 | Node version | 22 |
 | Package manager | npm |
 
@@ -112,14 +111,7 @@ Routes: `/` redirects to `/de/` (meta refresh + JS fallback). `/de/` → German,
 - Runs `npm run build` to verify the site builds
 
 ### Deployment (`deploy.yml`) — on push to `main`
-1. `npm ci && npm run build`
-2. rsync `_site/` to `REDACTED_PATH` (excludes `.well-known/`)
-3. Copy `translations.js` and `utils.js` into `chatbot-server/`
-4. rsync `chatbot-server/` to `REDACTED_PATH/`
-5. SSH: `npm install --production && systemctl restart $SERVICE`
-6. Health check: `curl http://localhost:PORT/api/health`
-
-**Required GitHub Secrets**: `SSH_PRIVATE_KEY`, `SERVER_IP`
+Builds the site, generates CVs, and deploys via rsync + SSH. Server details are configured via GitHub Secrets and Variables.
 
 ## Additional Rules
 

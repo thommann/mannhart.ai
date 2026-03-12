@@ -12,7 +12,26 @@
         <div class="edu-school">{{ item.school }}</div>
         <div class="edu-year">{{ item.year }}</div>
         <div class="edu-detail">
-          {{ item.detail | safe }}
+          <dl class="edu-structured">
+            {% if item.thesis %}
+            <div class="edu-row">
+              <dt>{{ t.education.labels.thesis }}</dt>
+              <dd>{{ item.thesis }}</dd>
+            </div>
+            {% endif %}
+            {% if item.project %}
+            <div class="edu-row">
+              <dt>{{ t.education.labels.project }}</dt>
+              <dd>{{ item.project }}</dd>
+            </div>
+            {% endif %}
+            {% if item.other %}
+            <div class="edu-row">
+              <dt>{{ t.education.labels.other }}</dt>
+              <dd>{{ item.other }}</dd>
+            </div>
+            {% endif %}
+          </dl>
           {% if item.award %}
           <div class="award-badge">
             <a href="{{ item.award.href }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:.5rem;">

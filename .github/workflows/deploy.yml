@@ -26,6 +26,11 @@ jobs:
 
       - run: npm ci
 
+      - name: Install TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-latex-recommended texlive-font-utils tex-gyre
+
       - run: node scripts/generate-cv.js
 
       - run: npm run build
@@ -35,9 +40,9 @@ jobs:
           switches: -avz --delete --exclude='.well-known'
           strict_hostkeys_checking: true
           path: _site/
-          remote_path: REDACTED_PATH
+          remote_path: ${{ secrets.SITE_DEPLOY_PATH }}
           remote_host: ${{ secrets.SERVER_IP }}
-          remote_user: REDACTED
+          remote_user: ${{ secrets.DEPLOY_USER }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - run: |
@@ -49,18 +54,18 @@ jobs:
           switches: -avz
           strict_hostkeys_checking: true
           path: chatbot-server/
-          remote_path: REDACTED_PATH/
+          remote_path: ${{ secrets.CHATBOT_DEPLOY_PATH }}
           remote_host: ${{ secrets.SERVER_IP }}
-          remote_user: REDACTED
+          remote_user: ${{ secrets.DEPLOY_USER }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Restart chatbot server
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SERVER_IP }}
-          username: REDACTED
+          username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd REDACTED_PATH && npm install --production && sudo systemctl restart $SERVICE
+            cd ${{ secrets.CHATBOT_DEPLOY_PATH }} && npm install --production && sudo systemctl restart ${{ secrets.CHATBOT_SERVICE }}
             sleep 2
-            curl --fail --retry 3 --retry-delay 2 http://localhost:PORT/api/health
+            curl --fail --retry 3 --retry-delay 2 http://localhost:${{ secrets.CHATBOT_PORT }}/api/health
