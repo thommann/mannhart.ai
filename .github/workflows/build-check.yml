@@ -40,8 +40,6 @@ jobs:
           cp src/_data/translations_de.json chatbot-server/translations_de.json
           cp src/_data/utils.js chatbot-server/utils.js
           cd chatbot-server && npm ci
-        env:
-          LLM_API_KEY: test
       - name: Start chatbot server and check health
         run: |
           cd chatbot-server && node server.js &
@@ -49,4 +47,4 @@ jobs:
           curl --fail --retry 3 --retry-delay 2 http://localhost:3001/api/health
           kill %1
         env:
-          LLM_API_KEY: test
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
