@@ -28,7 +28,7 @@ eleventyExcludeFromCollections: true
 - {{ group.name }}: {% for item in group.items %}{{ item.name }}{% if not loop.last %}, {% endif %}{% endfor %}
 {%- endfor %}
 
-## Talks
+## Projects
 
 - "{{ t.featured.fhnw.title | replace("<br>", " ") }}" — {{ t.featured.fhnw.label }}
 - "{{ t.featured.webinar.title }}" — {{ t.featured.webinar.desc }}

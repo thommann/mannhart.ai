@@ -241,7 +241,7 @@ export default {
     },
     featured: {
       number: "05",
-      title: "Talks",
+      title: "Projects",
       webinar: {
         title: "KI als Entwicklungspartner",
         desc: "bbv webinar on practical methods, tools, and proven strategies for integrating AI into the software development lifecycle — from requirements analysis through code development to testing.",
@@ -594,7 +594,7 @@ export default {
     },
     featured: {
       number: "05",
-      title: "Vorträge",
+      title: "Projekte",
       webinar: {
         title: "KI als Entwicklungspartner",
         desc: "bbv-Webinar über praktische Methoden, Tools und bewährte Strategien zur Integration von KI in den Software-Entwicklungszyklus, von der Anforderungsanalyse über die Code-Entwicklung bis zum Testing.",

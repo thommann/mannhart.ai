@@ -17,7 +17,7 @@ const LABELS = {
     experience: "Experience",
     education: "Education",
     skills: "Skills",
-    talks: "Talks \\& Projects",
+    projects: "Projects",
     programming: "Programming",
     languages: "Languages",
     location: "Zürich, Switzerland",
@@ -30,7 +30,7 @@ const LABELS = {
     experience: "Berufserfahrung",
     education: "Ausbildung",
     skills: "Skills",
-    talks: "Vorträge \\& Projekte",
+    projects: "Projekte",
     programming: "Programmierung",
     languages: "Sprachen",
     location: "Zürich, Schweiz",
@@ -124,7 +124,7 @@ function buildSkills(t, lang) {
   return groups.join("\n");
 }
 
-function buildTalks(t, lang) {
+function buildProjects(t, lang) {
   const docsUrl = lang === "de"
     ? "https://bbvch-ai.github.io/aihub-core/de/"
     : "https://bbvch-ai.github.io/aihub-core/";
@@ -151,7 +151,7 @@ function buildTalks(t, lang) {
       desc: `${escTex(t.featured.airspace.desc)} \\cvlink{github}{https://github.com/johannschwabe/AirspaceAuctionSimulator}{GitHub}`,
     },
   ]
-    .map((t) => `\\cvtalk{${t.title}}{${t.desc}}`)
+    .map((t) => `\\cvproject{${t.title}}{${t.desc}}`)
     .join("\n");
 }
 
@@ -175,8 +175,8 @@ function generateCV(lang) {
     .replace("{{EDU_ENTRIES}}", buildEducation(t, lang))
     .replace("{{LABEL_SKILLS}}", labels.skills)
     .replace("{{SKILL_ENTRIES}}", buildSkills(t, lang))
-    .replace("{{LABEL_TALKS}}", labels.talks)
-    .replace("{{TALK_ENTRIES}}", buildTalks(t, lang));
+    .replace("{{LABEL_PROJECTS}}", labels.projects)
+    .replace("{{PROJECT_ENTRIES}}", buildProjects(t, lang));
 
   writeFileSync(outputTex, tex);
   console.log(`LaTeX source written → ${outputTex}`);
