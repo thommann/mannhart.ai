@@ -21,6 +21,7 @@ if (!LLM_API_KEY) {
 const MODEL_CHAIN = [LLM_MODEL, ...LLM_FALLBACK_MODELS.split(",").map(m => m.trim()).filter(Boolean)];
 
 const openai = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL });
+const MAX_TOKENS = 5000;
 
 // --- Tool definitions (OpenAI function calling) ---
 
@@ -609,17 +610,18 @@ app.post("/api/chat", async (req, res) => {
       ...trimmed,
     ];
 
+    // Helper: stream a chat completion with shared defaults
+    function streamChat(msgs, extra = {}) {
+      return createWithFallback(
+        { max_tokens: MAX_TOKENS, temperature: 0.7, messages: msgs, stream: true, ...extra },
+        { signal: abortController.signal },
+      );
+    }
+
     // Round 1: request with tools (buffered — don't stream to client yet)
     let stream;
     try {
-      stream = await createWithFallback({
-        max_tokens: 500,
-        temperature: 0.7,
-        messages: currentMessages,
-        tools: TOOLS,
-        tool_choice: "auto",
-        stream: true,
-      }, { signal: abortController.signal });
+      stream = await streamChat(currentMessages, { tools: TOOLS, tool_choice: "auto" });
     } catch (toolErr) {
       // Provider might not support tools — fall back to plain request
       const isToolError = toolErr.message?.toLowerCase().includes("tool") ||
@@ -627,12 +629,7 @@ app.post("/api/chat", async (req, res) => {
       if (toolErr.status === 400 && isToolError) {
         console.warn("Provider does not support tools, falling back with links");
         currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
-        const fallbackStream = await createWithFallback({
-          max_tokens: 500,
-          temperature: 0.7,
-          messages: currentMessages,
-          stream: true,
-        }, { signal: abortController.signal });
+        const fallbackStream = await streamChat(currentMessages);
         for await (const chunk of fallbackStream) {
           write(chunk);
         }
@@ -690,12 +687,7 @@ app.post("/api/chat", async (req, res) => {
       // Round 2: stream final response (no tools) directly to client
       let round2Result;
       try {
-        const finalStream = await createWithFallback({
-          max_tokens: 500,
-          temperature: 0.7,
-          messages: currentMessages,
-          stream: true,
-        }, { signal: abortController.signal });
+        const finalStream = await streamChat(currentMessages);
         round2Result = await consumeStream(finalStream, write);
       } catch (round2Err) {
         console.warn("Round 2 failed, retrying without tool messages:", round2Err.status, round2Err.message);
@@ -706,12 +698,7 @@ app.post("/api/chat", async (req, res) => {
       if (!round2Result || round2Result.contentChunks.length === 0) {
         const plainMessages = currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls);
         plainMessages[0] = { role: "system", content: plainMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
-        const retryStream = await createWithFallback({
-          max_tokens: 500,
-          temperature: 0.7,
-          messages: plainMessages,
-          stream: true,
-        }, { signal: abortController.signal });
+        const retryStream = await streamChat(plainMessages);
         await consumeStream(retryStream, write);
       }
 
@@ -728,12 +715,9 @@ app.post("/api/chat", async (req, res) => {
       // Model returned nothing (tools ignored) — retry without tools, with link instructions
       console.warn("Round 1 empty, retrying without tools");
       currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
-      const retryStream = await createWithFallback({
-        max_tokens: 500,
-        temperature: 0.7,
-        messages: currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls),
-        stream: true,
-      }, { signal: abortController.signal });
+      const retryStream = await streamChat(
+        currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls),
+      );
       for await (const chunk of retryStream) {
         write(chunk);
       }
