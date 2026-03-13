@@ -183,24 +183,27 @@ const VALID_THEMES = new Set(["dark", "light"]);
 
 function executeSetTheme(args, lang, currentTheme) {
   const target = VALID_THEMES.has(args.theme) ? args.theme : (currentTheme === "light" ? "dark" : "light");
+  const t = translations[lang].serverMessages;
+  const themeName = target === "dark" ? translations[lang].chatbot.themeDark : translations[lang].chatbot.themeLight;
   if (target === currentTheme) {
-    return { type: "info", message: lang === "de" ? `Die Seite ist bereits im ${target === "dark" ? "Dark" : "Light"} Mode.` : `The site is already in ${target} mode.` };
+    return { type: "info", message: t.alreadyOnTheme.replace("{theme}", themeName) };
   }
   return {
     type: "action",
-    label: lang === "de" ? `Zu ${target === "dark" ? "Dark" : "Light"} Mode wechseln` : `Switch to ${target} mode`,
+    label: t.switchToTheme.replace("{theme}", themeName),
     newTheme: target,
   };
 }
 
 function executeSwitchLanguage(args, lang) {
   const target = VALID_LANGUAGES.has(args.language) ? args.language : (lang === "de" ? "en" : "de");
+  const t = translations[lang].serverMessages;
   if (target === lang) {
-    return { type: "info", message: lang === "de" ? "Die Seite ist bereits auf Deutsch." : "The site is already in English." };
+    return { type: "info", message: t.alreadyOnLanguage };
   }
   return {
     type: "action",
-    label: target === "de" ? "Zu Deutsch wechseln" : "Switch to English",
+    label: translations[target].serverMessages.switchToLanguage,
     targetLanguage: target,
   };
 }
@@ -400,18 +403,8 @@ app.use((req, res, next) => {
 // --- Fallback link instructions (when tool calling is unavailable) ---
 
 const LINK_INSTRUCTIONS = {
-  en: `You CANNOT execute actions directly. You can only provide clickable links for the user. NEVER say you have already done something — always tell the user to click the link. Use these markdown links:
-- Toggle theme: [Switch to dark mode](#action:toggle-theme) or [Switch to light mode](#action:toggle-theme) — use the one OPPOSITE to the current theme in <state>
-- Switch language: [Zu Deutsch wechseln](#action:switch-to-de)
-- Navigate to sections: [About](#about), [Experience](#experience), [Education](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Contact](#contact)
-- Resources: use the URLs from the <resources> block in your context (CV, GitHub, thesis, etc.)
-Example: if the user says "switch to dark mode", respond with "Click here to switch: [Switch to dark mode](#action:toggle-theme)"`,
-  de: `Du KANNST KEINE Aktionen direkt ausführen. Du kannst nur klickbare Links bereitstellen. Sage NIEMALS, dass du etwas bereits getan hast — sage dem Nutzer immer, er soll den Link klicken. Verwende diese Markdown-Links:
-- Theme wechseln: [Zum Dark Mode wechseln](#action:toggle-theme) oder [Zum Light Mode wechseln](#action:toggle-theme) — verwende das GEGENTEIL des aktuellen Themes im <state>-Block
-- Sprache wechseln: [Switch to English](#action:switch-to-en)
-- Zu Bereichen navigieren: [Über mich](#about), [Erfahrung](#experience), [Ausbildung](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Kontakt](#contact)
-- Ressourcen: verwende die URLs aus dem <resources>-Block in deinem Kontext (CV, GitHub, Thesis, etc.)
-Beispiel: Wenn der Nutzer "wechsle zum Dark Mode" sagt, antworte mit "Klicke hier: [Zum Dark Mode wechseln](#action:toggle-theme)"`,
+  en: translations.en.serverMessages.linkInstructions,
+  de: translations.de.serverMessages.linkInstructions,
 };
 
 // --- LLM request with model fallback on quota errors ---

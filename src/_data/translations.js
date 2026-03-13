@@ -324,6 +324,8 @@ export default {
       confirmLangSwitchNote: "This will reload the page and reset the chat.",
       confirmLangSwitchLink: "Switch to German?",
       alreadyOnLanguage: "The site is already in English!",
+      themeDark: "dark",
+      themeLight: "light",
       alreadyOnTheme: "The site is already in {theme} mode!",
       toggleThemeResponse: "Sure, toggling for you!",
       fallbackGreeting: "I'm Thomas's AI assistant! Ask me about him, or I can toggle dark mode, switch language, or show you his CV.",
@@ -349,6 +351,38 @@ export default {
     },
     footer: {
       text: "&copy; 2026 Thomas Mannhart · Zürich, Switzerland",
+    },
+    serverMessages: {
+      alreadyOnTheme: "The site is already in {theme} mode.",
+      switchToTheme: "Switch to {theme} mode",
+      alreadyOnLanguage: "The site is already in English.",
+      switchToLanguage: "Switch to English",
+      linkInstructions: `You CANNOT execute actions directly. You can only provide clickable links for the user. NEVER say you have already done something — always tell the user to click the link. Use these markdown links:
+- Toggle theme: [Switch to dark mode](#action:toggle-theme) or [Switch to light mode](#action:toggle-theme) — use the one OPPOSITE to the current theme in <state>
+- Switch language: [Zu Deutsch wechseln](#action:switch-to-de)
+- Navigate to sections: [About](#about), [Experience](#experience), [Education](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Contact](#contact)
+- Resources: use the URLs from the <resources> block in your context (CV, GitHub, thesis, etc.)
+Example: if the user says "switch to dark mode", respond with "Click here to switch: [Switch to dark mode](#action:toggle-theme)"`,
+    },
+    cvLabels: {
+      profile: "Profile",
+      experience: "Experience",
+      education: "Education",
+      skills: "Skills",
+      projects: "Projects",
+      programming: "Programming",
+      languages: "Languages",
+      location: "Zürich, Switzerland",
+      thesis: "Thesis",
+      project: "Project",
+      other: "Other",
+    },
+    redirect: {
+      langLabel: "English",
+    },
+    llms: {
+      germanDesc: "Main portfolio page in German",
+      englishDesc: "Main portfolio page in English",
     },
     chatbotPrompt: {
       identity: `<identity>
@@ -719,6 +753,8 @@ Assistant: "I'm here to answer questions about Thomas, so I can't help with codi
       confirmLangSwitchNote: "Die Seite wird neu geladen und der Chat zurückgesetzt.",
       confirmLangSwitchLink: "Zu Englisch wechseln?",
       alreadyOnLanguage: "Die Seite ist bereits auf Deutsch!",
+      themeDark: "Dark Mode",
+      themeLight: "Light Mode",
       alreadyOnTheme: "Die Seite ist bereits im {theme}!",
       toggleThemeResponse: "Klar, ich schalte das für dich um!",
       fallbackGreeting: "Ich bin Thomas' KI-Assistent! Frag mich etwas über ihn, oder ich kann den Dark Mode umschalten, die Sprache wechseln oder dir seinen CV zeigen.",
@@ -744,6 +780,34 @@ Assistant: "I'm here to answer questions about Thomas, so I can't help with codi
     },
     footer: {
       text: "&copy; 2026 Thomas Mannhart · Zürich, Schweiz",
+    },
+    serverMessages: {
+      alreadyOnTheme: "Die Seite ist bereits im {theme}.",
+      switchToTheme: "Zu {theme} wechseln",
+      alreadyOnLanguage: "Die Seite ist bereits auf Deutsch.",
+      switchToLanguage: "Zu Deutsch wechseln",
+      linkInstructions: `Du KANNST KEINE Aktionen direkt ausführen. Du kannst nur klickbare Links bereitstellen. Sage NIEMALS, dass du etwas bereits getan hast — sage dem Nutzer immer, er soll den Link klicken. Verwende diese Markdown-Links:
+- Theme wechseln: [Zum Dark Mode wechseln](#action:toggle-theme) oder [Zum Light Mode wechseln](#action:toggle-theme) — verwende das GEGENTEIL des aktuellen Themes im <state>-Block
+- Sprache wechseln: [Switch to English](#action:switch-to-en)
+- Zu Bereichen navigieren: [Über mich](#about), [Erfahrung](#experience), [Ausbildung](#education), [Skills](#skills), [Featured](#featured), [Beyond Work](#beyond-work), [Kontakt](#contact)
+- Ressourcen: verwende die URLs aus dem <resources>-Block in deinem Kontext (CV, GitHub, Thesis, etc.)
+Beispiel: Wenn der Nutzer "wechsle zum Dark Mode" sagt, antworte mit "Klicke hier: [Zum Dark Mode wechseln](#action:toggle-theme)"`,
+    },
+    cvLabels: {
+      profile: "Profil",
+      experience: "Berufserfahrung",
+      education: "Ausbildung",
+      skills: "Skills",
+      projects: "Projekte",
+      programming: "Programmierung",
+      languages: "Sprachen",
+      location: "Zürich, Schweiz",
+      thesis: "Abschlussarbeit",
+      project: "Projekt",
+      other: "Sonstiges",
+    },
+    redirect: {
+      langLabel: "Deutsch",
     },
     chatbotPrompt: {
       identity: `<identity>

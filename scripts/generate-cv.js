@@ -10,35 +10,7 @@ const OUTPUT_DIR = join(__dirname, "..", "src", "assets", "pdf");
 const PHOTO = join(__dirname, "..", "src", "assets", "img", "photo-cv.jpg");
 const TEMPLATE = readFileSync(join(__dirname, "cv-template.tex"), "utf8");
 
-// Section labels per language (already TeX-safe where needed)
-const LABELS = {
-  en: {
-    profile: "Profile",
-    experience: "Experience",
-    education: "Education",
-    skills: "Skills",
-    projects: "Projects",
-    programming: "Programming",
-    languages: "Languages",
-    location: "Zürich, Switzerland",
-    thesis: "Thesis",
-    project: "Project",
-    other: "Other",
-  },
-  de: {
-    profile: "Profil",
-    experience: "Berufserfahrung",
-    education: "Ausbildung",
-    skills: "Skills",
-    projects: "Projekte",
-    programming: "Programmierung",
-    languages: "Sprachen",
-    location: "Zürich, Schweiz",
-    thesis: "Abschlussarbeit",
-    project: "Projekt",
-    other: "Sonstiges",
-  },
-};
+const LABELS = { en: translations.en.cvLabels, de: translations.de.cvLabels };
 
 /* ── TeX helpers ──────────────────────────────────────── */
 
