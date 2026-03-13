@@ -10,35 +10,7 @@ const OUTPUT_DIR = join(__dirname, "..", "src", "assets", "pdf");
 const PHOTO = join(__dirname, "..", "src", "assets", "img", "photo-cv.jpg");
 const TEMPLATE = readFileSync(join(__dirname, "cv-template.tex"), "utf8");
 
-// Section labels per language (already TeX-safe where needed)
-const LABELS = {
-  en: {
-    profile: "Profile",
-    experience: "Experience",
-    education: "Education",
-    skills: "Skills",
-    talks: "Talks \\& Projects",
-    programming: "Programming",
-    languages: "Languages",
-    location: "Zürich, Switzerland",
-    thesis: "Thesis",
-    project: "Project",
-    other: "Other",
-  },
-  de: {
-    profile: "Profil",
-    experience: "Berufserfahrung",
-    education: "Ausbildung",
-    skills: "Skills",
-    talks: "Vorträge \\& Projekte",
-    programming: "Programmierung",
-    languages: "Sprachen",
-    location: "Zürich, Schweiz",
-    thesis: "Abschlussarbeit",
-    project: "Projekt",
-    other: "Sonstiges",
-  },
-};
+const LABELS = { en: translations.en.cvLabels, de: translations.de.cvLabels };
 
 /* ── TeX helpers ──────────────────────────────────────── */
 
@@ -124,7 +96,7 @@ function buildSkills(t, lang) {
   return groups.join("\n");
 }
 
-function buildTalks(t, lang) {
+function buildProjects(t, lang) {
   const docsUrl = lang === "de"
     ? "https://bbvch-ai.github.io/aihub-core/de/"
     : "https://bbvch-ai.github.io/aihub-core/";
@@ -151,7 +123,7 @@ function buildTalks(t, lang) {
       desc: `${escTex(t.featured.airspace.desc)} \\cvlink{github}{https://github.com/johannschwabe/AirspaceAuctionSimulator}{GitHub}`,
     },
   ]
-    .map((t) => `\\cvtalk{${t.title}}{${t.desc}}`)
+    .map((t) => `\\cvproject{${t.title}}{${t.desc}}`)
     .join("\n");
 }
 
@@ -175,8 +147,8 @@ function generateCV(lang) {
     .replace("{{EDU_ENTRIES}}", buildEducation(t, lang))
     .replace("{{LABEL_SKILLS}}", labels.skills)
     .replace("{{SKILL_ENTRIES}}", buildSkills(t, lang))
-    .replace("{{LABEL_TALKS}}", labels.talks)
-    .replace("{{TALK_ENTRIES}}", buildTalks(t, lang));
+    .replace("{{LABEL_PROJECTS}}", labels.projects)
+    .replace("{{PROJECT_ENTRIES}}", buildProjects(t, lang));
 
   writeFileSync(outputTex, tex);
   console.log(`LaTeX source written → ${outputTex}`);

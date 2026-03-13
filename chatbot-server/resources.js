@@ -146,7 +146,7 @@ const RESOURCES = {
   section_featured: {
     type: "section",
     url: "#featured",
-    title: { en: "Talks & Projects section", de: "Vorträge-Bereich" },
+    title: { en: "Projects section", de: "Projekte-Bereich" },
   },
   "section_beyond-work": {
     type: "section",

@@ -1,4 +1,4 @@
-# mannhart.ai
+# t.mannhart.ai
 
 Source code for my personal website at [t.mannhart.ai](https://t.mannhart.ai).
 

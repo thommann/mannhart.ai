@@ -32,3 +32,19 @@ jobs:
       - run: node scripts/generate-cv.js
 
       - run: npm run build
+
+      - name: Verify chatbot server
+        run: |
+          cp src/_data/translations.js chatbot-server/translations.js
+          cp src/_data/translations_en.json chatbot-server/translations_en.json
+          cp src/_data/translations_de.json chatbot-server/translations_de.json
+          cp src/_data/utils.js chatbot-server/utils.js
+          cd chatbot-server && npm ci
+      - name: Start chatbot server and check health
+        run: |
+          cd chatbot-server && node server.js &
+          sleep 2
+          curl --fail --retry 3 --retry-delay 2 http://localhost:3001/api/health
+          kill %1
+        env:
+          LLM_API_KEY: build-check-dummy-key

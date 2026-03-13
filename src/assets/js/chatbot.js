@@ -106,8 +106,7 @@
     toggle_theme: function (action) {
       if (action.theme !== "dark" && action.theme !== "light") return;
       if (action.theme === getCurrentTheme()) {
-        var themeName = action.theme;
-        if (locale === "de") themeName = action.theme === "dark" ? "Dark Mode" : "Light Mode";
+        var themeName = action.theme === "dark" ? strings.themeDark : strings.themeLight;
         showBotMessage(strings.alreadyOnTheme.replace("{theme}", themeName));
         return;
       }

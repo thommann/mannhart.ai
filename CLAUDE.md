@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**mannhart.ai** is a bilingual (German/English) personal portfolio website for Thomas Mannhart, a Professional AI Engineer. Built with Eleventy v3, vanilla CSS, and vanilla JavaScript. Includes an integrated AI chatbot powered by an Express server with OpenAI-compatible LLM providers.
+**t.mannhart.ai** is a bilingual (German/English) personal portfolio website for Thomas Mannhart, a Professional AI Engineer. Built with Eleventy v3, vanilla CSS, and vanilla JavaScript. Includes an integrated AI chatbot powered by an Express server with OpenAI-compatible LLM providers.
 
 Live site: https://t.mannhart.ai
 
@@ -44,11 +44,11 @@ node scripts/generate-cv.js   # Generates PDF CVs to src/assets/pdf/
 
 ## Things to Avoid
 
-- **Never duplicate content** — all text content lives in `src/_data/translations.js` and is referenced from templates. Do not hardcode strings in `.njk` files, JS, or elsewhere
+- **Never duplicate content** — all text content lives in `src/_data/translations_en.json` and `src/_data/translations_de.json`. Do not hardcode strings in `.njk` files, JS, server code, or elsewhere. Every user-facing or translatable string (including chatbot prompts, server messages, CV labels, and error messages) must go in the translation files
 - **Do not add build tools, linters, or frameworks** unless explicitly requested — the project deliberately uses minimal tooling
 - **Do not use `innerHTML`** for user-supplied content (XSS risk) — follow the safe rendering pattern in `chatbot.js`
 - **Do not commit `.env` files** or secrets — only `.env.example` is tracked
-- **Do not commit `chatbot-server/translations.js` or `chatbot-server/utils.js`** — these are generated at deploy time
+- **Do not commit `chatbot-server/translations.js`, `chatbot-server/translations_en.json`, `chatbot-server/translations_de.json`, or `chatbot-server/utils.js`** — these are generated at deploy time
 - **Do not modify `_site/`** — this is the build output directory, regenerated on every build
 - **Do not add external analytics, tracking scripts, or third-party CDN dependencies** without explicit approval
 - **Use en dashes without spaces for date/year ranges** in both languages (e.g. `2020–2023`, not `2020 — 2023`)
@@ -57,7 +57,9 @@ node scripts/generate-cv.js   # Generates PDF CVs to src/assets/pdf/
 
 ## Key Entry Points
 
-- `src/_data/translations.js` — ALL content (DE + EN), organized by section
+- `src/_data/translations_en.json` — all English content (website, chatbot prompts, server messages, CV labels)
+- `src/_data/translations_de.json` — all German content (same structure as EN)
+- `src/_data/translations.js` — thin re-export combining both JSON files into `{ en, de }`
 - `src/_includes/base.njk` — HTML shell (head, fonts, theme script, JS)
 - `src/_includes/sections/` — page section partials (nav, hero, about, skills, etc.)
 - `src/assets/css/style.css` — single CSS file
@@ -70,7 +72,9 @@ node scripts/generate-cv.js   # Generates PDF CVs to src/assets/pdf/
 
 ### Internationalization (i18n)
 
-All translatable content is centralized in `src/_data/translations.js` as a single export with `{ en: {...}, de: {...} }` structure. Both language pages (`src/de/index.njk` and `src/en/index.njk`) are identical — they include the same section partials and differ only by the locale set in their directory data files (`de.json` / `en.json`).
+All translatable content is centralized in two JSON files: `src/_data/translations_en.json` (English) and `src/_data/translations_de.json` (German). A thin `translations.js` re-exports them as `{ en, de }` for consumption by Eleventy, the chatbot server, and CV generation.
+
+Both language pages (`src/de/index.njk` and `src/en/index.njk`) are identical — they include the same section partials and differ only by the locale set in their directory data files (`de.json` / `en.json`).
 
 In templates:
 ```nunjucks
@@ -81,27 +85,27 @@ In templates:
 
 Routes: `/` redirects to `/de/` (meta refresh + JS fallback). `/de/` → German, `/en/` → English.
 
-**To add or edit content**: update `translations.js` (both `en` and `de` keys). To change layout: edit section partials.
+**To add or edit content**: update the corresponding key in `translations_en.json` and `translations_de.json`. To change layout: edit section partials.
 
 ### Chatbot Server
 
 - Uses OpenAI SDK configured to work with any OpenAI-compatible API (OpenAI, Groq, Together AI, Gemini, Mistral)
 - Configuration via `.env`: `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`, `ALLOWED_ORIGIN`, `PORT`
 - Implements function calling with tools: `get_resource()`, `navigate_to_section()`, `get_contact_info()`
-- System prompt auto-generated from `translations.js` and `resources.js`
-- During deployment, `translations.js` and `utils.js` are copied from `src/_data/` into `chatbot-server/` (not committed there)
+- System prompt and all server messages come from the translation files via `translations.js`; tool definitions and resources live in `resources.js`
+- During deployment, `translations.js`, `translations_en.json`, `translations_de.json`, and `utils.js` are copied from `src/_data/` into `chatbot-server/` (not committed there)
 
 ## Development Guidelines
 
 ### Adding a New Section
 1. Create `src/_includes/sections/<name>.njk`
-2. Add translation keys in `translations.js` under both `en` and `de`
+2. Add translation keys in `translations_en.json` and `translations_de.json`
 3. Include the section in both `src/de/index.njk` and `src/en/index.njk`
 4. Add styles in `src/assets/css/style.css`
 5. Add a section ID for anchor navigation if needed
 
 ### CV Updates
-- Edit content in `translations.js`, then run `node scripts/generate-cv.js`
+- Edit content in `translations_en.json` and `translations_de.json`, then run `node scripts/generate-cv.js`
 - Output goes to `src/assets/pdf/`
 
 ## CI/CD
