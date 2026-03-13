@@ -47,4 +47,4 @@ jobs:
           curl --fail --retry 3 --retry-delay 2 http://localhost:3001/api/health
           kill %1
         env:
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_API_KEY: build-check-dummy-key
