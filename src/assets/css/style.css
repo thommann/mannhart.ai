@@ -1204,6 +1204,56 @@ section {
   stroke-width: 1.5;
 }
 
+/* --- Legal / Privacy pages --- */
+.legal-content {
+  padding: 6rem 3rem 4rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.legal-content h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-bottom: 0.5rem;
+}
+
+.legal-updated {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+
+.legal-content h2 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.legal-content p,
+.legal-content ul,
+.legal-content li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.legal-content ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.legal-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 960px) {
+  .legal-content { padding: 5rem 1.5rem 3rem; }
+}
+
 /* --- Footer --- */
 footer {
   text-align: center;
@@ -1216,6 +1266,16 @@ footer p {
   font-size: 0.72rem;
   color: var(--text-muted);
   letter-spacing: 0.08em;
+}
+
+footer a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+footer a:hover {
+  color: var(--accent);
 }
 
 /* --- Scroll Reveal --- */
