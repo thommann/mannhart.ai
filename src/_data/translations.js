@@ -277,7 +277,6 @@ export default {
         title: "mannhart.ai",
         desc: "My website — a bilingual portfolio with an integrated AI chatbot, built with Eleventy and vanilla JS.",
         tech: ["Eleventy", "Caddy"],
-        source: "Source",
       },
       airspace: {
         title: "Airspace Auction Simulator",
@@ -631,7 +630,6 @@ export default {
         title: "mannhart.ai",
         desc: "Meine Website, ein zweisprachiges Portfolio mit integriertem KI-Chatbot, gebaut mit Eleventy und Vanilla JS.",
         tech: ["Eleventy", "Caddy"],
-        source: "Quellcode",
       },
       airspace: {
         title: "Airspace Auction Simulator",
