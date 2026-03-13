@@ -274,7 +274,7 @@ export default {
         bbvSoftwareServices: "bbv Software Services",
       },
       mannhart: {
-        title: "mannhart.ai",
+        title: "t.mannhart.ai",
         desc: "My website — a bilingual portfolio with an integrated AI chatbot, built with Eleventy and vanilla JS.",
         tech: ["Eleventy", "Caddy"],
       },
@@ -627,7 +627,7 @@ export default {
         bbvSoftwareServices: "bbv Software Services",
       },
       mannhart: {
-        title: "mannhart.ai",
+        title: "t.mannhart.ai",
         desc: "Meine Website, ein zweisprachiges Portfolio mit integriertem KI-Chatbot, gebaut mit Eleventy und Vanilla JS.",
         tech: ["Eleventy", "Caddy"],
       },

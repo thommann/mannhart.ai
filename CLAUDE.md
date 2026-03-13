@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**mannhart.ai** is a bilingual (German/English) personal portfolio website for Thomas Mannhart, a Professional AI Engineer. Built with Eleventy v3, vanilla CSS, and vanilla JavaScript. Includes an integrated AI chatbot powered by an Express server with OpenAI-compatible LLM providers.
+**t.mannhart.ai** is a bilingual (German/English) personal portfolio website for Thomas Mannhart, a Professional AI Engineer. Built with Eleventy v3, vanilla CSS, and vanilla JavaScript. Includes an integrated AI chatbot powered by an Express server with OpenAI-compatible LLM providers.
 
 Live site: https://t.mannhart.ai
 
