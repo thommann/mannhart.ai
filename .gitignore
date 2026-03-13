@@ -17,6 +17,8 @@ node_modules/
 _site/
 dist/
 chatbot-server/translations.js
+chatbot-server/translations_en.json
+chatbot-server/translations_de.json
 chatbot-server/utils.js
 src/assets/pdf/Thomas_Mannhart_CV_*.pdf
 src/assets/pdf/cv_*.tex

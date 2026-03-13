@@ -48,7 +48,7 @@ node scripts/generate-cv.js   # Generates PDF CVs to src/assets/pdf/
 - **Do not add build tools, linters, or frameworks** unless explicitly requested — the project deliberately uses minimal tooling
 - **Do not use `innerHTML`** for user-supplied content (XSS risk) — follow the safe rendering pattern in `chatbot.js`
 - **Do not commit `.env` files** or secrets — only `.env.example` is tracked
-- **Do not commit `chatbot-server/translations.js` or `chatbot-server/utils.js`** — these are generated at deploy time
+- **Do not commit `chatbot-server/translations.js`, `chatbot-server/translations_en.json`, `chatbot-server/translations_de.json`, or `chatbot-server/utils.js`** — these are generated at deploy time
 - **Do not modify `_site/`** — this is the build output directory, regenerated on every build
 - **Do not add external analytics, tracking scripts, or third-party CDN dependencies** without explicit approval
 - **Use en dashes without spaces for date/year ranges** in both languages (e.g. `2020–2023`, not `2020 — 2023`)
@@ -89,7 +89,7 @@ Routes: `/` redirects to `/de/` (meta refresh + JS fallback). `/de/` → German,
 - Configuration via `.env`: `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`, `ALLOWED_ORIGIN`, `PORT`
 - Implements function calling with tools: `get_resource()`, `navigate_to_section()`, `get_contact_info()`
 - System prompt auto-generated from `translations.js` and `resources.js`
-- During deployment, `translations.js` and `utils.js` are copied from `src/_data/` into `chatbot-server/` (not committed there)
+- During deployment, `translations.js`, `translations_en.json`, `translations_de.json`, and `utils.js` are copied from `src/_data/` into `chatbot-server/` (not committed there)
 
 ## Development Guidelines
 
