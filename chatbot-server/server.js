@@ -21,6 +21,7 @@ if (!LLM_API_KEY) {
 const MODEL_CHAIN = [LLM_MODEL, ...LLM_FALLBACK_MODELS.split(",").map(m => m.trim()).filter(Boolean)];
 
 const openai = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL });
+const MAX_TOKENS = 5000;
 
 // --- Tool definitions (OpenAI function calling) ---
 
@@ -613,7 +614,7 @@ app.post("/api/chat", async (req, res) => {
     let stream;
     try {
       stream = await createWithFallback({
-        max_tokens: 500,
+        max_tokens: MAX_TOKENS,
         temperature: 0.7,
         messages: currentMessages,
         tools: TOOLS,
@@ -628,7 +629,7 @@ app.post("/api/chat", async (req, res) => {
         console.warn("Provider does not support tools, falling back with links");
         currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
         const fallbackStream = await createWithFallback({
-          max_tokens: 500,
+          max_tokens: MAX_TOKENS,
           temperature: 0.7,
           messages: currentMessages,
           stream: true,
@@ -691,7 +692,7 @@ app.post("/api/chat", async (req, res) => {
       let round2Result;
       try {
         const finalStream = await createWithFallback({
-          max_tokens: 500,
+          max_tokens: MAX_TOKENS,
           temperature: 0.7,
           messages: currentMessages,
           stream: true,
@@ -707,7 +708,7 @@ app.post("/api/chat", async (req, res) => {
         const plainMessages = currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls);
         plainMessages[0] = { role: "system", content: plainMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
         const retryStream = await createWithFallback({
-          max_tokens: 500,
+          max_tokens: MAX_TOKENS,
           temperature: 0.7,
           messages: plainMessages,
           stream: true,
@@ -729,7 +730,7 @@ app.post("/api/chat", async (req, res) => {
       console.warn("Round 1 empty, retrying without tools");
       currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
       const retryStream = await createWithFallback({
-        max_tokens: 500,
+        max_tokens: MAX_TOKENS,
         temperature: 0.7,
         messages: currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls),
         stream: true,
