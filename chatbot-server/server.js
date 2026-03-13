@@ -611,9 +611,9 @@ app.post("/api/chat", async (req, res) => {
     ];
 
     // Helper: stream a chat completion with shared defaults
-    function streamChat(messages, extra = {}) {
+    function streamChat(msgs, extra = {}) {
       return createWithFallback(
-        { max_tokens: MAX_TOKENS, temperature: 0.7, messages, stream: true, ...extra },
+        { max_tokens: MAX_TOKENS, temperature: 0.7, messages: msgs, stream: true, ...extra },
         { signal: abortController.signal },
       );
     }
