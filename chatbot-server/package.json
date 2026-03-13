@@ -4,8 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "node server.js",
-    "mock": "node mock-server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^5.2.1",
