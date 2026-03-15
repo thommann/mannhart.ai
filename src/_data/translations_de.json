@@ -472,6 +472,7 @@
       "Dark Mode umschalten",
       "Sprache wechseln (DE/EN)"
     ],
+    "greetingPrivacy": "Deine Nachrichten werden von einer externen KI verarbeitet. Siehe <a href=\"/de/datenschutz/\">Datenschutzerklärung</a>.",
     "placeholder": "Stelle eine Frage...",
     "toggleAriaLabel": "Chat",
     "closeAriaLabel": "Chat schliessen",

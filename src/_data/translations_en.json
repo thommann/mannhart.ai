@@ -472,6 +472,7 @@
       "Toggle dark mode",
       "Switch language (DE/EN)"
     ],
+    "greetingPrivacy": "Your messages are processed by an external AI. See the <a href=\"/en/privacy/\">privacy policy</a>.",
     "placeholder": "Ask a question...",
     "toggleAriaLabel": "Chat",
     "closeAriaLabel": "Close chat",

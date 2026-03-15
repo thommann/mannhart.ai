@@ -1563,6 +1563,15 @@ footer a:hover {
 .chatbot-greeting-list li {
   margin: 1px 0;
 }
+.chatbot-greeting-privacy {
+  margin: 8px 0 0;
+  font-size: 0.78em;
+  opacity: 0.7;
+}
+.chatbot-greeting-privacy a {
+  color: inherit;
+  text-decoration: underline;
+}
 
 @media (max-width: 500px) {
   #chatbot-panel {
