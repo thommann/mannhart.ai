@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>KI macht Coden leichter und explizite Architektur dadurch wichtiger</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #faf9f5;
+    --paper: #ece6da;
+    --ink: #1d1f23;
+    --cream: #fdf6ee;
+    --muted: #6b6457;
+    --accent: #c75d3a;
+    --accent-soft: #ff8a80;
+    --rule: #d6cfc1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    line-height: 1.5;
+    overflow: hidden;
+  }
+
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    counter-reset: slide;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 6vh 8vw;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    counter-increment: slide;
+  }
+
+  .slide::before {
+    content: attr(data-num);
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+    font-size: 1.6em;
+    font-weight: 700;
+    color: var(--muted);
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .slide.dark::before { color: var(--cream); opacity: 0.4; }
+
+  .slide.active { display: flex; }
+
+  .slide.dark {
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  .slide.paper {
+    background: var(--paper);
+  }
+
+  /* Typography */
+  h1 {
+    font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+    font-size: 3.4em;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4em;
+  }
+
+  h2 {
+    font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+    font-size: 2.3em;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 0.5em;
+  }
+
+  h3 {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin-bottom: 0.6em;
+    letter-spacing: -0.005em;
+  }
+
+  p { margin-bottom: 0.8em; max-width: 56ch; }
+
+  .lead {
+    font-size: 1.4em;
+    line-height: 1.4;
+    max-width: 36ch;
+    color: var(--muted);
+  }
+
+  .dark .lead { color: #d6cfc1; }
+
+  ul, ol {
+    margin-left: 1.2em;
+    margin-bottom: 0.6em;
+  }
+  li { margin-bottom: 0.4em; max-width: 60ch; }
+
+  /* Icon-bulleted list – icon replaces the bullet marker */
+  ul.icon-list {
+    list-style: none;
+    margin-left: 0;
+  }
+  ul.icon-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-bottom: 0.6em;
+  }
+  ul.icon-list li > svg {
+    width: 1.4em;
+    height: 1.4em;
+    color: var(--accent);
+    stroke-width: 1.6;
+    flex-shrink: 0;
+  }
+  .dark ul.icon-list li > svg { color: var(--accent-soft); }
+
+  .kicker {
+    display: inline-block;
+    font-size: 0.88em;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 0.8em;
+  }
+
+  .dark .kicker { color: var(--accent-soft); }
+
+  strong { font-weight: 700; }
+  em { font-style: italic; color: var(--accent); }
+  .dark em { color: var(--accent-soft); }
+
+  code {
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-size: 0.95em;
+    background: rgba(199, 93, 58, 0.1);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+  .dark code {
+    background: rgba(253, 246, 238, 0.1);
+    color: var(--accent-soft);
+  }
+
+  .accent { color: var(--accent); }
+  .dark .accent { color: var(--accent-soft); }
+
+  a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+  a:hover { text-decoration-thickness: 2px; }
+  .dark a { color: var(--accent-soft); }
+
+  .small { font-size: 0.92em; color: var(--muted); }
+  .dark .small { color: #b8b1a4; }
+
+  /* Layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3em;
+    align-items: start;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2em;
+  }
+
+  .card {
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 1.5em 1.7em;
+  }
+
+  .dark .card {
+    background: rgba(253, 246, 238, 0.08);
+  }
+
+  /* Big quote / pullquote */
+  .pull {
+    font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+    font-size: 2.1em;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    max-width: 22ch;
+  }
+
+  .pull .accent { color: var(--accent); }
+
+  /* Footer / chrome */
+  .chrome {
+    position: fixed;
+    bottom: 18px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .chrome .title-mini {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .chrome .counter {
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+    z-index: 100;
+  }
+
+  /* Question highlight */
+  .question {
+    border-left: 4px solid var(--accent);
+    padding: 0.4em 0 0.4em 1em;
+    font-style: italic;
+    font-size: 1.15em;
+    color: var(--muted);
+    max-width: 50ch;
+    margin: 0.6em 0 1em;
+  }
+  .dark .question { color: #d6cfc1; }
+
+  /* Table for quality attributes */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.9em;
+    margin-top: 0.4em;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.5em 0.7em;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .dark th, .dark td { border-bottom-color: rgba(253, 246, 238, 0.15); }
+  th {
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.06em;
+  }
+  .dark th { color: var(--accent-soft); }
+  tr.highlight td { background: rgba(199, 93, 58, 0.08); font-weight: 600; }
+  .dark tr.highlight td { background: rgba(255, 138, 128, 0.08); }
+
+  /* Tag list */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin: 0.6em 0;
+  }
+  .tag {
+    background: var(--paper);
+    border-radius: 999px;
+    padding: 0.35em 0.9em;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .dark .tag {
+    background: rgba(253, 246, 238, 0.12);
+    color: var(--cream);
+  }
+  .tag.accent {
+    background: var(--accent);
+    color: var(--cream);
+  }
+
+  /* Status pills */
+  .pill {
+    display: inline-block;
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+    font-size: 0.75em;
+    font-weight: 700;
+    margin-right: 0.4em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .pill-ok { background: #2d6a4f; color: #fdf6ee; }
+  .pill-mid { background: #d4a373; color: #1d1f23; }
+  .pill-old { background: #9d4e3f; color: #fdf6ee; }
+
+  /* Alumni 2025 slide style – distinguishable from 2026 deck */
+  .slide.alumni {
+    background: #f5efe3;
+    border-left: 6px solid var(--accent);
+  }
+  .slide.alumni .kicker { color: var(--muted); }
+  .slide.alumni::after {
+    content: "FHNW · 18. Juni 2025";
+    position: absolute;
+    bottom: 28px;
+    left: 32px;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.7;
+  }
+
+  /* Hint */
+  .hint {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* Icons (Lucide-style, ISC license) – base style for all inline SVGs */
+  .slide svg, .icon {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    stroke-width: 1.75;
+    flex-shrink: 0;
+  }
+  .icon-lg { width: 1.6em; height: 1.6em; }
+  .icon-xl { width: 2.4em; height: 2.4em; }
+
+  /* Hero icon – big decorative icon inside slide content */
+  .icon-hero {
+    width: 7em;
+    height: 7em;
+    stroke-width: 1.25;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .dark .icon-hero { color: var(--accent-soft); }
+
+  /* Watermark icon – huge, very faint, in corner */
+  .icon-watermark {
+    position: absolute;
+    bottom: 6vh;
+    right: 6vw;
+    width: 22vh;
+    height: 22vh;
+    stroke-width: 1.25;
+    color: var(--accent);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .dark .icon-watermark { color: var(--accent-soft); opacity: 0.18; }
+  .alumni .icon-watermark { color: var(--accent); opacity: 0.14; }
+
+  .slide > * { position: relative; z-index: 1; }
+  .slide > .icon-watermark { z-index: 0; }
+
+  /* Hero layout: icon next to content */
+  .hero-layout {
+    display: flex;
+    align-items: center;
+    gap: 3em;
+  }
+  .hero-layout > .hero-content { flex: 1; }
+  .icon-accent { color: var(--accent); }
+  .dark .icon-accent { color: var(--accent-soft); }
+
+  .icon-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .card h3 .icon { color: var(--accent); margin-right: 0.3em; }
+  .dark .card h3 .icon { color: var(--accent-soft); }
+
+  /* Card with hero icon at top */
+  .card .icon-card {
+    width: 2.6em;
+    height: 2.6em;
+    color: var(--accent);
+    margin-bottom: 0.6em;
+    stroke-width: 1.5;
+  }
+  .dark .card .icon-card { color: var(--accent-soft); }
+
+  /* Hero figure – big icon next to content as a visual anchor */
+  .hero-figure {
+    display: flex;
+    align-items: center;
+    gap: 4em;
+  }
+  .hero-figure > svg {
+    width: 14em;
+    height: 14em;
+    color: var(--accent);
+    stroke-width: 1.25;
+    flex-shrink: 0;
+  }
+  .dark .hero-figure > svg { color: var(--accent-soft); }
+  .hero-figure > .hero-body { flex: 1; min-width: 0; }
+
+  @media (max-width: 1100px) {
+    html, body { font-size: 18px; }
+    h1 { font-size: 3em; }
+    h2 { font-size: 2.2em; }
+    .pull { font-size: 2em; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Icon library (Lucide-style, ISC license – https://lucide.dev) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h2c1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h2c1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+    <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2v6L3 18a2 2 0 0 0 2 3h14a2 2 0 0 0 2-3l-6-10V2"/><line x1="8" y1="2" x2="16" y2="2"/><line x1="7" y1="14" x2="17" y2="14"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+    <symbol id="i-megaphone" viewBox="0 0 24 24"><polygon points="3 11 3 13 8 13 8 11"/><path d="M11 5v14l11-7z"/><path d="M5 13v3a2 2 0 0 0 2 2"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-package" viewBox="0 0 24 24"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-funnel" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><polyline points="8.21 13.89 7 22 12 19 17 22 15.79 13.88"/></symbol>
+    <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+    <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></symbol>
+    <symbol id="i-graduation-cap" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16c0 1.66 2.69 3 6 3s6-1.34 6-3v-3.5"/></symbol>
+  </defs>
+</svg>
+
+<div class="deck" id="deck">
+
+<!-- 1: Title -->
+<section class="slide dark active">
+  <div>
+    <span class="kicker">CAS · Workshop · Mai 2026</span>
+    <h1>KI macht Coden leichter und <span class="accent">explizite Architektur</span> dadurch wichtiger.</h1>
+    <p class="lead">Ein Vortrag über Softwarearchitektur mit und für AI.</p>
+    <p class="small" style="margin-top:2em">Thomas Rolf Mannhart</p>
+  </div>
+</section>
+
+<!-- 2: Einleitung – FHNW-Rückblick -->
+<section class="slide">
+  <span class="kicker">Einleitung</span>
+  <h2>Vor knapp einem Jahr: Mittwoch, 18. Juni 2025</h2>
+  <p>Am FHNW Data Science &amp; Data Engineering Alumni Event habe ich genau zu diesem Thema einen Vortrag gehalten.</p>
+  <p>Ich klicke gleich kurz durch die damaligen Folien.</p>
+  <div class="question">
+    <strong>Frage ans Publikum:</strong> Was davon ist heute, im Mai 2026, <em>immer noch</em> gültig, und was wirkt heute schon angestaubt?
+  </div>
+</section>
+
+<!-- ALUMNI 2025 · Folie 1: Titel -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 1 von 13</span>
+  <h1 style="font-size:3.2em">AI Augmented Software Engineering</h1>
+  <p class="lead">Ihr persönlicher Junior Dev: super-schnell, immer verfügbar, konsequent unkritisch.</p>
+</section>
+
+<!-- ALUMNI 2025 · Folie 5: Vom Wildwuchs zur Strategie -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 5 von 13</span>
+  <h2>Vom Wildwuchs zur Strategie</h2>
+</section>
+
+<!-- ALUMNI 2025 · Folie 6: KI-Strategie -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 6 von 13</span>
+  <h2>KI-Strategie</h2>
+  <ul class="icon-list" style="margin-top:1em">
+    <li><svg><use href="#i-zap"/></svg><span><strong>Zugang</strong> zu generativer KI</span></li>
+    <li><svg><use href="#i-shield"/></svg><span><strong>Datenschutz</strong> und Kontrolle</span></li>
+    <li><svg><use href="#i-database"/></svg><span><strong>Relevanz</strong> durch internes Wissen</span></li>
+  </ul>
+</section>
+
+<!-- ALUMNI 2025 · Folie 7: Kontext ist King -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 7 von 13</span>
+  <h1 style="font-size:3em">Kontext ist King</h1>
+  <p class="lead">Arbeiten mit dem Development Funnel.</p>
+</section>
+
+<!-- ALUMNI 2025 · Folie 8: Development Funnel -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 8 von 13 · Development Funnel</span>
+  <div class="hero-figure">
+    <svg><use href="#i-funnel"/></svg>
+    <div class="hero-body">
+      <table style="margin-top:0">
+        <thead>
+          <tr><th>Schicht</th><th>Kontext</th><th>Tool</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Breite Recherche</td><td>Das Internet</td><td>Deep Research</td></tr>
+          <tr><td>Analyse unbekannter Codebases</td><td>Ganze Codebases</td><td>Coding Agents (Claude Code, Junie, …)</td></tr>
+          <tr><td>Integration in eigene Codebase</td><td>Teil der Codebase</td><td>RepoMix, Gemini</td></tr>
+          <tr><td>Implementierung</td><td>Ausgewählte Files</td><td>AI Assistants (Claude, Gemini)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ALUMNI 2025 · Folie 9: Junior Developer 2.0 -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 9 von 13</span>
+  <h1 style="font-size:3em">Junior Developer 2.0</h1>
+  <p class="lead">super-schnell, immer verfügbar, konsequent unkritisch.</p>
+</section>
+
+<!-- ALUMNI 2025 · Folie 10: Junior Dev 2.0 traits -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 10 von 13 · Junior Dev 2.0</span>
+  <ul class="icon-list" style="font-size:1.15em; margin-top:1em">
+    <li><svg><use href="#i-layers"/></svg><span>Komplizierte Lösungen für einfache Probleme</span></li>
+    <li><svg><use href="#i-help"/></svg><span>Kein implizites Projektwissen</span></li>
+    <li><svg><use href="#i-alert"/></svg><span>Konsequent unkritisch</span></li>
+    <li><svg><use href="#i-zap"/></svg><span>Super-schnell</span></li>
+  </ul>
+</section>
+
+<!-- ALUMNI 2025 · Folie 11: Senior Dev -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 11 von 13 · Senior Dev</span>
+  <ul class="icon-list" style="font-size:1.15em; margin-top:1em">
+    <li><svg><use href="#i-layers"/></svg><span>Probleme herunterbrechen</span></li>
+    <li><svg><use href="#i-target"/></svg><span>Software-Architektur</span></li>
+    <li><svg><use href="#i-tool"/></svg><span>Feinschliff</span></li>
+    <li><svg><use href="#i-shield-check"/></svg><span>Qualitätssicherung und Verantwortung</span></li>
+  </ul>
+</section>
+
+<!-- ALUMNI 2025 · Folie 12: Zusammenfassung -->
+<section class="slide alumni">
+  <span class="kicker">Alumni-Deck · 12 von 13 · Zusammenfassung</span>
+  <ul class="icon-list" style="font-size:1.2em; margin-top:1em">
+    <li><svg><use href="#i-target"/></svg><span>KI-Strategie</span></li>
+    <li><svg><use href="#i-eye"/></svg><span>Kontext ist King</span></li>
+    <li><svg><use href="#i-user"/></svg><span>Junior Dev 2.0</span></li>
+  </ul>
+</section>
+
+<!-- 3 (after alumni): Pointe -->
+<section class="slide paper">
+  <span class="kicker">Die Pointe nach dem Rückblick</span>
+  <h2>Erstaunlich gemischt.</h2>
+  <p class="lead">Die KI-Welt entwickelt sich rasend schnell, aber wenn man genau hinschaut, halten die <em>Grundsätze</em> überraschend gut.</p>
+  <p style="margin-top:1.5em"><strong>Die Botschaft:</strong> Ihr müsst nicht jedem neuen Tool hinterherrennen. Ihr müsst die Grundsätze beherrschen.</p>
+</section>
+
+<!-- 4: whoami -->
+<section class="slide">
+  <span class="kicker">whoami</span>
+  <h2>Thomas Rolf Mannhart</h2>
+  <div class="grid-2" style="margin-top:1em">
+    <div>
+      <h3>Hintergrund</h3>
+      <ul class="icon-list">
+        <li><svg><use href="#i-graduation-cap"/></svg><span>B.Sc. Wirtschaftsinformatik · M.Sc. Artificial Intelligence</span></li>
+        <li><svg><use href="#i-code"/></svg><span>7 Jahre Software-Entwicklung</span></li>
+        <li><svg><use href="#i-bot"/></svg><span>Seit 2023 zusammen mit AI<br><span class="small">ChatGPT-3.5 → Claude Code</span></span></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Heute</h3>
+      <ul class="icon-list">
+        <li><svg><use href="#i-briefcase"/></svg><span>Seit Januar 2025 bei <a href="https://www.bbv.ch"><strong>bbv Software Services</strong></a></span></li>
+        <li><svg><use href="#i-server"/></svg><span>Team designt &amp; entwickelt den <a href="https://ai-hub.bbv.ch/"><strong>Swiss AI Hub</strong></a></span></li>
+        <li><svg><use href="#i-link"/></svg><span><a href="https://t.mannhart.ai"><strong>t.mannhart.ai</strong></a></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5: Behauptung -->
+<section class="slide dark">
+  <span class="kicker">Behauptung</span>
+  <p class="pull">KI macht Coden leichter und <span class="accent">explizite Architektur</span> dadurch wichtiger als je zuvor.</p>
+</section>
+
+<!-- 6: Tagesstruktur -->
+<section class="slide paper">
+  <span class="kicker">Überblick</span>
+  <h2>Tagesstruktur des Workshops</h2>
+  <div class="grid-2" style="margin-top:1em">
+    <div class="card">
+      <svg class="icon-card"><use href="#i-sun"/></svg>
+      <h3 class="accent">Vormittag</h3>
+      <p><strong>Info 1 + Info 2</strong> als Vortrag</p>
+      <p>→ <strong>Übung 1: Mealie Part 1</strong></p>
+      <p class="small">Architektur entdecken, dokumentieren, Layering-Smell finden, Refactoring unter Regression-Netz.</p>
+    </div>
+    <div class="card">
+      <svg class="icon-card"><use href="#i-coffee"/></svg>
+      <h3 class="accent">Nachmittag</h3>
+      <p><strong>Info 3</strong> als Vortrag</p>
+      <p>→ <strong>Übung 2: Mealie Part 2</strong></p>
+      <p class="small">LiteLLM als Gateway + Pydantic/Instructor als ACL vor die direkten Provider-SDK-Calls schalten.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7: Nutzen für das Publikum -->
+<section class="slide">
+  <span class="kicker">Nutzen für das Publikum</span>
+  <h2>Drei Fragen, eine pro Teil.</h2>
+  <ol style="margin-top:1em">
+    <li><strong>Wie muss Architektur aussehen, damit ein Team <em>mit</em> Coding-Agenten überhaupt funktioniert?</strong> <span class="small">(→ Info 1)</span></li>
+    <li><strong>Wie kann AI <em>euch</em> als Architekt:innen konkret helfen?</strong> <span class="small">(→ Info 2)</span></li>
+    <li><strong>Wie muss Architektur aussehen, wenn AI selbst <em>Teil</em> eures Produkts ist?</strong> <span class="small">(→ Info 3)</span></li>
+    <li><strong>Eine Auswahl an erprobten Open-Source-Tools</strong> zu allen drei Fragen.</li>
+  </ol>
+</section>
+
+<!-- 8: Teil 1 – Title -->
+<section class="slide dark">
+  <span class="kicker">Teil 1 von 3</span>
+  <h1>Architecture as Code</h1>
+  <p class="lead">Architektur muss durchsetzbar UND maschinenlesbar werden, sonst existiert sie für den Coding-Agent nicht.</p>
+</section>
+
+<!-- 9: Teil 1 – Drei Ebenen -->
+<section class="slide">
+  <span class="kicker">Teil 1 · Drei Ebenen</span>
+  <h2>Explizit, maschinenlesbar, durchsetzbar.</h2>
+  <div class="grid-3" style="margin-top:1em">
+    <div class="card">
+      <svg class="icon-card"><use href="#i-book"/></svg>
+      <h3>1. Vertrag</h3>
+      <p class="small"><em>vor dem Coden</em></p>
+      <ul>
+        <li><code>CLAUDE.md</code> / <code>AGENTS.md</code></li>
+        <li>ADRs versioniert</li>
+        <li>arc42 / C4 als Code <span class="small">(LikeC4, Structurizr DSL)</span></li>
+        <li>Skills &amp; Slash-Commands</li>
+      </ul>
+    </div>
+    <div class="card">
+      <svg class="icon-card"><use href="#i-shield-check"/></svg>
+      <h3>2. Lint-Regel</h3>
+      <p class="small"><em>nach dem Coden</em></p>
+      <ul>
+        <li><code>import-linter</code> <span class="small">(Python)</span></li>
+        <li><code>ArchUnit</code> <span class="small">(JVM)</span></li>
+        <li><code>Spring Modulith</code></li>
+        <li>Verstoss = roter Build</li>
+      </ul>
+    </div>
+    <div class="card">
+      <svg class="icon-card"><use href="#i-eye"/></svg>
+      <h3>3. Review-Gate</h3>
+      <p class="small"><em>ein anderes Modell</em></p>
+      <ul>
+        <li>PR-Review durch <strong>fremde</strong> Modellfamilie</li>
+        <li>Idealerweise mehrere parallel</li>
+        <li>Sieht, was der Coding-Agent strukturell übersehen hat</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11: Teil 2 – Title -->
+<section class="slide dark">
+  <span class="kicker">Teil 2 von 3</span>
+  <h1>Brownfield wird wieder bewegbar.</h1>
+  <p class="lead">AI verschiebt die Schmerzgrenze drastisch nach hinten: was Wochen dauerte, wird Tagesarbeit.</p>
+</section>
+
+<!-- 12: Teil 2 – Test-Sicherheitsnetz -->
+<section class="slide">
+  <span class="kicker">Teil 2 · Schlüssel-Pattern</span>
+  <h2>Test-Sicherheitsnetz <em>vor</em> Refactoring.</h2>
+  <ol style="margin-top:1em">
+    <li><strong>Mutation Tests</strong> prüfen die Qualität bestehender Tests<br><span class="small">mutmut · Stryker · PIT: seit Jahrzehnten praktikabel, nur teuer; AI senkt die Hürde drastisch.</span></li>
+    <li><strong>Snapshot Tests</strong> fixieren das beobachtbare Verhalten<br><span class="small">syrupy · Jest Snapshots · ApprovalTests</span></li>
+    <li><strong>Erst dann refactored die KI:</strong> Ergebnis ist <em>deterministisch validierbar</em>: Tests nachweislich gut (Mutation Score) UND Verhalten identisch (Snapshots).</li>
+  </ol>
+  <p style="margin-top:1.5em"><strong>Budget-Verschiebung:</strong> AI macht Coding <em>und</em> Testing schneller, aber nicht im selben Maß. Anteil Testing wächst, absoluter Output steigt deutlich.</p>
+</section>
+
+<!-- 13: Teil 2 – Brücke -->
+<section class="slide paper">
+  <span class="kicker">Brücke zur Übung 1</span>
+  <h2>Vom eingefrorenen Modul zur Tagesarbeit.</h2>
+  <p class="lead">Legacy-Modul → mit AI in Stunden statt Wochen <em>verstanden</em>, mit Mutation+Snapshot abgesichert, in Tagen statt Monaten <em>refactored</em>.</p>
+  <p style="margin-top:1.5em" class="small"><strong>Übung 1 (Vormittag):</strong> Mit der LikeC4-Sicht aus Info 1 im Rücken: Snapshot-Sicherheitsnetz aufbauen, Layering-Smell unter dieser Sicherung refactoren, Linter bleibt grün.</p>
+</section>
+
+<!-- Übung 1 – Überblick -->
+<section class="slide">
+  <span class="kicker">Übung 1 · Vormittag · Überblick</span>
+  <h2>Architektur entdecken &amp; härten an <a href="https://github.com/mealie-recipes/mealie">Mealie</a>.</h2>
+  <p class="lead">Echte Open-Source-Codebase als Spielwiese. In fünf Schritten von „nie gesehen" zu „sicher refactored".</p>
+  <ol style="margin-top:1em">
+    <li><strong>Verstehen:</strong> Architektur dokumentieren lassen.</li>
+    <li><strong>Regel setzen:</strong> Schichtenarchitektur als Decision Record.</li>
+    <li><strong>Erzwingen:</strong> Linter prüft die Regel in CI.</li>
+    <li><strong>Absichern:</strong> Snapshot-Tests als Regression-Netz.</li>
+    <li><strong>Refactoren:</strong> den schlimmsten Verstoss unter dem Sicherheitsnetz beheben.</li>
+  </ol>
+  <p style="margin-top:1em" class="small"><strong>Werkzeugkasten:</strong> Claude Code · arc42 · <a href="https://likec4.dev">LikeC4</a> · <a href="https://github.com/seddonym/grimp">grimp</a> · <a href="https://github.com/seddonym/import-linter">import-linter</a> · <a href="https://github.com/syrupy-project/syrupy">syrupy</a></p>
+</section>
+
+<!-- 14: Teil 3 – Title -->
+<section class="slide dark">
+  <span class="kicker">Teil 3 von 3</span>
+  <h1>Software <em>mit</em> AI-Komponenten<br>braucht eine eigene Architektur-Disziplin.</h1>
+  <p class="lead">Sobald AI im Produktivsystem läuft, gelten Regeln, die kein klassisches Architektur-Framework kennt.</p>
+</section>
+
+<!-- 15: Teil 3 – Qualitätsattribute -->
+<section class="slide">
+  <span class="kicker">Teil 3 · Qualitätsattribute</span>
+  <h2>Was bricht, und was hilft dagegen.</h2>
+  <table>
+    <thead>
+      <tr><th>Attribut</th><th>Was bricht</th><th>Architektur-Antwort</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Testbarkeit</strong></td><td>Outputs nicht-deterministisch</td><td>Eval-Harness, Golden-Dataset, Eval-on-Merge</td></tr>
+      <tr><td><strong>Latenz</strong></td><td>p50 1–5 s, lange Tails</td><td>Streaming, zweischichtiger Cache, kleinere Modelle</td></tr>
+      <tr><td><strong>Kosten</strong></td><td>neue Dimension (Tokens)</td><td>Gateway-Budgets, Modell-Kaskade, Batch</td></tr>
+      <tr><td><strong>Wartbarkeit</strong></td><td>Prompt-Drift bei stillen Upgrades</td><td>Versionen pinnen, Prompt-Registry</td></tr>
+      <tr><td><strong>Verlässlichkeit</strong></td><td>Provider-Ausfälle, Throttling, Deprecations</td><td>Multi-Backend-Pool, Circuit-Breaker, Fallback</td></tr>
+      <tr><td><strong>Compliance</strong></td><td>Erklärbarkeit ist hart</td><td>Logging-Tripel, Post-Validatoren, HITL</td></tr>
+      <tr><td><strong>Sicherheit</strong></td><td>Lethal Trifecta, Excessive Agency</td><td>Beurer-Kellner-Patterns, Defence-in-Depth</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 16: Teil 3 – Gateway + ACL -->
+<section class="slide paper">
+  <span class="kicker">Teil 3 · Leitprinzip</span>
+  <h2>Gateway + ACL als deterministische Hülle.</h2>
+  <div class="grid-2" style="margin-top:1em">
+    <div class="card">
+      <svg class="icon-card"><use href="#i-zap"/></svg>
+      <h3 class="accent">AI-Gateway <span class="small">(vorne)</span></h3>
+      <p>Zentrale Schleuse zum LLM:</p>
+      <ul class="small">
+        <li>Multi-Backend-Pool</li>
+        <li>Circuit-Breaker pro Modell</li>
+        <li>Fallback &amp; Versionen pinnen</li>
+        <li>Gateway-Budgets, Modell-Kaskade</li>
+        <li>Logging-Tripel</li>
+      </ul>
+      <p style="margin-top:0.6em"><strong>Tool 2026:</strong> <code>LiteLLM</code></p>
+    </div>
+    <div class="card">
+      <svg class="icon-card"><use href="#i-filter"/></svg>
+      <h3 class="accent">Anti-Corruption Layer <span class="small">(hinten)</span></h3>
+      <p>Schutzhaut zwischen LLM und Geschäftslogik:</p>
+      <ul class="small">
+        <li>Streaming, zweischichtiger Cache</li>
+        <li>Deterministische Post-Validatoren</li>
+        <li>HITL bei folgenreichen Aktionen</li>
+        <li><strong>Kerntechnik:</strong> Structured Outputs</li>
+      </ul>
+      <p style="margin-top:0.6em"><strong>Tool 2026:</strong> <code>Pydantic</code> + <code>Instructor</code></p>
+    </div>
+  </div>
+  <p style="margin-top:1em" class="small">Wer beide hat, hat 80 % der Antworten in einer einzigen Skizze.</p>
+</section>
+
+<!-- 17: Teil 3 – Eval -->
+<section class="slide">
+  <span class="kicker">Teil 3 · Eval ist das LLM-Pendant zum Test</span>
+  <h2>Pre-Deploy-Gate + Post-Deploy-Schicht.</h2>
+  <div class="grid-2" style="margin-top:1em">
+    <div>
+      <h3><code>Promptfoo</code> · Pre-Deploy</h3>
+      <p><code>promptfoo eval</code> blockt PRs bei Regression, analog zum Test-Gate.</p>
+    </div>
+    <div>
+      <h3><code>Langfuse</code> · Post-Deploy</h3>
+      <p>Tracing + Prompt-Registry + Cost-Tracking. Failure-Cases wandern als neue Test-Cases zurück in Promptfoo.</p>
+    </div>
+  </div>
+  <p style="margin-top:1.5em" class="accent"><strong>Wichtig:</strong> Ein LLM darf <em>nie</em> sich selbst beurteilen (Bias).</p>
+</section>
+
+<!-- 18: Spickzettel – LLM Code Smells -->
+<section class="slide dark">
+  <span class="kicker">Teil 3 · Spickzettel</span>
+  <h2 style="font-size:2em">LLM Code Smells.</h2>
+  <div class="grid-2" style="margin-top:1em; gap:2.5em">
+    <div>
+      <h3 style="font-size:1.15em">Mahmoudi et al.: 5 formalisierte Smells</h3>
+      <ol style="font-size:0.9em; margin-left:1.4em">
+        <li><strong>Unbounded Max Metrics:</strong> <span class="small">Token-Budgets, Timeouts, Retries unbounded</span></li>
+        <li><strong>No Model Version Pinning:</strong> <span class="small">Provider-Alias statt immutable Version</span></li>
+        <li><strong>No System Message:</strong> <span class="small">System-Message weggelassen</span></li>
+        <li><strong>No Structured Output:</strong> <span class="small">Free-Form Text wo Schema erwartet</span></li>
+        <li><strong>Temperature Not Explicitly Set:</strong> <span class="small">implizite Defaults, nicht reproduzierbar</span></li>
+      </ol>
+      <p class="small" style="margin-top:0.6em">Quelle: <a href="https://arxiv.org/abs/2512.18020" target="_blank" rel="noopener">Mahmoudi et al., <em>„Specification and Detection of LLM Code Smells"</em> (arXiv:2512.18020, ICSE-NIER 2026)</a>.</p>
+    </div>
+    <div>
+      <h3 style="font-size:1.15em">Meine Ergänzungen</h3>
+      <ol style="font-size:0.9em; margin-left:1.4em">
+        <li><strong>Prompt-as-String:</strong> <span class="small">Prompt im Code, keine Registry</span></li>
+        <li><strong>Leaky Vendor Abstraction:</strong> <span class="small">Provider-SDK im Aufrufpfad</span></li>
+        <li><strong>Synchronous Blocking Call:</strong> <span class="small">UI blockiert auf 5-Sekunden-LLM</span></li>
+        <li><strong>No-Observability Call:</strong> <span class="small">kein Tracing, keine Cost-Logs</span></li>
+        <li><strong>Cost-Leaking Loop:</strong> <span class="small">unbegrenzte Agent-Iterationen</span></li>
+        <li><strong>Cache-Absent:</strong> <span class="small">jede Query trifft den Provider</span></li>
+        <li><strong>Eval-Harness Absent:</strong> <span class="small">kein Pre-Deploy-Gate</span></li>
+        <li><strong>Trust-no-Error-Surface:</strong> <span class="small">LLM-Fehler als Geschäftslogik</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 19: Sicherheit – eine Folie, alle Referenzen -->
+<section class="slide">
+  <span class="kicker">Teil 3 · Sicherheit als eigene Disziplin</span>
+  <h2>Referenzen zur Selbstvertiefung.</h2>
+  <div class="grid-2" style="margin-top:1.2em; gap:2em">
+    <div>
+      <h3 style="font-size:1em" class="accent"><svg class="icon icon-lg" style="vertical-align:-0.3em"><use href="#i-alert"/></svg> Reale Vorfälle</h3>
+      <ul class="small">
+        <li><a href="https://embracethered.com/blog/posts/2025/github-copilot-remote-code-execution-via-prompt-injection/" target="_blank" rel="noopener">CVE-2025-53773: GitHub Copilot RCE</a> <span style="color:var(--muted)">(Aug 2025)</span></li>
+        <li><a href="https://www.legitsecurity.com/blog/camoleak-critical-github-copilot-vulnerability-leaks-private-source-code" target="_blank" rel="noopener">CamoLeak: Copilot-Chat-Exfiltration</a> <span style="color:var(--muted)">(CVSS 9.6)</span></li>
+        <li><a href="https://snyk.io/blog/malicious-mcp-server-on-npm-postmark-mcp-harvests-emails/" target="_blank" rel="noopener">Postmark-MCP: npm Supply-Chain</a> <span style="color:var(--muted)">(Sep 2025)</span></li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-size:1em" class="accent"><svg class="icon icon-lg" style="vertical-align:-0.3em"><use href="#i-book"/></svg> Vertiefung &amp; Frameworks</h3>
+      <ul class="small">
+        <li><a href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/" target="_blank" rel="noopener">Simon Willison, <em>Lethal Trifecta</em></a></li>
+        <li><a href="https://arxiv.org/abs/2506.08837" target="_blank" rel="noopener">Beurer-Kellner et al., arXiv:2506.08837</a>: sechs Patterns</li>
+        <li><a href="https://genai.owasp.org/llm-top-10/" target="_blank" rel="noopener">OWASP Top 10 LLM 2025</a> (LLM06/07/08)</li>
+        <li><a href="https://www.thoughtworks.com/en-us/radar/techniques/toxic-flow-analysis-for-ai" target="_blank" rel="noopener">ThoughtWorks Radar Vol. 34: Toxic-Flow-Analysis</a></li>
+        <li><a href="https://unit42.paloaltonetworks.com/comparing-llm-guardrails-across-genai-platforms/" target="_blank" rel="noopener">Palo Alto Unit 42 (Juni 2025): Guardrail-Vergleich</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 21: Brücke zur Übung 2 -->
+<section class="slide paper">
+  <span class="kicker">Brücke zur Übung 2</span>
+  <h2>Die deterministische Hülle bauen.</h2>
+  <p class="lead">In Übung 2 schiebt ihr <code>LiteLLM</code> als Gateway und <code>Pydantic + Instructor</code> als ACL zwischen Mealie und die Provider-SDK-Calls.</p>
+  <p style="margin-top:1em">Anschliessend übt ihr Fallback und Rate-Limit am laufenden System.</p>
+</section>
+
+<!-- Übung 2 – Überblick -->
+<section class="slide">
+  <span class="kicker">Übung 2 · Nachmittag · Überblick</span>
+  <h2>AI als Teil des Produkts härten.</h2>
+  <p class="lead">Wir geben Mealie einen <strong>LLM-Gateway</strong>, und verbessern den ACL, wenn die Zeit reicht.</p>
+  <ol style="margin-top:1em">
+    <li><strong>Baseline:</strong> heutiges Verhalten als Regression-Netz festhalten.</li>
+    <li><strong>LLM-Sicht:</strong> alle LLM-Aufrufer auf einer Skizze.</li>
+    <li><strong>Gateway einziehen:</strong> die Provider-Calls hinter eine Schleuse legen.</li>
+    <li><strong>Routing erleben:</strong> Fallback &amp; Rate-Limit am laufenden System ausprobieren.</li>
+    <li><strong>ACL härten:</strong> provider-agnostisches Schema-Binding mit automatischem Retry.</li>
+  </ol>
+  <p style="margin-top:1em" class="small"><strong>Werkzeugkasten:</strong> <a href="https://github.com/BerriAI/litellm">LiteLLM</a> · <a href="https://github.com/pydantic/pydantic">Pydantic</a> · <a href="https://github.com/567-labs/instructor">Instructor</a> · <a href="https://github.com/seddonym/import-linter">import-linter</a></p>
+</section>
+
+<!-- 22: Zusammenfassung -->
+<section class="slide">
+  <span class="kicker">Zusammenfassung</span>
+  <h2>Wir fassen zusammen.</h2>
+  <ol style="margin-top:1em">
+    <li><strong>Explizite Architektur (Architecture as Code):</strong> was nicht maschinenlesbar ist, existiert für den Coding-Agent nicht.</li>
+    <li><strong>Brownfield wird wieder bewegbar:</strong> Mutation+Snapshot baut das Sicherheitsnetz, unter dem AI Legacy-Code in Tagen statt Monaten refactored.</li>
+    <li><strong>Software <em>mit</em> AI-Komponenten braucht eine eigene Architektur-Disziplin:</strong> Gateway, ACL, Eval, Guardrails sind 2026 Pflicht.</li>
+  </ol>
+  <p class="small" style="margin-top:1.5em">Damit schliesst sich der Kreis zur Einleitung: <em>„Software-Architektur und Verantwortung bleiben beim Menschen"</em> stand schon 2025 auf den FHNW-Folien. Heute war das die Vertiefung dieses Satzes.</p>
+</section>
+
+<!-- 23: Behauptung wiederholt -->
+<section class="slide dark">
+  <span class="kicker">Und damit zur Behauptung, jetzt mit Substanz darunter.</span>
+  <p class="pull">KI macht Coden leichter und <span class="accent">explizite Architektur</span> dadurch wichtiger als je zuvor.</p>
+</section>
+
+<!-- 24: Appell -->
+<section class="slide paper">
+  <span class="kicker">Appell</span>
+  <h2>Drei Schritte, alle beginnen heute.</h2>
+  <ol style="margin-top:1em; font-size:1.15em">
+    <li><strong>Probiert's heute gleich aus.</strong></li>
+    <li><strong>Tauscht euch untereinander aus.</strong></li>
+    <li><strong>Nehmt mit, was ihr braucht, für eure CAS-Projekte und für euren Alltag.</strong></li>
+  </ol>
+  <p style="margin-top:2em" class="lead">Bleibt in Kontakt.</p>
+</section>
+
+<!-- 25: Danke / Kontakt -->
+<section class="slide dark">
+  <span class="kicker">Danke</span>
+  <h1>Fragen?</h1>
+  <p class="lead" style="margin-top:1em">Thomas Rolf Mannhart</p>
+  <p style="margin-top:0.6em"><code>thomas@mannhart.ai</code> · <code>thomasrolf.mannhart@fhnw.ch</code></p>
+</section>
+
+<!-- 26: Glossar Title -->
+<section class="slide paper">
+  <span class="kicker">Anhang</span>
+  <h1>Glossar</h1>
+  <p class="lead">Begriffe und Tools aus dem Vortrag: kompakte Referenz zum Nachschlagen.</p>
+  <p class="small" style="margin-top:1em">Volltext: <code>lecture/glossary.md</code></p>
+</section>
+
+<!-- 27: Glossar – Tools (LLM-Stack) -->
+<section class="slide">
+  <span class="kicker">Glossar · Tools · LLM-Stack</span>
+  <h2 style="font-size:1.6em">Gateway, ACL, Eval, Tracing.</h2>
+  <div class="grid-2" style="font-size:0.78em; gap:2em; margin-top:0.8em">
+    <div>
+      <p><strong>LiteLLM:</strong> Open-Source-Proxy/SDK, der 100+ LLM-Provider hinter einem OpenAI-kompatiblen Interface bündelt. Spend-Tracking, Virtual Keys, Load-Balancing, Guardrails. Im Vortrag die <em>Gateway</em>-Schicht.</p>
+      <p><strong>Pydantic:</strong> meistverwendete Python-Validierungs-Library; Schemas via Type-Hints, Rust-Kern. Basis für Structured Outputs.</p>
+      <p><strong>Instructor:</strong> auf Pydantic aufsetzende Library, validiert LLM-Antworten gegen Schema mit Auto-Retry. ACL-Pendant zu LiteLLM.</p>
+      <p><strong>Promptfoo:</strong> CLI für LLM-Eval und Red-Teaming („Pytest für Prompts"); Pre-Deploy-Gate. Im März 2026 von OpenAI für $86 M übernommen, MIT-Lizenz bleibt.</p>
+    </div>
+    <div>
+      <p><strong>Langfuse:</strong> Open-Source-LLM-Engineering-Plattform: Tracing, Prompt-Registry, Eval, Cost-Tracking. Post-Deploy-Schicht.</p>
+      <p><strong>Repomix:</strong> packt ein Repo zu einer einzigen AI-freundlichen Datei (XML/Markdown), respektiert <code>.gitignore</code>, Token-Counts. Funnel-Schicht „Integration in Codebase".</p>
+      <p><strong>MCP (Model Context Protocol):</strong> offener Standard (Anthropic, Nov 2024) für LLM ↔ externe Systeme. „USB-C für AI", drei Primitive: tools, resources, prompts. Seit Dez 2025 unter Linux Foundation (AAIF).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 28: Glossar – Tools (Coding-Agents & Architektur-Linter) -->
+<section class="slide">
+  <span class="kicker">Glossar · Tools · Coding-Agents &amp; Architektur-Linter</span>
+  <div class="grid-2" style="font-size:0.78em; gap:2em; margin-top:0.6em">
+    <div>
+      <h3 style="font-size:1.1em">Coding-Agents</h3>
+      <p><strong>Claude Code:</strong> Anthropics offizieller CLI-Coding-Agent (Terminal, Web, IDEs). Referenz für „Analyse unbekannter Codebases".</p>
+      <p><strong>Junie:</strong> JetBrains-eigener AI-Coding-Agent, lebt in IntelliJ-Ultimate / PyCharm Pro, Bring-your-own-LLM, plant mehrstufig.</p>
+      <p><strong>CLAUDE.md / AGENTS.md:</strong> Markdown-Dateien im Repo-Root, die Coding-Agenten zu Session-Beginn lesen. <code>AGENTS.md</code>: 2025 von OpenAI, Google, Sourcegraph, Cursor, Factory als offener Standard gestartet, 20 000+ Repos, jetzt unter AAIF/Linux Foundation.</p>
+    </div>
+    <div>
+      <h3 style="font-size:1.1em">Architektur-Linter</h3>
+      <p><strong>import-linter:</strong> Python-CLI, prüft Imports gegen Layers/Forbidden/Independence-Contracts. Verstoss = roter Build.</p>
+      <p><strong>ArchUnit:</strong> Java-Library, testet Architekturregeln (Layered, Onion, Slices, Cycles) als Unit-Tests. Pendant auf JVM.</p>
+      <p><strong>Spring Modulith:</strong> Spring-Erweiterung für modulare Monolithen mit expliziten Modul-Boundaries und automatischer Verifikation (<code>./mvnw modulith:verify</code>).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 29: Glossar – Tools (Test-Techniken) -->
+<section class="slide">
+  <span class="kicker">Glossar · Tools · Mutation- &amp; Snapshot-Tests</span>
+  <div class="grid-2" style="font-size:0.78em; gap:2em; margin-top:0.6em">
+    <div>
+      <h3 style="font-size:1.1em">Mutation Testing</h3>
+      <p><strong>mutmut:</strong> Python-Mutation-Tester. Mutiert Source (z. B. <code>&gt;</code> → <code>&gt;=</code>), <em>überlebende</em> Mutanten = Test-Lücken.</p>
+      <p><strong>Stryker:</strong> JS/TS (auch C#, Scala). Seit 4.0 mit <em>Mutation Switching</em> (alle Mutanten gleichzeitig im Code, ein aktiv); 20–70 % schneller.</p>
+      <p><strong>PIT (pitest):</strong> JVM-Mutation-Tool, mutiert Bytecode in-memory statt auf Platte. Maven/Gradle, JUnit/TestNG.</p>
+    </div>
+    <div>
+      <h3 style="font-size:1.1em">Snapshot / Approval Testing</h3>
+      <p><strong>syrupy:</strong> Pytest-Plugin, zero-dependency, speichert Output in <code>__snapshots__/</code>.</p>
+      <p><strong>Jest Snapshots:</strong> De-facto-Standard in JS/TS; erste Ausführung erzeugt <code>.snap</code>, spätere Läufe diffen dagegen.</p>
+      <p><strong>ApprovalTests:</strong> Library-Familie (Java/.NET/Python/C++/Go). <code>Approvals.verify()</code> erzeugt <code>.received</code>, manuell zu <code>.approved</code> umbenannt; spätere Läufe diffen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 30: Glossar – Architektur-Konzepte 1 -->
+<section class="slide">
+  <span class="kicker">Glossar · Architektur-Konzepte (1/2)</span>
+  <h2 style="font-size:1.6em">Architecture as Code.</h2>
+  <div class="grid-2" style="font-size:0.78em; gap:2em; margin-top:0.6em">
+    <div>
+      <p><strong>Architecture as Code:</strong> Architektur in versionierten Text-Artefakten (DSL, Markdown, ADRs, Lint-Regeln) statt Folien/Confluence. Voraussetzung, dass Coding-Agenten die Architektur überhaupt sehen.</p>
+      <p><strong>ADR (Architecture Decision Record):</strong> Kurzes Doc je Entscheidung (Status, Context, Decision, Consequences). Format: Michael Nygard, 2011.</p>
+      <p><strong>arc42:</strong> Open-Source-Template (Starke/Hruschka, 2005) für Architekturdoku in 12 Abschnitten. Tool-/format-agnostisch.</p>
+      <p><strong>Development Funnel:</strong> mentales Modell aus dem Vortrag: Tools nach Kontext-Sicht (Internet → Codebase → Files).</p>
+    </div>
+    <div>
+      <p><strong>C4-Modell:</strong> Notation von Simon Brown (2006–2011): Context · Container · Component · Code. Leichtgewichtig, UML-Alternative.</p>
+      <p><strong>LikeC4:</strong> DSL und Toolchain inspiriert von C4 / Structurizr DSL, mit frei definierbaren Element-Typen. Ein Modell → mehrere interaktive Diagramme.</p>
+      <p><strong>Structurizr DSL:</strong> Text-DSL des C4-Erfinders Simon Brown. Workspace = Modell + Views.</p>
+      <p><strong>Brownfield / Greenfield:</strong> Greenfield = neues Projekt; Brownfield = bestehendes System mit Legacy. Vortrag: AI macht Brownfield wieder bewegbar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 31: Glossar – Architektur-Konzepte 2 (LLM-spezifisch) -->
+<section class="slide">
+  <span class="kicker">Glossar · Architektur-Konzepte (2/2) · LLM-spezifisch</span>
+  <div class="grid-2" style="font-size:0.78em; gap:2em; margin-top:0.6em">
+    <div>
+      <p><strong>Anti-Corruption Layer (ACL):</strong> DDD-Pattern (Eric Evans). Übersetzungsschicht zwischen eigenem Modell und Fremdsystem (Legacy, Third-Party, <em>oder LLM</em>).</p>
+      <p><strong>AI-Gateway:</strong> zentrale Schleuse: Multi-Backend-Pool, Routing, Circuit-Breaker, Budgets, Logging, Versions-Pinning. Realisiert via LiteLLM.</p>
+      <p><strong>Circuit Breaker:</strong> Resilience-Pattern (Nygard, <em>Release It!</em>): nach Fehler-Schwelle <em>kurzschliessen</em>, Half-Open-Probe testet Recovery. Im LLM-Kontext pro Modell/Provider.</p>
+      <p><strong>Model Cascade:</strong> Anfrage zuerst an billiges Modell; nur bei niedriger Confidence ans teure eskalieren. 45–85 % Kosten-Reduktion möglich.</p>
+    </div>
+    <div>
+      <p><strong>Structured Outputs:</strong> LLM gegen JSON-Schema / Pydantic / Grammar zwingen statt Free-Form-Text. Constrained Decoding.</p>
+      <p><strong>HITL (Human-in-the-Loop):</strong> Mensch gibt folgenreiche Aktionen explizit frei. Pflicht-Antwort auf <em>Excessive Agency</em>.</p>
+      <p><strong>Eval Harness:</strong> Test-Infrastruktur, die LLM-Aufrufe gegen ein <em>Golden Dataset</em> mit Assertions ausführt; CI-Gate. LLM-Pendant zur Test-Suite.</p>
+      <p><strong>Golden Dataset:</strong> manuell kuratierte Input/Erwartungs-Paare; Source of Truth für Quality-Messung. Wächst durch Failure-Cases.</p>
+      <p><strong>Prompt Registry:</strong> versionierte Prompt-Ablage ausserhalb Code (Metadaten, A/B, Diffs). Vermeidet <em>Prompt-as-String</em>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 32: Glossar – Test-Techniken (Definition) -->
+<section class="slide paper">
+  <span class="kicker">Glossar · Test-Techniken</span>
+  <h2 style="font-size:1.6em">Mutation- und Snapshot-Tests.</h2>
+  <div class="grid-2" style="margin-top:0.8em; gap:2em">
+    <div class="card">
+      <h3>Mutation Testing</h3>
+      <p class="small">Misst die <em>Qualität</em> der Test-Suite. Kleine Mutationen werden in den Source-Code eingespielt; Tests, die die Mutation nicht erkennen („überlebt"), markieren Lücken. <strong>Mutation Score</strong> = % gekillter Mutanten.</p>
+    </div>
+    <div class="card">
+      <h3>Snapshot / Approval Testing</h3>
+      <p class="small">Statt Erwartungswerte explizit zu codieren, wird der Output beim ersten Lauf als <em>Snapshot</em> gespeichert. Spätere Läufe diffen dagegen. Geeignet, um beobachtbares Verhalten von Legacy einzufrieren <em>vor</em> dem Refactoring.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 33: Glossar – LLM Code Smells -->
+<section class="slide dark">
+  <span class="kicker">Glossar · LLM Code Smells</span>
+  <h2 style="font-size:1.6em">Mahmoudi et al. + Ergänzungen.</h2>
+  <div class="grid-2" style="font-size:0.78em; gap:2em; margin-top:0.6em">
+    <div>
+      <h3 style="font-size:1em" class="accent">Mahmoudi et al. (5)</h3>
+      <p><strong>Unbounded Max Metrics:</strong> Token-Budgets, Timeouts, Retries ohne Cap.</p>
+      <p><strong>No Model Version Pinning:</strong> Provider-Alias statt immutable Version → stilles Verhaltens-Drift.</p>
+      <p><strong>No System Message:</strong> System-Prompt fehlt; keine Rolle, keine Constraints.</p>
+      <p><strong>No Structured Output:</strong> Free-Form-Text wo Schema nötig.</p>
+      <p><strong>Temperature Not Explicitly Set:</strong> implizite Defaults, nicht reproduzierbar.</p>
+    </div>
+    <div>
+      <h3 style="font-size:1em" class="accent">Ergänzungen aus dem Vortrag</h3>
+      <p><strong>Prompt-as-String:</strong> Prompt im Source, keine Registry, keine A/B-Tests.</p>
+      <p><strong>Leaky Vendor Abstraction:</strong> Provider-SDK direkt im Aufrufpfad → Vendor-Lock-in, kein einheitliches Logging.</p>
+      <p><strong>Cost-Leaking Loop:</strong> Agent-Loop ohne Iterations-Cap, ruft sich endlos selbst auf.</p>
+      <p><strong>Prompt Injection:</strong> Angriffsklasse: Anweisungen in Daten versteckt (Mail, PDF, PR-Text), die das LLM als legitime Instruktion ausführt. Begriff: Simon Willison, Sep 2022.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 34: Glossar – Sicherheit (Konzepte) -->
+<section class="slide">
+  <span class="kicker">Glossar · Sicherheit · Konzepte</span>
+  <div class="grid-2" style="font-size:0.78em; gap:2em; margin-top:0.6em">
+    <div>
+      <p><strong>Lethal Trifecta:</strong> Simon Willison (Juni 2025): gefährdet, sobald <em>alle drei</em> zutreffen: <em>private Daten · untrusted Content · externe Kommunikation</em>.</p>
+      <p><strong>Excessive Agency:</strong> OWASP <strong>LLM06:2025</strong>. Agent hat zu viele Tools/Permissions und führt auf manipulierte Outputs hin folgenreiche Aktionen aus. Mitigation: Least-Privilege + HITL.</p>
+      <p><strong>Beurer-Kellner-Patterns:</strong> sechs Patterns für sichere LLM-Agenten (arXiv:2506.08837): <em>Action-Selector · Plan-Then-Execute · LLM Map-Reduce · Dual LLM · Code-Then-Execute · Context-Minimization</em>.</p>
+    </div>
+    <div>
+      <p><strong>Defence-in-Depth:</strong> mehrere unabhängige Schutzschichten statt einer Mauer. Im LLM-Kontext: Input-Sanitization + Tool-Whitelist + Post-Validatoren + HITL + Monitoring.</p>
+      <p><strong>Toxic Flow Analysis:</strong> Tool-/Datenfluss als Graph modelliert; gefährliche Pfade (untrusted → sensitive → externe Senke) statisch identifiziert. Inspiriert von Taint-Analyse. ThoughtWorks Tech Radar Vol. 34.</p>
+      <p><strong>OWASP Top 10 LLM (2025):</strong> u. a. LLM01 Prompt Injection, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM08 Vector &amp; Embedding Weaknesses, LLM10 Unbounded Consumption.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 35: Glossar – Sicherheit (Vorfälle) -->
+<section class="slide">
+  <span class="kicker">Glossar · Sicherheit · Reale Vorfälle</span>
+  <h2 style="font-size:1.6em">Drei Lehrstücke 2025.</h2>
+  <div class="grid-3" style="font-size:0.74em; gap:1.4em; margin-top:0.6em">
+    <div class="card">
+      <h3 style="font-size:1em" class="accent">CVE-2025-53773</h3>
+      <p class="small">GitHub Copilot RCE via Prompt-Injection (Aug 2025). Injection schreibt <code>chat.tools.autoApprove: true</code> in <code>.vscode/settings.json</code> („YOLO-Mode") und führt beliebige Shell-Commands ohne User-Approval aus. Wormable.</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:1em" class="accent">CamoLeak (CVE-2025-59145)</h3>
+      <p class="small">GitHub Copilot Chat (CVSS 9.6, Disclosure Okt 2025). Prompt-Injection in PR-Beschreibungen schleust private Source-Code-/Secret-Inhalte zeichenweise über GitHubs <em>Camo</em>-Bild-Proxy aus, vorbei an der CSP. Patch: Bild-Rendering deaktiviert, 14. Aug 2025.</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:1em" class="accent">Postmark-MCP</h3>
+      <p class="small">Erster bekannter <em>malicious MCP server</em> in the wild (npm, Sep 2025). 15 Versionen unauffällig, dann v1.0.16 mit Einzeile-Backdoor: jede Mail still per BCC an <code>phan@giftshop.club</code>. Lehrstück für MCP-Supply-Chain-Risiko.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="progress" id="progress"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progress = document.getElementById('progress');
+  slides.forEach((s, idx) => s.setAttribute('data-num', idx + 1));
+  let i = 0;
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+    location.hash = '#' + (i + 1);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(i + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(i - 1); e.preventDefault(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a, code, input, button')) return;
+    const x = e.clientX / window.innerWidth;
+    if (x > 0.5) show(i + 1); else show(i - 1);
+  });
+
+  // Init from hash
+  const initial = parseInt(location.hash.slice(1), 10);
+  show(isNaN(initial) ? 0 : initial - 1);
+</script>
+</body>
+</html>

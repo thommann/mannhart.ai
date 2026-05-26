@@ -664,7 +664,8 @@ section {
   margin-bottom: 0.25rem;
 }
 
-.timeline-assessment {
+.timeline-assessment,
+.timeline-slides {
   display: inline-block;
   font-family: var(--mono);
   font-size: 0.75rem;
@@ -675,7 +676,12 @@ section {
   transition: color 0.3s, border-color 0.3s;
 }
 
-.timeline-assessment:hover {
+.timeline-slides {
+  margin-left: 1rem;
+}
+
+.timeline-assessment:hover,
+.timeline-slides:hover {
   color: var(--accent);
   border-color: var(--accent);
 }

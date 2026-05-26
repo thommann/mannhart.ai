@@ -54,7 +54,10 @@ function buildJobs(t) {
       const assessment = j.assessment
         ? `\\newline\\cvlink{file-alt}{https://t.mannhart.ai${j.assessment.href}}{${escTex(j.assessment.label)}}`
         : "";
-      return `\\cventry{${date}}{${role}}{${company}}{${assessment}}{${desc}}`;
+      const slides = j.slides
+        ? `\\newline\\cvlink{chalkboard-teacher}{https://t.mannhart.ai${j.slides.href}}{${escTex(j.slides.label)}}`
+        : "";
+      return `\\cventry{${date}}{${role}}{${company}}{${assessment}${slides}}{${desc}}`;
     })
     .join("\n");
 }

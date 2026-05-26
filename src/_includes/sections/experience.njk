@@ -20,6 +20,9 @@
         {% if job.assessment %}
         <a href="{{ job.assessment.href }}" target="_blank" rel="noopener" class="timeline-assessment">{{ job.assessment.label }}</a>
         {% endif %}
+        {% if job.slides %}
+        <a href="{{ job.slides.href }}" target="_blank" rel="noopener" class="timeline-slides">{{ job.slides.label }}</a>
+        {% endif %}
         <div class="timeline-tech">
           {% for tag in job.tech %}
           <span class="tech-tag">{{ tag }}</span>
