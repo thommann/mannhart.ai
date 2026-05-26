@@ -39,15 +39,16 @@
     "title": "Erfahrung",
     "jobs": [
       {
-        "date": "Mai 2026",
-        "role": "Dozent · CAS Künstliche Intelligenz für Softwareentwicklung",
+        "date": "Mai–August 2026",
+        "role": "Dozent & Betreuer der Abschlussarbeiten · CAS Künstliche Intelligenz für Softwareentwicklung",
         "company": "Fachhochschule Nordwestschweiz (FHNW)",
         "location": "Windisch, Schweiz",
         "desc": [
           "Konzeption und Durchführung eines ganztägigen Moduls «KI für Architektur von Software mit KI-Komponenten» im CAS «Künstliche Intelligenz für Softwareentwicklung» an der FHNW Hochschule für Informatik.",
           "Vorlesungsfolien zum Thema, warum KI-gestütztes Programmieren explizite Softwarearchitektur nicht weniger, sondern wichtiger macht, mit Fokus auf arc42, ADRs (MADR v4), das C4-Modell mit LikeC4 sowie maschinell prüfbare Durchsetzung einer geschichteten Architektur.",
           "Konzeption einer zweiteiligen Übung am Open-Source-Codebase Mealie: KI-gestützte Architekturdokumentation und ein Refactoring zur Bereinigung der Architekturschichten unter Snapshot-Tests, gefolgt von der Einführung von LiteLLM als LLM-Gateway mit Fallback- und Rate-Limit-Experimenten sowie einer Anti-Corruption-Schicht mit Pydantic und Instructor.",
-          "Begleitung der CAS-Teilnehmenden beim agentischen Coding mit Claude Code: Prompting, Skills, MCP-Server, import-linter-Verträge und das Verfassen von LikeC4-Modellen."
+          "Begleitung der CAS-Teilnehmenden beim agentischen Coding mit Claude Code: Prompting, Skills, MCP-Server, import-linter-Verträge und das Verfassen von LikeC4-Modellen.",
+          "Individuelle Betreuung von zwei CAS-Teilnehmenden bei ihrer Abschlussarbeit, jeweils zur Analyse und Dokumentation eines realen KI-Einsatzes für Softwareentwicklung im eigenen Team, von der Problemstellung und Wertstromanalyse über Tooling, Pilotbetrieb und Wirkungsmessung bis zur Schlusspräsentation im August 2026."
         ],
         "tech": [
           "arc42",

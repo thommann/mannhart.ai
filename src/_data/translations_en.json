@@ -39,15 +39,16 @@
     "title": "Experience",
     "jobs": [
       {
-        "date": "May 2026",
-        "role": "Lecturer · CAS in AI for Software Engineering",
+        "date": "May–August 2026",
+        "role": "Lecturer & Thesis Supervisor · CAS in AI for Software Engineering",
         "company": "Fachhochschule Nordwestschweiz (FHNW)",
         "location": "Windisch, Switzerland",
         "desc": [
           "Designed and delivered a full-day session, \"AI for the Architecture of Software with AI Components\", within the CAS Künstliche Intelligenz für Softwareentwicklung at the FHNW School of Computer Science.",
           "Authored the lecture on why AI-augmented coding makes explicit software architecture more important, not less — covering arc42, ADRs (MADR v4), the C4 model with LikeC4, and machine-checkable layered-architecture enforcement.",
           "Built a two-part hands-on exercise on the Mealie open-source codebase: AI-augmented architecture documentation and a layered refactor under snapshot tests, followed by introducing LiteLLM as an LLM gateway with fallback and rate-limit experiments, plus a Pydantic + Instructor anti-corruption layer.",
-          "Coached CAS participants through agentic coding workflows with Claude Code — prompting, skills, MCP servers, import-linter contracts, and LikeC4 model authoring."
+          "Coached CAS participants through agentic coding workflows with Claude Code — prompting, skills, MCP servers, import-linter contracts, and LikeC4 model authoring.",
+          "Supervising two CAS participants individually through their final theses (Abschlussarbeit), each analysing and documenting a real-world AI-for-software-engineering rollout in their own team — from problem framing and value-stream analysis through tooling, pilot deployment, and impact measurement, up to the final presentation in August 2026."
         ],
         "tech": [
           "arc42",
