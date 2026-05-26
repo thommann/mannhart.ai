@@ -45,11 +45,11 @@
 
 % ── Section heading ──
 \newcommand{\cvsection}[1]{%
-  \vspace{6pt}%
+  \vspace{4pt}%
   {\fontsize{9}{11}\selectfont\bfseries\color{cvdark}\MakeUppercase{#1}}%
   \\[-3pt]%
   {\color{ruledark}\rule{\textwidth}{0.6pt}}%
-  \vspace{4pt}%
+  \vspace{3pt}%
 }
 
 % ── Accent link: #1=icon name, #2=url, #3=label ──
@@ -87,7 +87,7 @@
 
 % ── Project entry ──
 \newcommand{\cvproject}[2]{%
-  {\fontsize{9}{12}\selectfont{\bfseries\color{cvblack}#1\enspace}{\color{cvgray}#2}}\\[3pt]%
+  {\fontsize{9}{12}\selectfont{\bfseries\color{cvblack}#1\enspace}{\color{cvgray}#2}}\\[2pt]%
 }
 
 \begin{document}
@@ -112,13 +112,11 @@
 % ── Profile ──
 \cvsection{{{LABEL_PROFILE}}}
 {\fontsize{9}{12}\selectfont\color{cvblack}{{PROFILE}}\par}
-\vspace{10pt}
+\vspace{6pt}
 
 % ── Experience ──
 \cvsection{{{LABEL_EXPERIENCE}}}
 {{JOB_ENTRIES}}
-
-\newpage
 
 % ── Education ──
 \cvsection{{{LABEL_EDUCATION}}}
