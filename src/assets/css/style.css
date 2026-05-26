@@ -129,16 +129,20 @@ body {
 
 ::selection { background: var(--accent); color: var(--bg); }
 
-/* --- Inline content links (centralized) --- */
+/* --- Inline content links (centralized) ---
+   Use text-decoration (not border-bottom) so the underline survives Firefox's
+   :visited privacy restrictions, which forbid border-style/width changes. */
 .about-prose a,
 .timeline-assessment,
 .timeline-slides,
 .thesis-link,
 .chatbot-msg-bot a.chatbot-link {
   color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(var(--accent-rgb), 0.3);
-  transition: color 0.3s, border-color 0.3s;
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--accent-rgb), 0.3);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.3s, text-decoration-color 0.3s;
 }
 
 .about-prose a:hover,
@@ -147,7 +151,7 @@ body {
 .thesis-link:hover,
 .chatbot-msg-bot a.chatbot-link:hover {
   color: var(--accent-bright);
-  border-bottom-color: var(--accent);
+  text-decoration-color: var(--accent);
 }
 
 /* --- Grain overlay --- */
@@ -681,7 +685,7 @@ section {
   margin-top: 0.75rem;
 }
 
-.timeline-slides {
+.timeline-assessment + .timeline-slides {
   margin-left: 1rem;
 }
 
@@ -870,6 +874,8 @@ section {
   border: 1px solid var(--border);
   overflow: hidden;
   display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .video-embed img {
@@ -1540,7 +1546,7 @@ footer p {
 [data-theme="light"] .timeline-slides,
 [data-theme="light"] .thesis-link,
 [data-theme="light"] .chatbot-msg-bot a.chatbot-link {
-  border-bottom-color: rgba(var(--accent-rgb), 0.4);
+  text-decoration-color: rgba(var(--accent-rgb), 0.4);
 }
 
 [data-theme="light"] .edu-card,
