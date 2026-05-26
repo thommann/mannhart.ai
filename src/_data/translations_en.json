@@ -46,7 +46,6 @@
         "desc": [
           "Design and delivery of a full-day module on AI for the architecture of software with AI components.",
           "Lecture on arc42, ADRs (MADR v4), the C4 model with LikeC4, and machine-checkable layered-architecture enforcement.",
-          "Hands-on exercises on the Mealie open-source codebase, including AI-augmented architecture documentation, LiteLLM as an LLM gateway, and a Pydantic + Instructor anti-corruption layer.",
           "Coaching of participants in agentic coding workflows with Claude Code.",
           "Individual supervision of two final theses (Abschlussarbeit) on real-world AI-for-software-engineering rollouts, up to the final presentation in August 2026."
         ],

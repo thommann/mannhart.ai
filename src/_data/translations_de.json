@@ -46,7 +46,6 @@
         "desc": [
           "Konzeption und Durchführung eines ganztägigen Moduls zu KI für Architektur von Software mit KI-Komponenten.",
           "Vorlesung zu arc42, ADRs (MADR v4), C4-Modell mit LikeC4 sowie maschinell prüfbarer Durchsetzung einer geschichteten Architektur.",
-          "Praktische Übungen am Open-Source-Codebase Mealie, inklusive KI-gestützter Architekturdokumentation, LiteLLM als LLM-Gateway und Anti-Corruption-Schicht mit Pydantic und Instructor.",
           "Begleitung der Teilnehmenden beim agentischen Coding mit Claude Code.",
           "Individuelle Betreuung von zwei Abschlussarbeiten zu realen KI-Einsätzen in der Softwareentwicklung, bis zur Schlusspräsentation im August 2026."
         ],
