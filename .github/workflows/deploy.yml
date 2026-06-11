@@ -61,6 +61,15 @@ jobs:
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Authorize polyswiss deploy key (one-time bootstrap)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            grep -qF 'polyswiss-deploy' ~/.ssh/authorized_keys || echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4zJAZ0VIsaACffQum9YMtN5vcPbYcTtTA/5BxyXPgs6zq1pH2Gbw5Ow1KjKY60GZnwlbam5TCReKesgSIWFxzSkcM38/Vwy4CnXiHN8aLYboFRLw90kwe04fvCw16R+cx0IcWGpmcO2rRrP3NVsNXl+GfhSqjdNjpCOZvkWaM7sR9LmoDvZRJbGc5b4muVApbkTvW7mg92D/hqE4S7mQwOVXCNdEJFQkm5dU6hw3pisK0VpBOQ12IseiwGTqVg9rK2nJZpAebX3yBGR7Qf/muA5VVBed6ymKwhOyH2hSxcgP8h/P06mYR8Gp/SkItI9ixmr2P+aFA6fsj92iVd+4B polyswiss-deploy' >> ~/.ssh/authorized_keys
+
       - name: Restart chatbot server
         uses: appleboy/ssh-action@v1
         with:
