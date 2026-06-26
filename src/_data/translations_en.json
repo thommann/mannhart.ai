@@ -39,6 +39,16 @@
     "title": "Experience",
     "jobs": [
       {
+        "date": "July 2026–now",
+        "role": "Professional AI Engineer",
+        "company": "Ergon Informatik AG",
+        "location": "Zürich, Switzerland",
+        "desc": [
+          "Building and delivering AI solutions. Further details to follow shortly."
+        ],
+        "tech": []
+      },
+      {
         "date": "May–August 2026",
         "role": "Lecturer · CAS in AI for Software Engineering",
         "company": "Fachhochschule Nordwestschweiz (FHNW)",
@@ -70,7 +80,7 @@
         }
       },
       {
-        "date": "2025–now",
+        "date": "2025–2026",
         "role": "Professional AI Engineer",
         "company": "bbv Software Services AG",
         "location": "Zürich, Switzerland",
@@ -113,7 +123,11 @@
           "Git",
           "GitHub",
           "Claude Code"
-        ]
+        ],
+        "assessment": {
+          "label": "Reference letter",
+          "href": "/assets/pdf/Mannhart_Thomas_Arbeitszeugnis_bbv.pdf"
+        }
       },
       {
         "date": "2023–2024",
