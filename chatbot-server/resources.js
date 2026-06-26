@@ -58,6 +58,11 @@ const RESOURCES = {
     url: "https://de.linkedin.com/posts/hochschule-f%C3%BCr-informatik-fhnw_fhnw-informatik-hsi-activity-7341831303979270144--ISp",
     title: { en: "FHNW LinkedIn Post", de: "FHNW LinkedIn-Beitrag" },
   },
+  ergon: {
+    type: "link",
+    url: { en: "https://www.ergon.ch/en/", de: "https://www.ergon.ch/" },
+    title: { en: "Ergon Informatik", de: "Ergon Informatik" },
+  },
   bbv: {
     type: "link",
     url: { en: "https://en.bbv.ch/", de: "https://www.bbv.ch/" },
