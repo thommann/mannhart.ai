@@ -8,6 +8,10 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "openai": "^6.27.0"
+    "openai": "^6.45.0"
+  },
+  "overrides": {
+    "qs": "^6.15.3",
+    "path-to-regexp": "^8.4.2"
   }
 }
