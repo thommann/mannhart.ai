@@ -3,6 +3,7 @@ name: Deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: deploy-production
@@ -10,10 +11,12 @@ concurrency:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  deploy:
-    name: Build & Deploy
+  build:
+    name: Build Site
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -34,40 +37,45 @@ jobs:
       - run: node scripts/generate-cv.js
 
       - run: npm run build
+        env:
+          CHATBOT_API_URL: ${{ vars.CHATBOT_API_URL }}
 
-      - uses: burnett01/rsync-deployments@v8
+      - uses: actions/upload-pages-artifact@v5
         with:
-          switches: -avz --delete --exclude='.well-known'
-          strict_hostkeys_checking: true
           path: _site/
-          remote_path: ${{ secrets.SITE_DEPLOY_PATH }}
-          remote_host: ${{ secrets.SERVER_IP }}
-          remote_user: ${{ secrets.DEPLOY_USER }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - run: |
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  deploy-worker:
+    name: Deploy Chatbot Worker
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Assemble worker sources
+        run: |
           cp src/_data/translations.js chatbot-server/translations.js
           cp src/_data/translations_en.json chatbot-server/translations_en.json
           cp src/_data/translations_de.json chatbot-server/translations_de.json
           cp src/_data/utils.js chatbot-server/utils.js
 
-      - uses: burnett01/rsync-deployments@v8
+      - uses: cloudflare/wrangler-action@v4
         with:
-          switches: -avz
-          strict_hostkeys_checking: true
-          path: chatbot-server/
-          remote_path: ${{ secrets.CHATBOT_DEPLOY_PATH }}
-          remote_host: ${{ secrets.SERVER_IP }}
-          remote_user: ${{ secrets.DEPLOY_USER }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Restart chatbot server
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.CHATBOT_DEPLOY_PATH }} && npm install --production && sudo systemctl restart ${{ secrets.CHATBOT_SERVICE }}
-            sleep 2
-            curl --fail --retry 3 --retry-delay 2 http://localhost:${{ secrets.CHATBOT_PORT }}/api/health
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: chatbot-server

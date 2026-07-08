@@ -45,6 +45,7 @@
 </div>
 <script>
 window.__chatbotLocale = "{{ locale }}";
+window.__chatbotApi = "{{ chatbotApi }}";
 window.__chatbotStrings = {{ t.chatbot.errors | dump | safe }};
 Object.assign(window.__chatbotStrings, {{ { confirmLangSwitchNote: t.chatbot.confirmLangSwitchNote, confirmLangSwitchLink: t.chatbot.confirmLangSwitchLink, alreadyOnLanguage: t.chatbot.alreadyOnLanguage, alreadyOnTheme: t.chatbot.alreadyOnTheme, themeDark: t.chatbot.themeDark, themeLight: t.chatbot.themeLight } | dump | safe }});
 </script>

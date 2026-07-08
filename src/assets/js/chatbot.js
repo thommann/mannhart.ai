@@ -1,5 +1,5 @@
 (function () {
-  const API_URL = "/api/chat";
+  const API_URL = window.__chatbotApi || "/api/chat";
   const locale = window.__chatbotLocale;
   const strings = window.__chatbotStrings;
 

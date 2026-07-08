@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mannhart-chatbot",
+  "main": "worker.js",
+  "compatibility_date": "2025-10-01",
+
+  // Serve the API on the site's own domain so the frontend can keep calling
+  // /api/chat relatively (no CORS). Requires the mannhart.ai zone on Cloudflare
+  // with a proxied DNS record for t.mannhart.ai (CNAME → thommann.github.io).
+  "routes": [
+    { "pattern": "t.mannhart.ai/api/*", "zone_name": "mannhart.ai" }
+  ],
+
+  // Keep the workers.dev URL as a fallback endpoint (set the repo variable
+  // CHATBOT_API_URL to it if the route above is not used).
+  "workers_dev": true,
+
+  // Don't wipe dashboard-configured vars on deploy. Non-secret config
+  // (LLM_BASE_URL, LLM_MODEL, LLM_FALLBACK_MODELS, ALLOWED_ORIGIN) is set in
+  // the Cloudflare dashboard or via `wrangler secret/vars`; the secret
+  // LLM_API_KEY via `wrangler secret put LLM_API_KEY`.
+  "keep_vars": true,
+
+  "observability": {
+    "enabled": true
+  }
+}

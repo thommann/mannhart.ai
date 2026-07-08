@@ -4,14 +4,14 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run --outdir=dist"
   },
   "dependencies": {
-    "express": "^5.2.1",
     "openai": "^6.45.0"
   },
-  "overrides": {
-    "qs": "^6.15.3",
-    "path-to-regexp": "^8.4.2"
+  "devDependencies": {
+    "wrangler": "^4.42.0"
   }
 }

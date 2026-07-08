@@ -1,26 +1,8 @@
-import express from "express";
 import OpenAI from "openai";
 import RESOURCES from "./resources.js";
 import translations from "./translations.js";
 import { stripHtml, SKILL_LEVELS } from "./utils.js";
 
-const {
-  LLM_API_KEY,
-  LLM_BASE_URL = "https://api.openai.com/v1",
-  LLM_MODEL = "gpt-4o-mini",
-  LLM_FALLBACK_MODELS = "",
-  ALLOWED_ORIGIN = "https://t.mannhart.ai",
-  PORT = "3001",
-} = process.env;
-
-if (!LLM_API_KEY) {
-  console.error("LLM_API_KEY is required");
-  process.exit(1);
-}
-
-const MODEL_CHAIN = [LLM_MODEL, ...LLM_FALLBACK_MODELS.split(",").map(m => m.trim()).filter(Boolean)];
-
-const openai = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL });
 const MAX_TOKENS = 5000;
 
 // --- Tool definitions (OpenAI function calling) ---
@@ -325,25 +307,39 @@ Current theme: ${theme === "light" ? "light" : "dark"}
 }
 
 // --- Abuse prevention ---
+// State lives at module scope, so limits are per Worker isolate (per PoP,
+// reset on eviction) — best-effort throttling, not an exact global count.
 
 const rateMap = new Map();
 const BURST_LIMIT = 10;
 const BURST_WINDOW_MS = 60_000;
 const DAILY_LIMIT_PER_IP = 50;
-
-let globalDailyCount = 0;
 const GLOBAL_DAILY_LIMIT = 500;
 
-function getClientIp(req) {
-  const forwarded = req.headers["x-forwarded-for"];
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return req.socket.remoteAddress;
+let globalDaily = { count: 0, start: 0 };
+
+function getClientIp(request) {
+  return (
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+    "unknown"
+  );
 }
 
 function isRateLimited(ip) {
-  if (globalDailyCount >= GLOBAL_DAILY_LIMIT) return true;
-
   const now = Date.now();
+
+  if (now - globalDaily.start > 86_400_000) {
+    globalDaily = { count: 0, start: now };
+  }
+  if (globalDaily.count >= GLOBAL_DAILY_LIMIT) return true;
+
+  if (rateMap.size > 5_000) {
+    for (const [key, e] of rateMap) {
+      if (now - e.dailyStart > 86_400_000) rateMap.delete(key);
+    }
+  }
+
   let entry = rateMap.get(ip);
 
   if (!entry) {
@@ -367,45 +363,17 @@ function isRateLimited(ip) {
 
   entry.burstCount++;
   entry.dailyCount++;
-  globalDailyCount++;
+  globalDaily.count++;
 
   return false;
 }
-
-setInterval(() => {
-  globalDailyCount = 0;
-}, 86_400_000);
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, entry] of rateMap) {
-    if (now - entry.dailyStart > 86_400_000) rateMap.delete(ip);
-  }
-}, 300_000);
 
 // --- Input validation ---
 
 const MAX_MESSAGE_LENGTH = 50_000;
 const MAX_MESSAGES = 10;
+const MAX_BODY_BYTES = 512 * 1024;
 const ALLOWED_ROLES = new Set(["user", "assistant"]);
-
-const app = express();
-app.use(express.json({ limit: "512kb" }));
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
-
-// --- Fallback link instructions (when tool calling is unavailable) ---
-
-const LINK_INSTRUCTIONS = {
-  en: translations.en.serverMessages.linkInstructions,
-  de: translations.de.serverMessages.linkInstructions,
-};
 
 // --- LLM request with model fallback on quota errors ---
 
@@ -416,15 +384,15 @@ function isRetryableError(err) {
     err.message?.toLowerCase().includes("rate limit");
 }
 
-async function createWithFallback(params, options) {
+async function createWithFallback(openai, modelChain, params, options) {
   let lastErr;
-  for (const model of MODEL_CHAIN) {
+  for (const model of modelChain) {
     try {
       return await openai.chat.completions.create({ ...params, model }, options);
     } catch (err) {
       lastErr = err;
-      if (isRetryableError(err) && MODEL_CHAIN.indexOf(model) < MODEL_CHAIN.length - 1) {
-        const next = MODEL_CHAIN[MODEL_CHAIN.indexOf(model) + 1];
+      if (isRetryableError(err) && modelChain.indexOf(model) < modelChain.length - 1) {
+        const next = modelChain[modelChain.indexOf(model) + 1];
         console.warn(`${model} failed (${err.status}), falling back to ${next}`);
         continue;
       }
@@ -452,7 +420,7 @@ async function consumeStream(stream, writer) {
 
     if (delta.content) {
       contentChunks.push(chunk);
-      if (writer) writer(chunk);
+      if (writer) await writer(chunk);
     }
 
     if (delta.tool_calls) {
@@ -471,60 +439,105 @@ async function consumeStream(stream, writer) {
   return { contentChunks, toolCalls: Object.values(toolCalls), finishReason };
 }
 
+// --- Response helpers ---
+
+function corsHeaders(allowedOrigin) {
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+}
+
+function jsonResponse(body, status, cors) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
+}
+
 // --- Chat endpoint with tool calling ---
 
-app.post("/api/chat", async (req, res) => {
-  const ip = getClientIp(req);
-  if (isRateLimited(ip)) {
-    return res.status(429).json({ error: "rate_limited" });
+async function handleChat(request, env, ctx, cors) {
+  const config = {
+    apiKey: env.LLM_API_KEY,
+    baseURL: env.LLM_BASE_URL || "https://api.openai.com/v1",
+    model: env.LLM_MODEL || "gpt-4o-mini",
+    fallbackModels: env.LLM_FALLBACK_MODELS || "",
+  };
+
+  if (!config.apiKey) {
+    console.error("LLM_API_KEY is required");
+    return jsonResponse({ error: "llm_error" }, 502, cors);
   }
 
-  if (!req.body) {
-    return res.status(400).json({ error: "invalid_request" });
+  const ip = getClientIp(request);
+  if (isRateLimited(ip)) {
+    return jsonResponse({ error: "rate_limited" }, 429, cors);
   }
-  const { messages, locale, theme } = req.body;
+
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  if (contentLength > MAX_BODY_BYTES) {
+    return jsonResponse({ error: "invalid_request" }, 400, cors);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "invalid_request" }, 400, cors);
+  }
+
+  const { messages, locale, theme } = body || {};
   if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: "invalid_request" });
+    return jsonResponse({ error: "invalid_request" }, 400, cors);
   }
 
   const trimmed = messages.slice(-MAX_MESSAGES);
   for (const msg of trimmed) {
     if (!ALLOWED_ROLES.has(msg.role)) {
-      return res.status(400).json({ error: "invalid_request" });
+      return jsonResponse({ error: "invalid_request" }, 400, cors);
     }
     if (
       typeof msg.content !== "string" ||
       msg.content.length > MAX_MESSAGE_LENGTH
     ) {
-      return res.status(400).json({ error: "message_too_long" });
+      return jsonResponse({ error: "message_too_long" }, 400, cors);
     }
   }
 
   const lang = locale === "de" ? "de" : "en";
 
+  const modelChain = [
+    config.model,
+    ...config.fallbackModels.split(",").map((m) => m.trim()).filter(Boolean),
+  ];
+  const openai = new OpenAI({ apiKey: config.apiKey, baseURL: config.baseURL });
+  const linkInstructions = translations[lang].serverMessages.linkInstructions;
+
+  const currentTheme = theme === "light" ? "light" : "dark";
+  let currentMessages = [
+    { role: "system", content: buildSystemPrompt(lang, currentTheme) },
+    ...trimmed,
+  ];
+
+  // Helper: stream a chat completion with shared defaults
+  function streamChat(msgs, extra = {}) {
+    return createWithFallback(
+      openai,
+      modelChain,
+      { max_tokens: MAX_TOKENS, temperature: 0.7, messages: msgs, stream: true, ...extra },
+      { signal: request.signal },
+    );
+  }
+
+  // Round 1 runs before the SSE response is created, so LLM failures can
+  // still be reported as HTTP error statuses (a streaming Response is
+  // committed the moment it is returned).
+  let round1Result = null;
+  let toolFallbackStream = null;
+
   try {
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const abortController = new AbortController();
-    res.on("close", () => abortController.abort());
-    const write = (chunk) => res.write(`data: ${JSON.stringify(chunk)}\n\n`);
-    const currentTheme = theme === "light" ? "light" : "dark";
-    let currentMessages = [
-      { role: "system", content: buildSystemPrompt(lang, currentTheme) },
-      ...trimmed,
-    ];
-
-    // Helper: stream a chat completion with shared defaults
-    function streamChat(msgs, extra = {}) {
-      return createWithFallback(
-        { max_tokens: MAX_TOKENS, temperature: 0.7, messages: msgs, stream: true, ...extra },
-        { signal: abortController.signal },
-      );
-    }
-
-    // Round 1: request with tools (buffered — don't stream to client yet)
     let stream;
     try {
       stream = await streamChat(currentMessages, { tools: TOOLS, tool_choice: "auto" });
@@ -534,121 +547,159 @@ app.post("/api/chat", async (req, res) => {
         toolErr.error?.message?.toLowerCase().includes("tool");
       if (toolErr.status === 400 && isToolError) {
         console.warn("Provider does not support tools, falling back with links");
-        currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
-        const fallbackStream = await streamChat(currentMessages);
-        for await (const chunk of fallbackStream) {
-          write(chunk);
-        }
-        res.write("data: [DONE]\n\n");
-        res.end();
-        return;
-      }
-      throw toolErr;
-    }
-
-    const result = await consumeStream(stream, null); // buffer, don't write
-
-    if (
-      result.finishReason === "tool_calls" &&
-      result.toolCalls.length > 0
-    ) {
-      // Build assistant message with tool_calls
-      const assistantMsg = {
-        role: "assistant",
-        content: null,
-        tool_calls: result.toolCalls.map((tc) => ({
-          id: tc.id,
-          type: "function",
-          function: { name: tc.name, arguments: tc.arguments },
-        })),
-      };
-      currentMessages.push(assistantMsg);
-
-      // Execute each tool, append results, and collect structured actions
-      const collectedActions = [];
-
-      for (const tc of result.toolCalls) {
-        let args;
-        try {
-          args = JSON.parse(tc.arguments);
-        } catch {
-          args = {};
-        }
-        const toolResult = executeTool(tc.name, args, lang, currentTheme);
-        currentMessages.push({
-          role: "tool",
-          tool_call_id: tc.id,
-          content: JSON.stringify(toolResult),
-        });
-
-        // Collect validated structured actions (navigate_to_section is handled
-        // via anchor links in the LLM's text response, so no SSE action needed)
-        if (tc.name === "set_theme" && toolResult.type === "action") {
-          collectedActions.push({ type: "toggle_theme", theme: toolResult.newTheme });
-        } else if (tc.name === "switch_language" && toolResult.type === "action" && VALID_LANGUAGES.has(args.language)) {
-          collectedActions.push({ type: "switch_language", language: args.language });
-        }
-      }
-
-      // Round 2: stream final response (no tools) directly to client
-      let round2Result;
-      try {
-        const finalStream = await streamChat(currentMessages);
-        round2Result = await consumeStream(finalStream, write);
-      } catch (round2Err) {
-        console.warn("Round 2 failed, retrying without tool messages:", round2Err.status, round2Err.message);
-        round2Result = null;
-      }
-
-      // If Round 2 failed or returned empty, retry with link-based fallback
-      if (!round2Result || round2Result.contentChunks.length === 0) {
-        const plainMessages = currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls);
-        plainMessages[0] = { role: "system", content: plainMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
-        const retryStream = await streamChat(plainMessages);
-        await consumeStream(retryStream, write);
-      }
-
-      // Emit structured actions as a named SSE event
-      if (collectedActions.length > 0) {
-        res.write(`event: actions\ndata: ${JSON.stringify({ actions: collectedActions })}\n\n`);
-      }
-    } else if (result.contentChunks.length > 0) {
-      // No tool calls — flush buffered content to client
-      for (const chunk of result.contentChunks) {
-        write(chunk);
-      }
-    } else {
-      // Model returned nothing (tools ignored) — retry without tools, with link instructions
-      console.warn("Round 1 empty, retrying without tools");
-      currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + LINK_INSTRUCTIONS[lang] };
-      const retryStream = await streamChat(
-        currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls),
-      );
-      for await (const chunk of retryStream) {
-        write(chunk);
+        currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + linkInstructions };
+        toolFallbackStream = await streamChat(currentMessages);
+      } else {
+        throw toolErr;
       }
     }
 
-    res.write("data: [DONE]\n\n");
-    res.end();
+    if (!toolFallbackStream) {
+      round1Result = await consumeStream(stream, null); // buffer, don't write
+    }
   } catch (err) {
     console.error("LLM error:", err.status, err.message, err.error || "");
-    if (res.headersSent) {
-      res.write("data: [DONE]\n\n");
-      res.end();
-    } else if (err.status === 429) {
-      res.status(503).json({ error: "quota_exceeded" });
-    } else {
-      res.status(502).json({ error: "llm_error" });
+    if (err.status === 429) {
+      return jsonResponse({ error: "quota_exceeded" }, 503, cors);
     }
+    return jsonResponse({ error: "llm_error" }, 502, cors);
   }
-});
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok" });
-});
+  // From here on, stream SSE to the client
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const encoder = new TextEncoder();
+  const writeRaw = (str) => writer.write(encoder.encode(str));
+  const write = (chunk) => writeRaw(`data: ${JSON.stringify(chunk)}\n\n`);
 
-app.listen(Number(PORT), () => {
-  console.log(`Chatbot server running on port ${PORT}`);
-  console.log(`Models: ${MODEL_CHAIN.join(" → ")} via ${LLM_BASE_URL}`);
-});
+  const pump = async () => {
+    try {
+      if (toolFallbackStream) {
+        await consumeStream(toolFallbackStream, write);
+        return;
+      }
+
+      const result = round1Result;
+
+      if (
+        result.finishReason === "tool_calls" &&
+        result.toolCalls.length > 0
+      ) {
+        // Build assistant message with tool_calls
+        const assistantMsg = {
+          role: "assistant",
+          content: null,
+          tool_calls: result.toolCalls.map((tc) => ({
+            id: tc.id,
+            type: "function",
+            function: { name: tc.name, arguments: tc.arguments },
+          })),
+        };
+        currentMessages.push(assistantMsg);
+
+        // Execute each tool, append results, and collect structured actions
+        const collectedActions = [];
+
+        for (const tc of result.toolCalls) {
+          let args;
+          try {
+            args = JSON.parse(tc.arguments);
+          } catch {
+            args = {};
+          }
+          const toolResult = executeTool(tc.name, args, lang, currentTheme);
+          currentMessages.push({
+            role: "tool",
+            tool_call_id: tc.id,
+            content: JSON.stringify(toolResult),
+          });
+
+          // Collect validated structured actions (navigate_to_section is handled
+          // via anchor links in the LLM's text response, so no SSE action needed)
+          if (tc.name === "set_theme" && toolResult.type === "action") {
+            collectedActions.push({ type: "toggle_theme", theme: toolResult.newTheme });
+          } else if (tc.name === "switch_language" && toolResult.type === "action" && VALID_LANGUAGES.has(args.language)) {
+            collectedActions.push({ type: "switch_language", language: args.language });
+          }
+        }
+
+        // Round 2: stream final response (no tools) directly to client
+        let round2Result;
+        try {
+          const finalStream = await streamChat(currentMessages);
+          round2Result = await consumeStream(finalStream, write);
+        } catch (round2Err) {
+          console.warn("Round 2 failed, retrying without tool messages:", round2Err.status, round2Err.message);
+          round2Result = null;
+        }
+
+        // If Round 2 failed or returned empty, retry with link-based fallback
+        if (!round2Result || round2Result.contentChunks.length === 0) {
+          const plainMessages = currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls);
+          plainMessages[0] = { role: "system", content: plainMessages[0].content + "\n\n" + linkInstructions };
+          const retryStream = await streamChat(plainMessages);
+          await consumeStream(retryStream, write);
+        }
+
+        // Emit structured actions as a named SSE event
+        if (collectedActions.length > 0) {
+          await writeRaw(`event: actions\ndata: ${JSON.stringify({ actions: collectedActions })}\n\n`);
+        }
+      } else if (result.contentChunks.length > 0) {
+        // No tool calls — flush buffered content to client
+        for (const chunk of result.contentChunks) {
+          await write(chunk);
+        }
+      } else {
+        // Model returned nothing (tools ignored) — retry without tools, with link instructions
+        console.warn("Round 1 empty, retrying without tools");
+        currentMessages[0] = { role: "system", content: currentMessages[0].content + "\n\n" + linkInstructions };
+        const retryStream = await streamChat(
+          currentMessages.filter((m) => m.role !== "tool" && !m.tool_calls),
+        );
+        await consumeStream(retryStream, write);
+      }
+    } catch (err) {
+      console.error("LLM error:", err.status, err.message, err.error || "");
+    } finally {
+      try {
+        await writeRaw("data: [DONE]\n\n");
+      } catch {}
+      try {
+        await writer.close();
+      } catch {}
+    }
+  };
+
+  ctx.waitUntil(pump());
+
+  return new Response(readable, {
+    headers: {
+      ...cors,
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+    },
+  });
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    const cors = corsHeaders(env.ALLOWED_ORIGIN || "https://t.mannhart.ai");
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: cors });
+    }
+
+    const { pathname } = new URL(request.url);
+
+    if (pathname === "/api/health") {
+      return jsonResponse({ status: "ok" }, 200, cors);
+    }
+
+    if (pathname === "/api/chat" && request.method === "POST") {
+      return handleChat(request, env, ctx, cors);
+    }
+
+    return jsonResponse({ error: "not_found" }, 404, cors);
+  },
+};

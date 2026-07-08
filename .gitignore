@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+.dev.vars
 *clouds.yaml
 
 # SSH keys
@@ -16,6 +17,7 @@ node_modules/
 # Build output
 _site/
 dist/
+.wrangler/
 chatbot-server/translations.js
 chatbot-server/translations_en.json
 chatbot-server/translations_de.json
