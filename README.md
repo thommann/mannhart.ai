@@ -16,12 +16,13 @@ The site is hosted on **GitHub Pages**; the chatbot API runs as a **Cloudflare W
 
 One-time setup:
 
-1. **GitHub Pages**: In the repo, go to *Settings → Pages*, set *Source* to **GitHub Actions**, and enter `t.mannhart.ai` as the custom domain (with *Enforce HTTPS*).
-2. **DNS (Cloudflare)**: In the `mannhart.ai` zone, create a **proxied** CNAME record `t` → `thommann.github.io`.
-3. **Cloudflare Worker**: Create an API token (template *Edit Cloudflare Workers*) and add it as the GitHub secret `CLOUDFLARE_API_TOKEN`, plus the account ID as `CLOUDFLARE_ACCOUNT_ID`.
-4. **Worker config**: Set the secret `LLM_API_KEY` (via `wrangler secret put LLM_API_KEY` in `chatbot-server/` or the Cloudflare dashboard) and optionally the vars `LLM_BASE_URL`, `LLM_MODEL`, `LLM_FALLBACK_MODELS`, `ALLOWED_ORIGIN`.
+1. **DNS**: At the DNS provider for `mannhart.ai`, point `t.mannhart.ai` at GitHub Pages with a CNAME record `t` → `thommann.github.io` (DNS stays where it is — Cloudflare is only used for the worker).
+2. **GitHub Pages**: In the repo, go to *Settings → Pages*, set *Source* to **GitHub Actions**, and enter `t.mannhart.ai` as the custom domain (with *Enforce HTTPS*).
+3. **Cloudflare Worker**: Create a (free) Cloudflare account, then an API token (template *Edit Cloudflare Workers*) and add it as the GitHub secret `CLOUDFLARE_API_TOKEN`, plus the account ID as `CLOUDFLARE_ACCOUNT_ID`.
+4. **Worker config** (after the first deploy created the worker): Set the secret `LLM_API_KEY` (Cloudflare dashboard or `wrangler secret put LLM_API_KEY` in `chatbot-server/`) and optionally the vars `LLM_BASE_URL`, `LLM_MODEL`, `LLM_FALLBACK_MODELS`, `ALLOWED_ORIGIN`.
+5. **API URL**: Set the GitHub Actions **variable** `CHATBOT_API_URL` to the worker's endpoint, e.g. `https://mannhart-chatbot.<subdomain>.workers.dev/api/chat`, then re-run the deploy so the site is rebuilt with it.
 
-The worker is routed on `t.mannhart.ai/api/*` (see `chatbot-server/wrangler.jsonc`), so the frontend keeps calling `/api/chat` on the same origin. If you prefer the `workers.dev` URL instead, remove the route and set the GitHub Actions variable `CHATBOT_API_URL` to the absolute endpoint (e.g. `https://mannhart-chatbot.<subdomain>.workers.dev/api/chat`).
+The frontend calls the worker cross-origin; the worker allows this via CORS for `ALLOWED_ORIGIN` (default `https://t.mannhart.ai`).
 
 ## Get in touch
 

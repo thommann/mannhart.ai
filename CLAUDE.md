@@ -68,7 +68,7 @@ node scripts/generate-cv.js   # Generates PDF CVs to src/assets/pdf/
 - `src/assets/js/main.js` — scroll reveal, theme toggle, nav, slideshow
 - `src/assets/js/chatbot.js` — chatbot widget UI & API integration
 - `chatbot-server/worker.js` — Cloudflare Worker API with OpenAI function calling
-- `chatbot-server/wrangler.jsonc` — Worker config (name, route, vars policy)
+- `chatbot-server/wrangler.jsonc` — Worker config (name, vars policy)
 - `eleventy.config.js` — i18n plugin + passthrough copy config
 
 ## Architecture & Key Patterns
@@ -92,7 +92,7 @@ Routes: `/` redirects to `/de/` (meta refresh + JS fallback). `/de/` → German,
 
 ### Chatbot Worker
 
-- Runs as a Cloudflare Worker (`chatbot-server/worker.js`); routed on the site's domain at `t.mannhart.ai/api/*` so the frontend calls `/api/chat` relatively (no CORS). The API URL can be overridden at build time via the `CHATBOT_API_URL` env var (`src/_data/chatbotApi.js`)
+- Runs as a Cloudflare Worker (`chatbot-server/worker.js`) on its `workers.dev` URL; the frontend calls it cross-origin (CORS restricted to `ALLOWED_ORIGIN`). The endpoint is baked into the site at build time via the `CHATBOT_API_URL` env var (`src/_data/chatbotApi.js`, GitHub Actions variable in production; defaults to `/api/chat` for local dev)
 - Uses OpenAI SDK configured to work with any OpenAI-compatible API (OpenAI, Groq, Together AI, Gemini, Mistral)
 - Configuration via Cloudflare Worker vars/secrets: `LLM_API_KEY` (secret), `LLM_BASE_URL`, `LLM_MODEL`, `LLM_FALLBACK_MODELS`, `ALLOWED_ORIGIN`. Set via dashboard or `wrangler secret put` — `wrangler.jsonc` uses `keep_vars: true` so deploys don't wipe them. For local dev, put them in `chatbot-server/.dev.vars` (not committed)
 - Implements function calling with tools: `get_resource()`, `navigate_to_section()`, `get_contact_info()`, `set_theme()`, `switch_language()`
@@ -123,7 +123,7 @@ Routes: `/` redirects to `/de/` (meta refresh + JS fallback). `/de/` → German,
 ### Deployment (`deploy.yml`) — on push to `main`
 - Builds the site (incl. CV generation) and deploys it to **GitHub Pages** (`actions/deploy-pages`)
 - Deploys the chatbot worker to **Cloudflare Workers** (`cloudflare/wrangler-action`)
-- Required GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`. Optional GitHub Variable: `CHATBOT_API_URL` (absolute worker URL if the `t.mannhart.ai/api/*` route is not used)
+- Required GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`. Required GitHub Variable: `CHATBOT_API_URL` (the worker's absolute `/api/chat` URL)
 - See the "Deployment" section in `README.md` for the one-time setup steps
 
 ## Additional Rules

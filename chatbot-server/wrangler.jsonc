@@ -4,15 +4,10 @@
   "main": "worker.js",
   "compatibility_date": "2025-10-01",
 
-  // Serve the API on the site's own domain so the frontend can keep calling
-  // /api/chat relatively (no CORS). Requires the mannhart.ai zone on Cloudflare
-  // with a proxied DNS record for t.mannhart.ai (CNAME → thommann.github.io).
-  "routes": [
-    { "pattern": "t.mannhart.ai/api/*", "zone_name": "mannhart.ai" }
-  ],
-
-  // Keep the workers.dev URL as a fallback endpoint (set the repo variable
-  // CHATBOT_API_URL to it if the route above is not used).
+  // The worker is served on its workers.dev URL
+  // (https://mannhart-chatbot.<subdomain>.workers.dev). The frontend gets
+  // this endpoint baked in at build time via the CHATBOT_API_URL repo
+  // variable; CORS is enforced against ALLOWED_ORIGIN.
   "workers_dev": true,
 
   // Don't wipe dashboard-configured vars on deploy. Non-secret config
