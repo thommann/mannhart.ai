@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mannhart-chatbot",
+  "main": "worker.js",
+  "compatibility_date": "2025-10-01",
+
+  // The worker is served on its workers.dev URL
+  // (https://mannhart-chatbot.<subdomain>.workers.dev). The frontend gets
+  // this endpoint baked in at build time via the CHATBOT_API_URL repo
+  // variable; CORS is enforced against ALLOWED_ORIGIN.
+  "workers_dev": true,
+
+  // Don't wipe dashboard-configured vars on deploy. Non-secret config
+  // (LLM_BASE_URL, LLM_MODEL, LLM_FALLBACK_MODELS, ALLOWED_ORIGIN) is set in
+  // the Cloudflare dashboard or via `wrangler secret/vars`; the secret
+  // LLM_API_KEY via `wrangler secret put LLM_API_KEY`.
+  "keep_vars": true,
+
+  "observability": {
+    "enabled": true
+  }
+}
